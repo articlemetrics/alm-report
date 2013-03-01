@@ -1,2 +1,106 @@
-<h1>Home#index</h1>
-<p>Find me in app/views/home/index.html.erb</p>
+        <ul class="progress-bar">
+          <li class="progress-bar-tab1-active progress-bar-tab1">Select Articles</li>
+          <li class="progress-bar-tab2">Preview List</li>
+          <li class="progress-bar-tab3">View Report</li>
+        </ul>
+      </div>
+    </header>
+
+    <div class="content wrapper">
+      <form class="home-form">
+        <h2 class="albert-light-normal">Search all Articles</h2>
+        <div class="input-holder">
+          <label for="keyword">Keyword</label>
+          <input type="text" name="" value="" id="keyword" />
+        </div>
+        <div class="input-holder">
+          <label for="author">Author</label>
+          <input type="text" name="" value="" id="author" />
+        </div>
+        <div class="input-holder">
+          <label for="author-country">Author Country</label>
+          <input type="text" name="" value="" id="author-country" />
+        </div>
+        <div class="input-holder">
+          <label for="institution">Institution</label>
+          <input type="text" name="" value="" id="institution" />
+        </div>
+        <div class="input-holder">
+          <label for="publication-date">Publication date</label>
+          <select id="publication-date" name="" class="styled">
+            <option selected>All Time</option>
+            <option>Last 30 days</option>
+            <option>Last 365 days</option>
+            <option>Custom date range</option>
+          </select>
+          <div class="date-input-fields">
+            <input type="text" name="" value="" id="datepicker1" placeholder="MM-DD-YYYY" />
+            <span>to</span>
+            <input type="text" name="" value="" id="datepicker2" placeholder="MM-DD-YYYY" />
+          </div>
+        </div>
+        <div class="input-holder">
+          <label for="subject-area">Subject Area</label>
+          <input type="text" name="" value="" id="subject-area" />
+        </div>
+        <div class="input-holder">
+          <label for="journal">Journal</label>
+          <select id="journal" name="" class="styled">
+            <option selected>All Journals</option>
+            <option></option>
+            <option></option>
+            <option></option>
+          </select>
+        </div>
+        <div class="input-holder">
+          <label for="funding-name-no">Funder name or funding number</label>
+          <input type="text" name="" value="" id="funding-name-no" />
+        </div>
+        <div class="input-holder">
+          <input class="button-hover-dark-black" type="submit" value="Search" />
+          <input type="reset" value="Clear All" />
+        </div>
+      </form>
+      <div class="aside aside-container">
+        <h2 class="albert-light-normal">Find Specific Articles</h2>
+        <a href="fixme">By DOI or PMID</a>
+        <a href="fixme">Upload File</a>
+      </div>
+      <div class="articles-list cf">
+        <h2 class="albert-light-normal">Browse the 'Best in Class' articles from PLOS</h2>
+        	<div>
+            <a href="fixme"><span class="top-views"></span><span>Top Views</span></a>
+            <a href="fixme"><span class="top-bookmarked"></span><span>Top Bookmarked</span></a>
+            <a href="fixme"><span class="top-tweets"></span><span>Top Tweets</span></a>
+            <a href="fixme"><span class="top-cited"></span><span>Top Cited</span></a>
+            <a href="fixme"><span class="top-shares"></span><span>Top Shares</span></a>
+          </div>
+      </div>
+      <section class="sample-reports cf">
+        <h2 class="albert-light-normal">Explore sample reports</h2>
+        <a href="fixme" class="sample-reports-block-1">
+          <%= image_tag "home.sample.reports.img1.plos-alm.jpg", :height => '173', :width => '216', :alt => 'Sample Reports Funder' %>
+          <span class="albert-light-normal">Funder:</span>
+          <span class="albert-light-normal">Alzheimer's Association</span>
+          <span>Jan 1, 2008 - Jan 1, 2010</span>
+        </a>
+        <a href="fixme" class="sample-reports-block-2">
+          <%= image_tag "home.sample.reports.img2.plos-alm.jpg", :height => '173', :width => '216', :alt => 'Sample Reports Funder' %>
+          <span class="albert-light-normal">Institution:</span>
+          <span class="albert-light-normal">Harvard University</span>
+          <span>Jan 1, 2008 - Jan 1, 2010</span>
+        </a>
+        <a href="fixme" class="sample-reports-block-3">
+          <%= image_tag "home.sample.reports.img3.plos-alm.jpg", :height => '173', :width => '216', :alt => 'Sample Reports Funder' %>
+          <span class="albert-light-normal">Subject Area:</span>
+          <span class="albert-light-normal">Evolutionary Biology (20120)</span>
+          <span>Jan 1, 2008 - Jan 1, 2010</span>
+        </a>
+        <a href="fixme" class="sample-reports-block-4">
+          <%= image_tag "home.sample.reports.img4.plos-alm.jpg", :height => '173', :width => '216', :alt => 'Sample Reports Funder' %>        	
+          <span class="albert-light-normal">Author:</span>
+          <span class="albert-light-normal">Michael B. Eisen</span>
+          <span>Jan 1, 2008 - Jan 1, 2010</span>
+        </a>
+      </section>
+    </div>
