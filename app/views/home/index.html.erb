@@ -7,11 +7,11 @@
     </header>
 
     <div class="content wrapper">
-      <form class="home-form">
+    <%= form_tag("/add-articles", :method => "get", :class => "home-form") do %>
         <h2 class="albert-light-normal">Search all Articles</h2>
         <div class="input-holder">
-          <label for="keyword">Keyword</label>
-          <input type="text" name="" value="" id="keyword" />
+          <%= label_tag(:keyword) %>
+          <%= text_field_tag(:keyword) %>
         </div>
         <div class="input-holder">
           <label for="author">Author</label>
@@ -57,10 +57,10 @@
           <input type="text" name="" value="" id="funding-name-no" />
         </div>
         <div class="input-holder">
-          <input class="button-hover-dark-black" type="submit" value="Search" />
+          <%= submit_tag("Search") %>
           <input type="reset" value="Clear All" />
         </div>
-      </form>
+      <% end %>
       <div class="aside aside-container">
         <h2 class="albert-light-normal">Find Specific Articles</h2>
         <a href="fixme">By DOI or PMID</a>

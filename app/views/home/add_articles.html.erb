@@ -1,0 +1,74 @@
+    <ul class="progress-bar">
+      <li class="progress-bar-tab1-active progress-bar-tab1">Select Articles</li>
+      <li class="progress-bar-tab2">Preview List</li>
+      <li class="progress-bar-tab3">View Report</li>
+    </ul>
+  </div>
+</header>
+
+<div class="content wrapper">
+ <div class="article-lists">
+   <h2 class="albert-light-normal">Add selected articles to your list</h2>
+   <p>1-25 of 87 results for keyword:
+     <span class="keyword"><%= params[:keyword] %>;</span>
+     <span>author: <span class="author-name">Thompson, J.;</span></span>
+     <span>author country: <span class="author-country">United States;</span></span>
+     <span>publication date: <span class="publication-date">01-01-2010</span>
+     to
+     <span class="publication-date">01-01-2013;</span></span>
+     <span>journals: <span class="journals">all journals</span></span>
+   </p>
+   <ul>
+     <li class="select-all-articles-link">select all</li>
+     <li class="unselect-all-articles-link">unselect all</li>
+   </ul>
+   <div class="add-select-box-holder">
+     <span class="add-select-label">Sort by</span>
+     <select id="add-article-select">
+       <option selected>Relevance</option>
+       <option></option>
+       <option></option>
+       <option></option>
+     </select>
+   </div>
+   <p class="select-articles-message albert-light-normal invisible"><span id="select-articles-message-text"></span> <a href="fixme">Select all 87 articles</a>.</p>
+   <form>
+     <% @dois.each do |doi| %>
+       <div class="article-info cf">
+         <input class="check-save-article" type="checkbox" name="" id="" value="1">
+         <a href="fixme">Learning in Autism: Implicitly Superb</a>
+         <p>Dezso Nemeth, Karolina Janacsek, Virag Balogh, Zsuzsa Londe, Robert Mingesz, Marta Fazekas, Szilvia Jambori, Izabella Danyi, Agnes Vetro</p>
+         <p>
+           Research Article
+           <span>|</span>
+           published 22 Jul 2010
+           <span>|</span>
+           PLOS Biology
+         </p>
+       </div>
+     <% end %>
+   </form>
+   <div class="pagination">
+     <span class="previous"></span>
+     <span class="pagination-number pagination-selected">1</span>
+     <a href="fixme" class="pagination-number">2</a>
+     <a href="fixme" class="pagination-number">3</a>
+     <a href="fixme" class="pagination-number">4</a>
+     <a href="fixme" class="pagination-number">5</a>
+     <a href="fixme" class="pagination-number">6</a>
+     <a href="fixme" class="next"></a>
+   </div>
+ </div>
+ <div class="aside-container rollover-fixed">
+   <form class="preview-list-aside-form">
+     <input class="preview-list-count preview-list-submit button-hover-dark-black submit-btn right-list-btn" type="submit" value="Preview List" name="" />
+     <span class="btn-arrow"></span>
+   </form>
+   <p class="albert-light-normal">Add more articles</p>
+   <ul class="add-article-links">
+     <li><a href="fixme" class="article-links">Search Again</a></li>
+     <li><a href="fixme" class="article-links">By DOI/PMID</a></li>
+     <li><a href="fixme" class="article-links">Upload File</a></li>
+   </ul>
+ </div>
+</div>
