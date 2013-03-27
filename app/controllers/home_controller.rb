@@ -1,13 +1,16 @@
+
 class HomeController < ApplicationController
 
   def index
   end
 
   def add_articles
-    @dois = []
-    
-    # TODO: populate from solr
-    
+    q = SolrRequest.new
+    q.keyword = params[:keyword]
+
+    # TODO: set additional solr search params.
+
+    @docs, @total_found = q.query
   end
   
 end

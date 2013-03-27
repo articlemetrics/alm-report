@@ -9,7 +9,7 @@
 <div class="content wrapper">
  <div class="article-lists">
    <h2 class="albert-light-normal">Add selected articles to your list</h2>
-   <p>1-25 of 87 results for keyword:
+   <p>1-25 of <%= @total_found %> results for keyword:
      <span class="keyword"><%= params[:keyword] %>;</span>
      <span>author: <span class="author-name">Thompson, J.;</span></span>
      <span>author country: <span class="author-country">United States;</span></span>
@@ -33,17 +33,21 @@
    </div>
    <p class="select-articles-message albert-light-normal invisible"><span id="select-articles-message-text"></span> <a href="fixme">Select all 87 articles</a>.</p>
    <form>
-     <% @dois.each do |doi| %>
+     <% @docs.each do |doc| %>
        <div class="article-info cf">
          <input class="check-save-article" type="checkbox" name="" id="" value="1">
-         <a href="fixme">Learning in Autism: Implicitly Superb</a>
-         <p>Dezso Nemeth, Karolina Janacsek, Virag Balogh, Zsuzsa Londe, Robert Mingesz, Marta Fazekas, Szilvia Jambori, Izabella Danyi, Agnes Vetro</p>
+         <a href="http://dx.doi.org/info:doi/<%= doc['id'] %>"><%= doc["title"] %></a>
+         <p>
+           <% doc["author"].each_with_index do |author, idx| %>
+             <%= author %><% if idx < doc["author"].length - 1 %>,<% end %>
+           <% end %>
+         </p>
          <p>
            Research Article
            <span>|</span>
-           published 22 Jul 2010
+           published <%= doc["publication_date"].strftime("%d %b %Y") %>
            <span>|</span>
-           PLOS Biology
+           <%= doc["journal"] %>
          </p>
        </div>
      <% end %>
