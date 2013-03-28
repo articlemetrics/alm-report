@@ -40,9 +40,9 @@ class SolrRequest
     keys.each_with_index do |key, i|
       encoded = URI::encode(solr_params[key])
       if encoded != solr_params[key]
-        encoded = "\"#{encoded}\""
+        encoded = "%22#{encoded}%22"  # Enclose with quotes; " == %22
       end
-      query << "#{key}:#{encoded}"
+      query << "#{key}%3A#{encoded}"  # : == %3A
       if keys.length > 1 && i < keys.length - 1
         query << "%20AND%20"
       end
