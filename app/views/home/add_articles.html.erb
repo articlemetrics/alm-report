@@ -19,7 +19,11 @@
        <span class="author-name"><%= params[:author] %>;</span>
        </span>
      <% end %>
-     <span>author country: <span class="author-country">FIXME;</span></span>
+     <% if params[:author_country].length > 0 %>
+       <span>author country:
+       <span class="author-country"><%= params[:author_country] %>;</span>
+       </span>
+     <% end %>
      <span>publication date: <span class="publication-date">01-01-2010</span>
      to
      <span class="publication-date">01-01-2013;</span></span>
