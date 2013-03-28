@@ -9,10 +9,17 @@
 <div class="content wrapper">
  <div class="article-lists">
    <h2 class="albert-light-normal">Add selected articles to your list</h2>
-   <p>1-25 of <%= @total_found %> results for keyword:
-     <span class="keyword"><%= params[:keyword] %>;</span>
-     <span>author: <span class="author-name">Thompson, J.;</span></span>
-     <span>author country: <span class="author-country">United States;</span></span>
+   <p>1-25 of <%= @total_found %> results for
+     <% if params[:everything].length > 0 %>
+       keyword:
+       <span class="keyword"><%= params[:everything] %>;</span>
+     <% end %>
+     <% if params[:author].length > 0 %>
+       <span>author:
+       <span class="author-name"><%= params[:author] %>;</span>
+       </span>
+     <% end %>
+     <span>author country: <span class="author-country">FIXME;</span></span>
      <span>publication date: <span class="publication-date">01-01-2010</span>
      to
      <span class="publication-date">01-01-2013;</span></span>
