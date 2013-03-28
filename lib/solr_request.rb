@@ -14,12 +14,18 @@ class SolrRequest
   
   RESULTS_PER_PAGE = 25
   
+  @@ALL_JOURNALS = "All Journals"
+  
   DEBUG = true
 
   # Creates a solr request.  The query (q param in the solr request) will be based on
   # the values of the params passed in, so these should all be valid entries in the PLOS schema.
   def initialize(params)
     @params = params
+  end
+  
+  def self.ALL_JOURNALS
+    return @@ALL_JOURNALS
   end
   
   # Adds leading and trailing double-quotes to the string if it contains any whitespace.
@@ -29,6 +35,7 @@ class SolrRequest
     end
     return s
   end
+  private :quote_if_spaces
   
   # The search page uses two form fields, author_country and institution, that are both
   # implemented by mapping onto the same field in the solr schema: affiliate.  This method
@@ -43,22 +50,9 @@ class SolrRequest
     both = part1.length > 0 && part2.length > 0
     solr_params[:affiliate] = (both ? "(" : "") + quote_if_spaces(part1) + (both ? " AND " : "") \
         + quote_if_spaces(part2) + (both ? ")" : "")
-=begin
-    if part1.length > 0
-      value << quote_if_spaces(part1)
-    end
-    if both
-      value << " AND "
-    end
-    if part2.length > 0
-      value << quote_if_spaces(part2)
-    end
-    if both
-      value << ")"
-    end
-=end
     return solr_params
   end
+  private :build_affiliate_param
   
   # Returns the portion of the solr URL with the q parameter, specifying the search.
   # Note that the results of this method *must* be URL-escaped before use.
@@ -69,7 +63,10 @@ class SolrRequest
     solr_params = {}
     @params.keys.each do |key|
       value = @params[key].strip
-      if value.length > 0
+      
+      # Also take this opportunity to strip out the bogus "all journals" journal value.
+      # It is implicit.
+      if value.length > 0 && (key.to_s != "cross_published_journal_name" || value != @@ALL_JOURNALS)
         solr_params[key] = value
       end
     end
@@ -98,6 +95,14 @@ class SolrRequest
     end
     return query
   end
+  
+  def self.send_query(url)
+    resp = Net::HTTP.get_response(URI.parse(url))
+    if resp.code != "200"
+      raise "Server returned #{resp.code}: " + resp.body
+    end
+    return JSON.parse(resp.body)
+  end
                 
   # Performs a single solr search, based on the parameters set on this object.  Returns a tuple
   # of the documents retrieved, and the total number of results.  TODO: results paging.
@@ -108,11 +113,8 @@ class SolrRequest
     fl = "fl=id,publication_date,title,journal,author_display"
     limit = "rows=#{RESULTS_PER_PAGE}"  # TODO: result paging
     url = "#{URL}?#{URI::encode(build_query)}&#{filter}&#{fl}&wt=json&#{limit}"
-    resp = Net::HTTP.get_response(URI.parse(url))
-    if resp.code != "200"
-      raise "Server returned #{resp.code}: " + resp.body
-    end
-    json = JSON.parse(resp.body)
+    json = SolrRequest.send_query(url)
+
 #    if DEBUG
 #      puts json["response"]["docs"]
 #    end
@@ -121,6 +123,17 @@ class SolrRequest
       doc["publication_date"] = Date.strptime(doc["publication_date"], "%Y-%m-%dT%H:%M:%SZ")
     end
     return docs, json["response"]["numFound"]
+  end
+  
+  # Performs a query for all known PLOS journals and returns their titles as an array.
+  def self.query_for_journals
+    url = "#{URL}?q=*:*&facet=true&facet.field=cross_published_journal_name&rows=0&wt=json"
+    json = send_query(url)
+    facet_counts = json["facet_counts"]["facet_fields"]["cross_published_journal_name"]
+
+    # TODO: cache this value
+
+    return facet_counts.select{|x| x.class == String && x[0..3] == "PLOS"}
   end
                 
 end

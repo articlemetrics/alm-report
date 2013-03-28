@@ -2,6 +2,10 @@
 class HomeController < ApplicationController
 
   def index
+    journals = SolrRequest.query_for_journals.collect{|x| [x, x]}
+
+    # Add a fake entry for "all journals"
+    @journals = journals.unshift([SolrRequest.ALL_JOURNALS, SolrRequest.ALL_JOURNALS])
   end
 
   def add_articles

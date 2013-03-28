@@ -44,13 +44,8 @@
           <%= text_field_tag(:subject) %>
         </div>
         <div class="input-holder">
-          <label for="journal">Journal</label>
-          <select id="journal" name="" class="styled">
-            <option selected>All Journals</option>
-            <option></option>
-            <option></option>
-            <option></option>
-          </select>
+          <%= label_tag(:cross_published_journal_name, "Journal") %>
+          <%= select_tag(:cross_published_journal_name, options_for_select(@journals), :class => "styled") %>
         </div>
         <div class="input-holder">
           <%= label_tag(:trial_registration, "Funder name or funding number") %>

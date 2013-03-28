@@ -29,6 +29,13 @@ class SolrRequestTest < ActiveSupport::TestCase
     build_query_test_once({:everything => "some keywords", :author_country => "USA",
         :institution => "stanford u", :subject => "ebola virus"},
         'q=affiliate:(USA AND "stanford u") AND everything:"some keywords" AND subject:"ebola virus"')
+        
+    # cross_published_journal_name should be ignored iff it equals "All Journals".
+    build_query_test_once({:everything => "fooCross", :cross_published_journal_name => "PLOS ONE"},
+        'q=cross_published_journal_name:"PLOS ONE" AND everything:fooCross')
+    build_query_test_once(
+        {:everything => "fooNoJournal", :cross_published_journal_name => "All Journals"},
+        "q=everything:fooNoJournal")
   end
 
 end
