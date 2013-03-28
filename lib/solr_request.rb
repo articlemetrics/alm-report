@@ -61,7 +61,7 @@ class SolrRequest
     # TODO: set additional search attributes.
     query = build_query
     filter = "fq=doc_type:full&fq=article_type_facet:#{CGI.escape("\"Research Article\"")}"
-    fl = "fl=id,publication_date,title,journal,author"
+    fl = "fl=id,publication_date,title,journal,author_display"
     limit = "rows=#{RESULTS_PER_PAGE}"  # TODO: result paging
     url = "#{URL}?#{query}&#{filter}&#{fl}&wt=json&#{limit}"
     if DEBUG

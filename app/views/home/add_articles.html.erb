@@ -38,8 +38,8 @@
          <input class="check-save-article" type="checkbox" name="" id="" value="1">
          <a href="http://dx.doi.org/info:doi/<%= doc['id'] %>"><%= doc["title"] %></a>
          <p>
-           <% doc["author"].each_with_index do |author, idx| %>
-             <%= author %><% if idx < doc["author"].length - 1 %>,<% end %>
+           <% doc["author_display"].each_with_index do |author, idx| %>
+             <%= author %><% if idx < doc["author_display"].length - 1 %>,<% end %>
            <% end %>
          </p>
          <p>
