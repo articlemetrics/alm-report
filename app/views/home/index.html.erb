@@ -10,20 +10,20 @@
     <%= form_tag("/add-articles", :method => "get", :class => "home-form") do %>
         <h2 class="albert-light-normal">Search all Articles</h2>
         <div class="input-holder">
-          <%= label_tag(:keyword) %>
-          <%= text_field_tag(:keyword) %>
+          <%= label_tag(:everything, "Keyword") %>
+          <%= text_field_tag(:everything) %>
         </div>
         <div class="input-holder">
-          <label for="author">Author</label>
-          <input type="text" name="" value="" id="author" />
+          <%= label_tag(:author, "Author") %>
+          <%= text_field_tag(:author) %>
         </div>
         <div class="input-holder">
-          <label for="author-country">Author Country</label>
-          <input type="text" name="" value="" id="author-country" />
+          <%= label_tag(:author_country, "Author Country") %>
+          <%= text_field_tag(:author_country) %>
         </div>
         <div class="input-holder">
-          <label for="institution">Institution</label>
-          <input type="text" name="" value="" id="institution" />
+          <%= label_tag(:institution) %>
+          <%= text_field_tag(:institution) %>
         </div>
         <div class="input-holder">
           <label for="publication-date">Publication date</label>
@@ -40,8 +40,8 @@
           </div>
         </div>
         <div class="input-holder">
-          <label for="subject-area">Subject Area</label>
-          <input type="text" name="" value="" id="subject-area" />
+          <%= label_tag(:subject, "Subject Area") %>
+          <%= text_field_tag(:subject) %>
         </div>
         <div class="input-holder">
           <label for="journal">Journal</label>
@@ -53,8 +53,8 @@
           </select>
         </div>
         <div class="input-holder">
-          <label for="funding-name-no">Funder name or funding number</label>
-          <input type="text" name="" value="" id="funding-name-no" />
+          <%= label_tag(:trial_registration, "Funder name or funding number") %>
+          <%= text_field_tag(:trial_registration) %>
         </div>
         <div class="input-holder">
           <%= submit_tag("Search") %>

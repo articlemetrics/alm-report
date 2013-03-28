@@ -5,11 +5,15 @@ class HomeController < ApplicationController
   end
 
   def add_articles
-    q = SolrRequest.new
-    q.keyword = params[:keyword]
-
-    # TODO: set additional solr search params.
-
+    
+    # Strip out form params not relevant to solr.
+    solr_params = {}
+    params.keys.each do |key|
+      if !["utf8", "commit", "controller", "action"].include?(key.to_s)
+        solr_params[key] = params[key]
+      end
+    end
+    q = SolrRequest.new(solr_params)
     @docs, @total_found = q.query
   end
   
