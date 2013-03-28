@@ -10,7 +10,7 @@ class HomeController < ApplicationController
     solr_params = {}
     params.keys.each do |key|
       if !["utf8", "commit", "controller", "action"].include?(key.to_s)
-        solr_params[key] = params[key]
+        solr_params[key.to_sym] = params[key]
       end
     end
     q = SolrRequest.new(solr_params)

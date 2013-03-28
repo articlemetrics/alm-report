@@ -22,9 +22,48 @@ class SolrRequest
     @params = params
   end
   
+  # Adds leading and trailing double-quotes to the string if it contains any whitespace.
+  def quote_if_spaces(s)
+    if /\s/.match(s)
+      s = "\"#{s}\""
+    end
+    return s
+  end
+  
+  # The search page uses two form fields, author_country and institution, that are both
+  # implemented by mapping onto the same field in the solr schema: affiliate.  This method
+  # handles building the affiliate param based on the other two (whether or not they are
+  # present).  It will also delete the two "virtual" params as a side-effect.
+  def build_affiliate_param(solr_params)
+    part1 = solr_params.delete(:author_country).to_s.strip
+    part2 = solr_params.delete(:institution).to_s.strip
+    if part1.length == 0 && part2.length == 0
+      return solr_params
+    end
+    both = part1.length > 0 && part2.length > 0
+    solr_params[:affiliate] = (both ? "(" : "") + quote_if_spaces(part1) + (both ? " AND " : "") \
+        + quote_if_spaces(part2) + (both ? ")" : "")
+=begin
+    if part1.length > 0
+      value << quote_if_spaces(part1)
+    end
+    if both
+      value << " AND "
+    end
+    if part2.length > 0
+      value << quote_if_spaces(part2)
+    end
+    if both
+      value << ")"
+    end
+=end
+    return solr_params
+  end
+  
   # Returns the portion of the solr URL with the q parameter, specifying the search.
+  # Note that the results of this method *must* be URL-escaped before use.
   def build_query
- 
+
     # Strip out empty params.  Has to be done in a separate loop from the one below to
     # preserve the AND logic.
     solr_params = {}
@@ -35,22 +74,28 @@ class SolrRequest
       end
     end
     
+    solr_params = build_affiliate_param(solr_params)
     query = "q="
-    keys = solr_params.keys
+    
+    # Sort the keys to ensure deterministic param order.  This is mainly for testing.
+    keys = solr_params.keys.sort
     keys.each_with_index do |key, i|
-      encoded = URI::encode(solr_params[key])
-      if encoded != solr_params[key]
-        encoded = "%22#{encoded}%22"  # Enclose with quotes; " == %22
+      value = solr_params[key]
+      if key != :affiliate  # :affiliate was already quoted in build_affiliate_param
+        value = quote_if_spaces(value)
       end
-      query << "#{key}%3A#{encoded}"  # : == %3A
+      query << "#{key}:#{value}"
       if keys.length > 1 && i < keys.length - 1
-        query << "%20AND%20"
+        query << " AND "
       end
     end
 
     # TODO: author_country, institution.  Use author affiliations.
     # TODO: publication_date: needs additional formatting
 
+    if DEBUG
+      puts "solr query: #{query}"
+    end
     return query
   end
                 
@@ -59,14 +104,10 @@ class SolrRequest
   def query
     
     # TODO: set additional search attributes.
-    query = build_query
     filter = "fq=doc_type:full&fq=article_type_facet:#{CGI.escape("\"Research Article\"")}"
     fl = "fl=id,publication_date,title,journal,author_display"
     limit = "rows=#{RESULTS_PER_PAGE}"  # TODO: result paging
-    url = "#{URL}?#{query}&#{filter}&#{fl}&wt=json&#{limit}"
-    if DEBUG
-      puts "solr query: #{url}"
-    end
+    url = "#{URL}?#{URI::encode(build_query)}&#{filter}&#{fl}&wt=json&#{limit}"
     resp = Net::HTTP.get_response(URI.parse(url))
     if resp.code != "200"
       raise "Server returned #{resp.code}: " + resp.body
