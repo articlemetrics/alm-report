@@ -17,6 +17,12 @@ class HomeController < ApplicationController
         solr_params[key.to_sym] = params[key]
       end
     end
+    @start_date, @end_date = SolrRequest.parse_date_range(solr_params.delete(:publication_days_ago),
+        solr_params.delete(:datepicker1), solr_params.delete(:datepicker2))
+    date_range = SolrRequest.build_date_range(@start_date, @end_date)
+    if !date_range.nil?
+      solr_params[:publication_date] = date_range
+    end
     q = SolrRequest.new(solr_params)
     @docs, @total_found = q.query
   end

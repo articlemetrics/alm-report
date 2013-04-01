@@ -12,22 +12,27 @@ class SolrRequest
   # Base URL of solr server.
   URL = "http://api.plos.org/search"
   
+  SOLR_TIMESTAMP_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
+  
   RESULTS_PER_PAGE = 25
   
   @@ALL_JOURNALS = "All Journals"
   
   DEBUG = true
 
+
   # Creates a solr request.  The query (q param in the solr request) will be based on
   # the values of the params passed in, so these should all be valid entries in the PLOS schema.
   def initialize(params)
     @params = params
   end
-  
+
+
   def self.ALL_JOURNALS
     return @@ALL_JOURNALS
   end
-  
+
+
   # Adds leading and trailing double-quotes to the string if it contains any whitespace.
   def quote_if_spaces(s)
     if /\s/.match(s)
@@ -36,7 +41,8 @@ class SolrRequest
     return s
   end
   private :quote_if_spaces
-  
+
+
   # The search page uses two form fields, author_country and institution, that are both
   # implemented by mapping onto the same field in the solr schema: affiliate.  This method
   # handles building the affiliate param based on the other two (whether or not they are
@@ -53,7 +59,8 @@ class SolrRequest
     return solr_params
   end
   private :build_affiliate_param
-  
+
+
   # Returns the portion of the solr URL with the q parameter, specifying the search.
   # Note that the results of this method *must* be URL-escaped before use.
   def build_query
@@ -78,7 +85,7 @@ class SolrRequest
     keys = solr_params.keys.sort
     keys.each_with_index do |key, i|
       value = solr_params[key]
-      if key != :affiliate  # :affiliate was already quoted in build_affiliate_param
+      if key != :affiliate && key != :publication_date  # params assumed to be pre-formatted
         value = quote_if_spaces(value)
       end
       query << "#{key}:#{value}"
@@ -87,15 +94,13 @@ class SolrRequest
       end
     end
 
-    # TODO: author_country, institution.  Use author affiliations.
-    # TODO: publication_date: needs additional formatting
-
     if DEBUG
       puts "solr query: #{query}"
     end
     return query
   end
-  
+
+
   def self.send_query(url)
     resp = Net::HTTP.get_response(URI.parse(url))
     if resp.code != "200"
@@ -103,7 +108,8 @@ class SolrRequest
     end
     return JSON.parse(resp.body)
   end
-                
+
+
   # Performs a single solr search, based on the parameters set on this object.  Returns a tuple
   # of the documents retrieved, and the total number of results.  TODO: results paging.
   def query
@@ -120,11 +126,12 @@ class SolrRequest
 #    end
     docs = json["response"]["docs"]
     docs.each do |doc|
-      doc["publication_date"] = Date.strptime(doc["publication_date"], "%Y-%m-%dT%H:%M:%SZ")
+      doc["publication_date"] = Date.strptime(doc["publication_date"], SOLR_TIMESTAMP_FORMAT)
     end
     return docs, json["response"]["numFound"]
   end
-  
+
+
   # Performs a query for all known PLOS journals and returns their titles as an array.
   def self.query_for_journals
     url = "#{URL}?q=*:*&facet=true&facet.field=cross_published_journal_name&rows=0&wt=json"
@@ -135,5 +142,44 @@ class SolrRequest
 
     return facet_counts.select{|x| x.class == String && x[0..3] == "PLOS"}
   end
-                
+
+  
+  def self.get_now
+    return Time.new
+  end
+
+
+  # Logic for creating a limit on the publication_date for a query.  All params are strings.
+  # Legal values for days_ago are "-1", "0", or a positive integer.  If -1, the method
+  # returns (nil, nil) (no date range specified).  If 0, the values of start_date and end_date
+  # are used to construct the returned range.  If positive, the range extends from
+  # (today - days_ago) to today.  start_date and end_date, if present, should be strings in the
+  # format %m-%d-%Y.
+  def self.parse_date_range(days_ago, start_date, end_date)
+    days_ago = days_ago.to_i
+    end_time = get_now
+    if days_ago == -1  # All time; default.  Nothing to do.
+      return nil, nil
+      
+    elsif days_ago == 0  # Custom date range
+      start_time = Date.strptime(start_date, "%m-%d-%Y")
+      end_time = DateTime.strptime(end_date + " 23:59:59", "%m-%d-%Y %H:%M:%S")
+      
+    else  # days_ago specifies start date; end date now
+      start_time = end_time - (3600 * 24 * days_ago)
+    end
+    return start_time, end_time
+  end
+
+  
+  # Returns a legal value constraining the publication_date solr field for the given start and
+  # end DateTimes.  Returns nil if either of the arguments are nil.
+  def self.build_date_range(start_date, end_date)
+    if start_date.nil? || end_date.nil?
+      return nil
+    else
+      return "[#{start_date.strftime(SOLR_TIMESTAMP_FORMAT)} TO #{end_date.strftime(SOLR_TIMESTAMP_FORMAT)}]"
+    end
+  end
+
 end

@@ -24,9 +24,11 @@
        <span class="author-country"><%= params[:author_country] %>;</span>
        </span>
      <% end %>
-     <span>publication date: <span class="publication-date">01-01-2010</span>
-     to
-     <span class="publication-date">01-01-2013;</span></span>
+     <% if !@start_date.nil? && !@end_date.nil? %>
+       <span>publication date: <span class="publication-date"><%= @start_date.strftime("%m-%d-%Y") %></span>
+       to
+       <span class="publication-date"><%= @end_date.strftime("%m-%d-%Y") %></span></span>
+     <% end %>
      <span>journals: <span class="journals">all journals</span></span>
    </p>
    <ul>

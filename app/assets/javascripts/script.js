@@ -385,7 +385,7 @@ jQuery(function(d, $){
 
   var $date_input_fields = $(".date-input-fields");
 
-  $('#publication-date').change(function() {
+  $('#publication_days_ago').change(function() {
     var option = this.options[this.selectedIndex];
 
     if (($(option).text()) == "Custom date range") {

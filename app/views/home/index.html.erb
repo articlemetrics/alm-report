@@ -26,17 +26,17 @@
           <%= text_field_tag(:institution) %>
         </div>
         <div class="input-holder">
-          <label for="publication-date">Publication date</label>
-          <select id="publication-date" name="" class="styled">
-            <option selected>All Time</option>
-            <option>Last 30 days</option>
-            <option>Last 365 days</option>
-            <option>Custom date range</option>
-          </select>
+          <%= label_tag(:publication_days_ago, "Publication date") %>
+          <%= select_tag(:publication_days_ago,
+              options_for_select(
+                  [["All Time", -1],
+                  ["Last 30 days", 30],
+                  ["Last 365 days", 365],
+                  ["Custom date range", 0]]), :class => "styled") %>
           <div class="date-input-fields">
-            <input type="text" name="" value="" id="datepicker1" placeholder="MM-DD-YYYY" />
+            <%= text_field_tag(:datepicker1, nil, :placeholder => "MM-DD-YYYY") %>
             <span>to</span>
-            <input type="text" name="" value="" id="datepicker2" placeholder="MM-DD-YYYY" />
+            <%= text_field_tag(:datepicker2, nil, :placeholder => "MM-DD-YYYY") %>
           </div>
         </div>
         <div class="input-holder">
