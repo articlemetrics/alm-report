@@ -9,7 +9,11 @@
 <div class="content wrapper">
  <div class="article-lists">
    <h2 class="albert-light-normal">Add selected articles to your list</h2>
-   <p>1-25 of <%= @total_found %> results for
+   <% if @total_found > 0 %>
+     <p>1-<%= @total_found > 25 ? 25 : @total_found %> of <%= number_with_delimiter(@total_found, :delimiter => ',') %> results for
+   <% else %>
+     <p>No results found for
+   <% end %>
      <% if params[:everything].length > 0 %>
        keyword:
        <span class="keyword"><%= params[:everything] %>;</span>
@@ -29,7 +33,7 @@
        to
        <span class="publication-date"><%= @end_date.strftime("%m-%d-%Y") %></span></span>
      <% end %>
-     <span>journals: <span class="journals">all journals</span></span>
+     <span>journals: <span class="journals"><%= params[:cross_published_journal_name] %></span></span>
    </p>
    <ul>
      <li class="select-all-articles-link">select all</li>
