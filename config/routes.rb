@@ -6,6 +6,6 @@ AlmReport::Application.routes.draw do
   
   match "/add-articles" => "home#add_articles"
   
-  match "/update-session" => "session#update_session"
+  match "/update-session" => "home#update_session"
 
 end
