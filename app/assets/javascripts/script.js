@@ -116,32 +116,25 @@ jQuery(function(d, $){
       updateServer : function(ajax_data, $checkboxes, $containers) {
         // disable the checkboxes while we await confirmation the server that it's been updated
         $checkboxes.prop('disabled', true);
+        $.ajax('/update-session', {
+          type: 'POST',
 
-        // // make your AJAX request here, maybe like this:
-        // $.ajax('/updateSession', {
-        //   type: 'POST',
-        //   data : ajax_data,
-        // 
-        //   // NOTE: ajaxResponseHandler requires checkboxes and containers passed in to the handler
-        //   //  so that we can update the correct article(s)!
-        //   complete : jQuery.proxy(this.ajaxResponseHandler, this, $checkboxes, $containers)
-        // });
-
-        // for now, we'll just mock the AJAX request with a setTimeout call
-        console.log("AJAX REQ", ajax_data);
-        setTimeout(jQuery.proxy(
-          this.ajaxResponseHandler, 
-          this, 
-          ajax_data.mode,
-          $checkboxes, 
-          $containers, 
-          { }, // a mock (empty) XHR object that is not used
-          (function randomStatus() { return !!Math.floor(Math.random(new Date()) * 2) ? "success" : "error"; })()
-        ), 500);
+          // Unless we set this header, rails will silently refuse to save anything
+          // to the session!
+          beforeSend: function(xhr) {
+              xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))
+              },
+          data : ajax_data,
+        
+          // NOTE: ajaxResponseHandler requires checkboxes and containers passed in to the handler
+          // so that we can update the correct article(s)!
+          complete : jQuery.proxy(this.ajaxResponseHandler, this, ajax_data.mode, $checkboxes, $containers)
+        });
       },
 
       // expects a jquery collections of checkboxes and containers
       ajaxResponseHandler : function(mode, $checkboxes, $containers, xhr, status) {
+
         // collection of values that controls what kind of status message gets 
         // inserted. values change based on XHR status
         var status_data;
