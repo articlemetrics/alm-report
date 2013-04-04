@@ -53,20 +53,19 @@
         </div>
         <div class="list-outer-container">
           <div class="list-container">
-            <span class="list-label">Your List</span>
+            <span class="list-label"><a ref="/preview-list">Your List</a></span>
             <span class="list-count">0</span>
           </div>
           <div class="list-hover">
             <a href="fixme">View Report</a>
-            <a href="fixme">Edit List</a>
+            <a href="/preview-list">Edit List</a>
           </div>
         </div>
         
-        <!-- TODO: render these appropriately  -->
         <ul class="progress-bar">
-          <li class="progress-bar-tab1-active progress-bar-tab1">Select Articles</li>
-          <li class="progress-bar-tab2">Preview List</li>
-          <li class="progress-bar-tab3">View Report</li>
+          <li class="<%= @tab == :select_articles ? 'progress-bar-tab1-active progress-bar-tab1' : 'progress-bar-tab1' %>">Select Articles</li>
+          <li class="<%= @tab == :preview_list ? 'progress-bar-tab2-active progress-bar-tab2' : 'progress-bar-tab2' %>">Preview List</li>
+          <li class="<%= @tab == :view_report ? 'progress-bar-tab3-active progress-bar-tab3' : 'progress-bar-tab3' %>">View Report</li>
         </ul>
 
     <%= yield %>

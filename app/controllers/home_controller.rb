@@ -1,8 +1,11 @@
 require "set"
 
+# TODO: separate out the methods into multiple Controller classes, if necessary.
+# Right now this is the entire app.
 class HomeController < ApplicationController
 
   def index
+    @tab = :select_articles
     journals = SolrRequest.query_for_journals.collect{|x| [x, x]}
 
     # Add a fake entry for "all journals"
@@ -11,6 +14,7 @@ class HomeController < ApplicationController
 
   
   def add_articles
+    @tab = :select_articles
     
     # Strip out form params not relevant to solr.
     solr_params = {}
@@ -51,6 +55,19 @@ class HomeController < ApplicationController
     payload = {:status => "success"}
     respond_to do |format|
       format.json { render :json => payload}
+    end
+  end
+  
+  
+  def preview_list
+    @tab = :preview_list
+    
+    # TODO: this performs a separate solr query to retrieve each DOI.  Probably
+    # bad.  Consider alternatives: cache a doi -> doc mapping for search results?
+    # Or multiple DOIs per query?
+    @docs = []
+    session[:dois].each do |doi|
+      @docs << SolrRequest.get_article(doi)
     end
   end
   

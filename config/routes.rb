@@ -7,5 +7,7 @@ AlmReport::Application.routes.draw do
   match "/add-articles" => "home#add_articles"
   
   match "/update-session" => "home#update_session"
+  
+  match "/preview-list" => "home#preview_list"
 
 end

@@ -5,20 +5,27 @@ require "json"
 
 # Interface to solr search for PLOS articles.  A thin wrapper around the solr http API.
 #
-# TODO: move this somewhere more appropriate.  (lib?  app/lib?)
-# I tried doing this but rails could not load the file for some reason.
+# TODO: consider renaming this class.  Originally I thought there would also be a SolrResponse,
+# but that was not necessary.
 class SolrRequest
   
   # Base URL of solr server.
-  URL = "http://api.plos.org/search"
+  @@URL = "http://api.plos.org/search"
   
-  SOLR_TIMESTAMP_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
+  @@SOLR_TIMESTAMP_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
   
-  RESULTS_PER_PAGE = 25
+  @@RESULTS_PER_PAGE = 25
+  
+  @@FILTER = "fq=doc_type:full&fq=article_type_facet:#{URI::encode("\"Research Article\"")}"
+  
+  # The fields we want solr to return for each article.
+  @@FL = "fl=id,publication_date,title,journal,author_display"
+  
+  @@LIMIT = "rows=#{@@RESULTS_PER_PAGE}"  # TODO: result paging
   
   @@ALL_JOURNALS = "All Journals"
   
-  DEBUG = true
+  @@DEBUG = true
 
 
   # Creates a solr request.  The query (q param in the solr request) will be based on
@@ -94,7 +101,7 @@ class SolrRequest
       end
     end
 
-    if DEBUG
+    if @@DEBUG
       puts "solr query: #{query}"
     end
     return query
@@ -108,33 +115,31 @@ class SolrRequest
     end
     return JSON.parse(resp.body)
   end
+  
+  
+  # Returns a list of JSON entities for article results given a json response from solr.
+  def self.parse_docs(json)
+    docs = json["response"]["docs"]
+    docs.each do |doc|
+      doc["publication_date"] = Date.strptime(doc["publication_date"], @@SOLR_TIMESTAMP_FORMAT)
+    end
+    return docs
+  end
 
 
   # Performs a single solr search, based on the parameters set on this object.  Returns a tuple
   # of the documents retrieved, and the total number of results.  TODO: results paging.
   def query
-    
-    # TODO: set additional search attributes.
-    filter = "fq=doc_type:full&fq=article_type_facet:#{CGI.escape("\"Research Article\"")}"
-    fl = "fl=id,publication_date,title,journal,author_display"
-    limit = "rows=#{RESULTS_PER_PAGE}"  # TODO: result paging
-    url = "#{URL}?#{URI::encode(build_query)}&#{filter}&#{fl}&wt=json&#{limit}"
+    url = "#{@@URL}?#{URI::encode(build_query)}&#{@@FILTER}&#{@@FL}&wt=json&#{@@LIMIT}"
     json = SolrRequest.send_query(url)
-
-#    if DEBUG
-#      puts json["response"]["docs"]
-#    end
-    docs = json["response"]["docs"]
-    docs.each do |doc|
-      doc["publication_date"] = Date.strptime(doc["publication_date"], SOLR_TIMESTAMP_FORMAT)
-    end
+    docs = SolrRequest.parse_docs(json)
     return docs, json["response"]["numFound"]
   end
 
 
   # Performs a query for all known PLOS journals and returns their titles as an array.
   def self.query_for_journals
-    url = "#{URL}?q=*:*&facet=true&facet.field=cross_published_journal_name&rows=0&wt=json"
+    url = "#{@@URL}?q=*:*&facet=true&facet.field=cross_published_journal_name&rows=0&wt=json"
     json = send_query(url)
     facet_counts = json["facet_counts"]["facet_fields"]["cross_published_journal_name"]
 
@@ -178,8 +183,24 @@ class SolrRequest
     if start_date.nil? || end_date.nil?
       return nil
     else
-      return "[#{start_date.strftime(SOLR_TIMESTAMP_FORMAT)} TO #{end_date.strftime(SOLR_TIMESTAMP_FORMAT)}]"
+      return "[#{start_date.strftime(@@SOLR_TIMESTAMP_FORMAT)} TO #{end_date.strftime(@@SOLR_TIMESTAMP_FORMAT)}]"
     end
+  end
+
+  
+  # Looks up a single article in solr, given the DOI.  It's assumed the DOI is valid: if
+  # no article is found (or multiple articles are found), this will raise an exception.
+  def self.get_article(doi)
+    url = "#{@@URL}?q=id:#{URI::encode(doi)}&#{@@FILTER}&#{@@FL}&wt=json&#{@@LIMIT}"
+    json = SolrRequest.send_query(url)
+    docs = SolrRequest.parse_docs(json)
+    if docs.length != 1
+      raise "Retrieved #{docs.length} docs for DOI #{doi}"
+    end
+    
+    # TODO: consider caching this.  This method is normally used to retrieve details for
+    # articles the user has saved to their session, which will be needed for several requests.
+    return docs[0]
   end
 
 end

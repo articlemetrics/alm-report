@@ -43,10 +43,13 @@
        <option></option>
      </select>
    </div>
+   <p class="select-articles-message albert-light-normal invisible">
+     <span id="select-articles-message-text"></span> <a href="fixme">Select all 87 articles</a>.
+   </p>
    <%= render "article_list" %>
  </div>
  <div class="aside-container rollover-fixed">
-   <form class="preview-list-aside-form">
+   <form class="preview-list-aside-form" action="/preview-list" method="get">
      <input class="preview-list-count preview-list-submit button-hover-dark-black submit-btn right-list-btn" type="submit" value="Preview List" name="" />
      <span class="btn-arrow"></span>
    </form>
