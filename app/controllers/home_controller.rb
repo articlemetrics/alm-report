@@ -68,13 +68,15 @@ class HomeController < ApplicationController
   
   def preview_list
     @tab = :preview_list
-    
-    # TODO: this performs a separate solr query to retrieve each DOI.  Probably
-    # bad.  Consider alternatives: cache a doi -> doc mapping for search results?
-    # Or multiple DOIs per query?
     @docs = []
-    session[:dois].each do |doi|
-      @docs << SolrRequest.get_article(doi)
+    if !session[:dois].nil?
+    
+      # TODO: this performs a separate solr query to retrieve each DOI.  Probably
+      # bad.  Consider alternatives: cache a doi -> doc mapping for search results?
+      # Or multiple DOIs per query?
+      session[:dois].each do |doi|
+        @docs << SolrRequest.get_article(doi)
+      end
     end
   end
   
