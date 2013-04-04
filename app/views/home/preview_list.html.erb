@@ -5,6 +5,7 @@
   <form class="preview-form">
     <h2 class="albert-light-normal">Review your list of articles</h2>
     <p>1-3 of 3 articles</p>
+    <% @articles_checked = true %>
     <%= render "article_list" %>
     <div class="input-list">
       <input class="button-hover-dark-black submit-btn update-list-btn" type="submit" value="Update List" />

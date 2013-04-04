@@ -18,6 +18,7 @@ jQuery(function(d, $){
         $('.check-save-article').on("click", jQuery.proxy(this.checkboxClickHandler, this));
         $('.select-all-articles-link').on("click", { 'mode' : "SAVE" }, jQuery.proxy(this.toggleAllArticles, this));
         $('.unselect-all-articles-link').on("click", { 'mode' : "REMOVE" }, jQuery.proxy(this.toggleAllArticles, this));
+        $('.reset-btn').on("click", jQuery.proxy(this.resetButtonClickHandler, this));
       },
 
       updateListCount : function(new_count) {
@@ -51,6 +52,21 @@ jQuery(function(d, $){
         // NOTE: update server expects an array (or collection) of checkboxes 
         // and containers to iterate over later on
         this.updateServer(ajax_data, $checkbox, $container);
+      },
+      
+      resetButtonClickHandler : function(e) {
+        var $checkbox = $(e.target);
+//        var ajax_data = {
+//        };
+        $.ajax('/clear-session', {
+          type: 'GET',
+
+//          beforeSend: function(xhr) {
+//              xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))
+//              },
+//          data : ajax_data,
+          complete : jQuery.proxy(this.clearSessionResponseHandler, this)
+        });
       },
 
       // expects a jquery collection of containers to operate on
@@ -244,8 +260,11 @@ jQuery(function(d, $){
           // var updated_msg = c.find("." + status_data.class_name);
           // setTimeout(function() { updated_msg.fadeOut(2000); }, 3000);
         });
-      }
+      },
 
+      clearSessionResponseHandler : function(xhr, status) {
+        alert("clearSessionResponseHandler: status: " + status);
+      }
     };
 
   })().init();

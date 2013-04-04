@@ -35,18 +35,16 @@ class HomeController < ApplicationController
   
   
   def update_session
-    
-    # TODO: handle removing
-    if params[:mode] != "SAVE"
-      raise "Unexpected mode " + params[:mode]
-    end
-    
     saved = session[:dois]
-    if saved.nil?
-      saved = Set.new
-    end
-    params[:article_id].each do |doi|
-      saved.add(doi)
+    if params[:mode] == "SAVE"
+      if saved.nil?
+        saved = Set.new
+      end
+      params[:article_id].each {|doi| saved.add(doi)}
+    elsif params[:mode] == "REMOVE"
+      params[:article_id].each {|doi| saved.delete(doi)}
+    else
+      raise "Unexpected mode " + params[:mode]
     end
     session[:dois] = saved
     
@@ -56,6 +54,15 @@ class HomeController < ApplicationController
     respond_to do |format|
       format.json { render :json => payload}
     end
+  end
+  
+  
+  def clear_session
+    
+    puts "Clearing session DOIs..."
+    
+    session[:dois] = Set.new
+    head :no_content
   end
   
   

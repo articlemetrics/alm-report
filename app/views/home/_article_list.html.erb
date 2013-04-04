@@ -2,7 +2,8 @@
   <%= csrf_meta_tag %>
   <% @docs.each do |doc| %>
     <div class="article-info cf">
-      <input class="check-save-article" type="checkbox" name="" id="" value="<%= doc['id'] %>">
+      <input class="check-save-article" type="checkbox"
+          <%= @articles_checked ? 'checked="yes"' : '' %> name="" id="" value="<%= doc['id'] %>">
       <a href="http://dx.doi.org/info:doi/<%= doc['id'] %>"><%= doc["title"] %></a>
       <p>
         <% doc["author_display"].each_with_index do |author, idx| %>
