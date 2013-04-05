@@ -52,7 +52,7 @@ class HomeController < ApplicationController
 
       params[:article_ids].each {|doi| saved.add(doi)}
     elsif params[:mode] == "REMOVE"
-      params[:article_id].each {|doi| saved.delete(doi)}
+      params[:article_ids].each {|doi| saved.delete(doi)}
     else
       raise "Unexpected mode " + params[:mode]
     end
