@@ -46,6 +46,10 @@ class HomeController < ApplicationController
     end
     initial_count = saved.length
     if params[:mode] == "SAVE"
+      
+      # TODO: enforce a limit on the number of articles users can save to
+      # their session.  (500?)
+
       params[:article_ids].each {|doi| saved.add(doi)}
     elsif params[:mode] == "REMOVE"
       params[:article_id].each {|doi| saved.delete(doi)}
