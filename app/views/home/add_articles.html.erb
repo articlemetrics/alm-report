@@ -5,7 +5,7 @@
  <div class="article-lists">
    <h2 class="albert-light-normal">Add selected articles to your list</h2>
    <% if @total_found > 0 %>
-     <p>1-<%= @total_found > 25 ? 25 : @total_found %> of <%= number_with_delimiter(@total_found, :delimiter => ',') %> results for
+     <p><%= @start_result %>-<%= @end_result %> of <%= number_with_delimiter(@total_found, :delimiter => ',') %> results for
    <% else %>
      <p>No results found for
    <% end %>

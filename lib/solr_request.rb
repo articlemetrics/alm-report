@@ -14,14 +14,10 @@ class SolrRequest
   
   @@SOLR_TIMESTAMP_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
   
-  @@RESULTS_PER_PAGE = 25
-  
   @@FILTER = "fq=doc_type:full&fq=article_type_facet:#{URI::encode("\"Research Article\"")}"
   
   # The fields we want solr to return for each article.
   @@FL = "fl=id,publication_date,title,journal,author_display"
-  
-  @@LIMIT = "rows=#{@@RESULTS_PER_PAGE}"  # TODO: result paging
   
   @@ALL_JOURNALS = "All Journals"
   
@@ -37,6 +33,12 @@ class SolrRequest
 
   def self.ALL_JOURNALS
     return @@ALL_JOURNALS
+  end
+  
+  
+  def self.set_page_size(page_size)
+    @@PAGE_SIZE = page_size
+    @@LIMIT = "rows=#{page_size}"
   end
 
 
@@ -130,7 +132,13 @@ class SolrRequest
   # Performs a single solr search, based on the parameters set on this object.  Returns a tuple
   # of the documents retrieved, and the total number of results.  TODO: results paging.
   def query
+    page = @params.delete(:current_page)
+    page = page.nil? ? "1" : page
+    page = page.to_i - 1
     url = "#{@@URL}?#{URI::encode(build_query)}&#{@@FILTER}&#{@@FL}&wt=json&#{@@LIMIT}"
+    if page > 0
+      url << "&start=#{page * @@PAGE_SIZE + 1}"
+    end
     json = SolrRequest.send_query(url)
     docs = SolrRequest.parse_docs(json)
     return docs, json["response"]["numFound"]

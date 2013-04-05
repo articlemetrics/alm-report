@@ -31,6 +31,11 @@ class HomeController < ApplicationController
     end
     q = SolrRequest.new(solr_params)
     @docs, @total_found = q.query
+    page = params[:current_page]
+    page = page.nil? ? "1" : page
+    @start_result = (page.to_i - 1) * $RESULTS_PER_PAGE + 1
+    @end_result = @start_result + $RESULTS_PER_PAGE - 1
+    @end_result = [@end_result, @total_found].min
   end
   
   
