@@ -1,7 +1,7 @@
 require "set"
 
 # TODO: separate out the methods into multiple Controller classes, if necessary.
-# Right now this is the entire app.
+# Right now this is the entire app except for the report page.
 class HomeController < ApplicationController
 
   def index
