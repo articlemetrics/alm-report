@@ -11,6 +11,17 @@ class HomeController < ApplicationController
     # Add a fake entry for "all journals"
     @journals = journals.unshift([SolrRequest.ALL_JOURNALS, SolrRequest.ALL_JOURNALS])
   end
+  
+  
+  # Sets fields used by the UI for results paging of articles.
+  # A precondition of this method is that @total_found is set appropriately.
+  def set_paging_vars(current_page)
+    current_page = current_page.nil? ? "1" : current_page
+    @start_result = (current_page.to_i - 1) * $RESULTS_PER_PAGE + 1
+    @end_result = @start_result + $RESULTS_PER_PAGE - 1
+    @end_result = [@end_result, @total_found].min
+  end
+  private :set_paging_vars
 
   
   def add_articles
@@ -31,11 +42,7 @@ class HomeController < ApplicationController
     end
     q = SolrRequest.new(solr_params)
     @docs, @total_found = q.query
-    page = params[:current_page]
-    page = page.nil? ? "1" : page
-    @start_result = (page.to_i - 1) * $RESULTS_PER_PAGE + 1
-    @end_result = @start_result + $RESULTS_PER_PAGE - 1
-    @end_result = [@end_result, @total_found].min
+    set_paging_vars(params[:current_page])
   end
   
   
@@ -78,17 +85,21 @@ class HomeController < ApplicationController
   
   def preview_list
     @tab = :preview_list
+    dois = session[:dois].nil? ? Set.new : session[:dois]
+    @total_found = dois.length
+    set_paging_vars(params[:current_page])
+      
+    # TODO: sort in a better way than alphabetically by DOI?
+    dois = dois.to_a.sort
+    dois = dois[(@start_result) - 1..(@end_result - 1)]
     @docs = []
-    if !session[:dois].nil?
     
-      # TODO: this performs a separate solr query to retrieve each DOI.  Probably
-      # bad.  Consider alternatives: cache a doi -> doc mapping for search results?
-      # Or multiple DOIs per query?
-      session[:dois].each do |doi|
-        @docs << SolrRequest.get_article(doi)
-      end
+    # TODO: this performs a separate solr query to retrieve each DOI.  Probably
+    # bad.  Consider alternatives: cache a doi -> doc mapping for search results?
+    # Or multiple DOIs per query?
+    dois.each do |doi|
+      @docs << SolrRequest.get_article(doi)
     end
-    @total_found = @docs.length
   end
   
 end
