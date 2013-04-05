@@ -46,7 +46,7 @@ class HomeController < ApplicationController
     end
     initial_count = saved.length
     if params[:mode] == "SAVE"
-      params[:article_id].each {|doi| saved.add(doi)}
+      params[:article_ids].each {|doi| saved.add(doi)}
     elsif params[:mode] == "REMOVE"
       params[:article_id].each {|doi| saved.delete(doi)}
     else

@@ -43,7 +43,7 @@ jQuery(function(d, $){
         // create some data that we want to send to the server
         var ajax_data = {
           // grab the article ID from the checkbox value
-          article_id : [$checkbox.val()],
+          article_ids : [$checkbox.val()],
 
           // set the "mode" based on what state the checkbox is transitioning to
           // NOTE: this handler runs *after* the checkbox element has been 
