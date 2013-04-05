@@ -83,6 +83,7 @@ class HomeController < ApplicationController
         @docs << SolrRequest.get_article(doi)
       end
     end
+    @total_found = @docs.length
   end
   
 end
