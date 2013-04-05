@@ -2,13 +2,14 @@
   </header>
 <div class="content wrapper">
   <div class="article-lists">
-  <form class="preview-form">
+  <form class="preview-form" action="/preview-list" method="get">
     <h2 class="albert-light-normal">Review your list of articles</h2>
     <p><%= @start_result %>-<%= @end_result %> of <%= @total_found %> articles</p>
     <% @articles_checked = true %>
     <%= render "article_list" %>
     <div class="input-list">
-      <input class="button-hover-dark-black submit-btn update-list-btn" type="submit" value="Update List" />
+      <input class="button-hover-dark-black submit-btn update-list-btn" type="submit"
+          value="Update List" onClick="window.location.href='/preview-list'; return false;" />
       <input class="reset-btn" type="reset" value="Clear All" />
     </div>
   </form>

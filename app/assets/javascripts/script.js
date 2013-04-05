@@ -18,7 +18,7 @@ jQuery(function(d, $){
         $('.check-save-article').on("click", jQuery.proxy(this.checkboxClickHandler, this));
         $('.select-all-articles-link').on("click", { 'mode' : "SAVE" }, jQuery.proxy(this.toggleAllArticles, this));
         $('.unselect-all-articles-link').on("click", { 'mode' : "REMOVE" }, jQuery.proxy(this.toggleAllArticles, this));
-        $('.reset-btn').on("click", jQuery.proxy(this.resetButtonClickHandler, this));
+        $('.reset-btn').on("click", { 'mode' : "REMOVE" }, jQuery.proxy(this.toggleAllArticles, this));
       },
 
       // Replaces the preview list counts in the UI with the new value.
@@ -60,21 +60,6 @@ jQuery(function(d, $){
         // NOTE: update server expects an array (or collection) of checkboxes 
         // and containers to iterate over later on
         this.updateServer(ajax_data, $checkbox, $container);
-      },
-      
-      resetButtonClickHandler : function(e) {
-        var $checkbox = $(e.target);
-//        var ajax_data = {
-//        };
-        $.ajax('/clear-session', {
-          type: 'GET',
-
-//          beforeSend: function(xhr) {
-//              xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))
-//              },
-//          data : ajax_data,
-          complete : jQuery.proxy(this.clearSessionResponseHandler, this)
-        });
       },
 
       // expects a jquery collection of containers to operate on
