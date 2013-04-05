@@ -21,12 +21,20 @@ jQuery(function(d, $){
         $('.reset-btn').on("click", jQuery.proxy(this.resetButtonClickHandler, this));
       },
 
+      // Replaces the preview list counts in the UI with the new value.
       updateListCount : function(new_count) {
         // update "your list" box in header
         $list_count.text(new_count);
 
         // update preview list button
         $preview_list_count.val("Preview List (" + new_count + ")");
+      },
+      
+      // Increments the preview list counts in the UI by the specified delta, which
+      // can be positive or negative.
+      incrementListCount : function(delta) {
+        var count = parseInt($('.list-count').text(), 10);
+        this.updateListCount(count + delta);
       },
 
       checkboxClickHandler : function(e) {
@@ -150,6 +158,7 @@ jQuery(function(d, $){
 
       // expects a jquery collections of checkboxes and containers
       ajaxResponseHandler : function(mode, $checkboxes, $containers, xhr, status) {
+        var json_resp = $.parseJSON(xhr.responseText);
 
         // collection of values that controls what kind of status message gets 
         // inserted. values change based on XHR status
@@ -157,12 +166,6 @@ jQuery(function(d, $){
 
         // flag to determine if resetting checkboxes is necessary
         var error_occurred = false;
-
-        // FIXME: !!! ATTENTION !!!
-        // this logic will most certainly need to be modified once the JS API is 
-        // written in order to handle the multiple layers of status (HTTP, 
-        // businiess logic, etc.)
-
         switch(status) {
 
           // possible values for 'status' from AJAX call per jquery docs
@@ -219,7 +222,7 @@ jQuery(function(d, $){
         var selected_articles_count = $(".check-save-article:checked").length;
 
         // update "your list" and "preview list" buttons with new article count
-        this.updateListCount(initial_list_count + selected_articles_count);
+        this.incrementListCount(json_resp.delta);
 
         // one last thing to do if no errors occurred...
         if (!error_occurred) {

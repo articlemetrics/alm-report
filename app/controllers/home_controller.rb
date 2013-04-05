@@ -41,10 +41,11 @@ class HomeController < ApplicationController
   
   def update_session
     saved = session[:dois]
+    if saved.nil?
+      saved = Set.new
+    end
+    initial_count = saved.length
     if params[:mode] == "SAVE"
-      if saved.nil?
-        saved = Set.new
-      end
       params[:article_id].each {|doi| saved.add(doi)}
     elsif params[:mode] == "REMOVE"
       params[:article_id].each {|doi| saved.delete(doi)}
@@ -55,7 +56,7 @@ class HomeController < ApplicationController
     
     puts "Saved DOIs in session: #{session[:dois].to_a}"
     
-    payload = {:status => "success"}
+    payload = {:status => "success", :delta => saved.length - initial_count}
     respond_to do |format|
       format.json { render :json => payload}
     end

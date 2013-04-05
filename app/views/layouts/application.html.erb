@@ -54,7 +54,7 @@
         <div class="list-outer-container">
           <div class="list-container">
             <span class="list-label">Your List</span>
-            <span class="list-count">0</span>
+            <span class="list-count"><%= @preview_list_count.nil? ? 0 : @preview_list_count %></span>
           </div>
           <div class="list-hover">
             <a href="fixme">View Report</a>
