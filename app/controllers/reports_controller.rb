@@ -15,7 +15,6 @@ class ReportsController < ApplicationController
       raise "Error saving report"
     end
     dois.each {|doi| @report.report_dois.create(:doi => doi)}
-    end
     
     if @report.save
       redirect_to :action => "show", :id => @report.id
