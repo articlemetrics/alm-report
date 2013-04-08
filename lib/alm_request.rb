@@ -63,18 +63,35 @@ class AlmRequest
     results[:pmc_pdf] = pmc_pdf
     
     results[:total_usage] = plos_html + plos_pdf + plos_xml + pmc_views + pmc_pdf
+    results[:usage_data_present] = (results[:total_usage] > 0)
     
-    results[:pmc_citations] = sources_dict["PubMed Central"]["count"].to_i
-    results[:crossref_citations] = sources_dict["CrossRef"]["count"].to_i
-    results[:scopus_citations] = sources_dict["Scopus"]["count"].to_i
-    results[:citeulike] = sources_dict["CiteULike"]["count"].to_i
-    results[:connotea] = sources_dict["Connotea"]["count"].to_i
-    results[:mendeley] = sources_dict["Mendeley"]["count"].to_i
-    results[:twitter] = sources_dict["Twitter"]["count"].to_i
-    results[:facebook] = sources_dict["Facebook"]["count"].to_i
-    results[:nature] = sources_dict["Nature"]["count"].to_i
-    results[:research_blogging] = sources_dict["Research Blogging"]["count"].to_i
-    results[:wikipedia] = sources_dict["Wikipedia"]["count"].to_i
+    pmc_citations = sources_dict["PubMed Central"]["count"].to_i
+    results[:pmc_citations] = pmc_citations
+    crossref_citations = sources_dict["CrossRef"]["count"].to_i
+    results[:crossref_citations] = crossref_citations
+    scopus_citations = sources_dict["Scopus"]["count"].to_i
+    results[:scopus_citations] = scopus_citations
+    results[:citation_data_present] = (pmc_citations + crossref_citations + scopus_citations) > 0
+    
+    citulike = sources_dict["CiteULike"]["count"].to_i
+    results[:citeulike] = citulike
+    connotea = sources_dict["Connotea"]["count"].to_i
+    results[:connotea] = connotea
+    mendeley = sources_dict["Mendeley"]["count"].to_i
+    results[:mendeley] = mendeley
+    twitter = sources_dict["Twitter"]["count"].to_i
+    results[:twitter] = twitter
+    facebook = sources_dict["Facebook"]["count"].to_i
+    results[:facebook] = facebook
+    results[:social_network_data_present] = (citulike + connotea + mendeley + twitter + facebook) > 0
+    
+    nature = sources_dict["Nature"]["count"].to_i
+    results[:nature] = nature
+    research_blogging = sources_dict["Research Blogging"]["count"].to_i
+    results[:research_blogging] = research_blogging
+    wikipedia = sources_dict["Wikipedia"]["count"].to_i
+    results[:wikipedia] = wikipedia
+    results[:blogs_data_present] = (nature + research_blogging + wikipedia) > 0
     
     # TODO: caching
     return results

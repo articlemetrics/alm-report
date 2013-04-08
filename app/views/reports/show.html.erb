@@ -33,45 +33,53 @@
     <a href="fixme">Show all ALMs<span></span></a>
     <div class="metrics-table-content">
       <div class="metric-row-content">
-        <table class="metrics-table">
-          <caption>Usage</caption>
-          <%= render "alm_stat", :stat => doc[:alm_data][:plos_html], :label => "PLOS views" %>
-          <%= render "alm_stat", :stat => doc[:alm_data][:plos_pdf], :label => "PLOS PDF downloads" %>
-          <%= render "alm_stat", :stat => doc[:alm_data][:plos_xml], :label => "PLOS XML downloads" %>
-          <%= render "alm_stat", :stat => doc[:alm_data][:pmc_views], :label => "PMC views" %>
-          <%= render "alm_stat", :stat => doc[:alm_data][:pmc_pdf], :label => "PMC PDF downloads" %>
-          <%= render "alm_stat", :stat => doc[:alm_data][:total_usage], :label => "Total usage" %>
-        </table>
-        <table class="metrics-table">
-          <caption>Social Network</caption>
-          <%= render "alm_stat", :stat => doc[:alm_data][:citeulike], :label => "CiteULike" %>
-          <%= render "alm_stat", :stat => doc[:alm_data][:connotea], :label => "Connotea" %>
-          <%= render "alm_stat", :stat => doc[:alm_data][:mendeley], :label => "Mendeley" %>
-          <%= render "alm_stat", :stat => doc[:alm_data][:twitter], :label => "Twitter" %>
-          <%= render "alm_stat", :stat => doc[:alm_data][:facebook], :label => "Facebook" %>
-        </table>
+        <% if doc[:alm_data][:usage_data_present] %>
+          <table class="metrics-table">
+            <caption>Usage</caption>
+            <%= render "alm_stat", :stat => doc[:alm_data][:plos_html], :label => "PLOS views" %>
+            <%= render "alm_stat", :stat => doc[:alm_data][:plos_pdf], :label => "PLOS PDF downloads" %>
+            <%= render "alm_stat", :stat => doc[:alm_data][:plos_xml], :label => "PLOS XML downloads" %>
+            <%= render "alm_stat", :stat => doc[:alm_data][:pmc_views], :label => "PMC views" %>
+            <%= render "alm_stat", :stat => doc[:alm_data][:pmc_pdf], :label => "PMC PDF downloads" %>
+            <%= render "alm_stat", :stat => doc[:alm_data][:total_usage], :label => "Total usage" %>
+          </table>
+        <% end %>
+        <% if doc[:alm_data][:social_network_data_present] %>
+          <table class="metrics-table">
+            <caption>Social Network</caption>
+            <%= render "alm_stat", :stat => doc[:alm_data][:citeulike], :label => "CiteULike" %>
+            <%= render "alm_stat", :stat => doc[:alm_data][:connotea], :label => "Connotea" %>
+            <%= render "alm_stat", :stat => doc[:alm_data][:mendeley], :label => "Mendeley" %>
+            <%= render "alm_stat", :stat => doc[:alm_data][:twitter], :label => "Twitter" %>
+            <%= render "alm_stat", :stat => doc[:alm_data][:facebook], :label => "Facebook" %>
+          </table>
+        <% end %>
       </div>
       <div class="metric-row-content">
-        <table class="metrics-table">
-          <caption>Citation</caption>
-          <%= render "alm_stat", :stat => doc[:alm_data][:pmc_citations], :label => "PubMed Central" %>
-          <%= render "alm_stat", :stat => doc[:alm_data][:crossref_citations], :label => "CrossRef" %>
-          <%= render "alm_stat", :stat => doc[:alm_data][:scopus_citations], :label => "Scopus" %>
-          <%# TODO: web of science.  It is in the mockups, but not in ALM today.  %>
-        </table>
-        <table class="metrics-table">
-          <caption>Blogs &amp; Media</caption>
-          <%= render "alm_stat", :stat => doc[:alm_data][:nature], :label => "Nature Blogs" %>
-          <%= render "alm_stat", :stat => doc[:alm_data][:research_blogging], :label => "Research Blogging" %>
-          <%# TODO: trackbacks.  Not in ALM--get from ambra DB?  %>
-          <%= render "alm_stat", :stat => doc[:alm_data][:wikipedia], :label => "Wikipedia" %>
-        </table>
+        <% if doc[:alm_data][:citation_data_present] %>
+          <table class="metrics-table">
+            <caption>Citation</caption>
+            <%= render "alm_stat", :stat => doc[:alm_data][:pmc_citations], :label => "PubMed Central" %>
+            <%= render "alm_stat", :stat => doc[:alm_data][:crossref_citations], :label => "CrossRef" %>
+            <%= render "alm_stat", :stat => doc[:alm_data][:scopus_citations], :label => "Scopus" %>
+            <%# TODO: web of science.  It is in the mockups, but not in ALM today.  %>
+          </table>
+        <% end %>
+        <% if doc[:alm_data][:blogs_data_present] %>
+          <table class="metrics-table">
+            <caption>Blogs &amp; Media</caption>
+            <%= render "alm_stat", :stat => doc[:alm_data][:nature], :label => "Nature Blogs" %>
+            <%= render "alm_stat", :stat => doc[:alm_data][:research_blogging], :label => "Research Blogging" %>
+            <%# TODO: trackbacks.  Not in ALM--get from ambra DB?  %>
+            <%= render "alm_stat", :stat => doc[:alm_data][:wikipedia], :label => "Wikipedia" %>
+          </table>
+        <% end %>
       </div>
       <div class="metric-row-content">
+        <%# TODO: get these from ambra DB  %>
+<!--
         <table class="metrics-table  plos-table">
           <caption>PLOS Community</caption>
-          <%# TODO: get these from ambra DB  %>
-<!--
           <tr>
             <td class="list-names">Comments</td>
             <td class="metrics-list-value">2</td>
@@ -80,8 +88,8 @@
             <td class="list-names">Notes</td>
             <td class="metrics-list-value">5</td>
           </tr>
--->
         </table>
+-->
       </div>
     </div>
     <% end %>
