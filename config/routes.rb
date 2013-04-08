@@ -1,7 +1,5 @@
 AlmReport::Application.routes.draw do
 
-#  get "home/index"
-
   root :to => "home#index"
   
   match "/add-articles" => "home#add_articles"
@@ -11,5 +9,9 @@ AlmReport::Application.routes.draw do
   match "/clear-session" => "home#clear_session"
   
   match "/preview-list" => "home#preview_list"
+
+  match "/reports/generate" => "reports#generate"
+  
+  match "/reports" => "reports#show"
 
 end

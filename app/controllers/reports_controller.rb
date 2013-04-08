@@ -28,6 +28,14 @@ class ReportsController < ApplicationController
   def show
     @tab = :view_report
     @report = Report.find(params[:id])
+    @docs = []
+    
+    # TODO: paging
+    @report.report_dois.each do |report_doi|
+      
+      # TODO: same TODOs as HomeController.preview_list.  Cache results from solr.
+      @docs << SolrRequest.get_article(report_doi.doi)
+    end
   end
   
 end
