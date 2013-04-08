@@ -1,0 +1,79 @@
+<%
+current_page = params[:current_page]
+if current_page.nil?
+  current_page = "1"
+end
+current_page = current_page.to_i
+total_pages, r = @total_found.divmod(results_per_page)
+if r > 0
+  total_pages += 1
+end
+
+def paging_link(page)
+  href = request.fullpath
+  if !href.index("?")
+    href += "?"
+  end
+  return "#{href}&current_page=#{page}"
+end
+
+if total_pages > 1
+%>
+<div class="pagination">
+<%
+  # This logic is based on journals/PLoSDefault/webapp/search/searchResults.ftl.
+  # Please direct complaints to the author of that page... ;)
+  if total_pages < 4
+    if current_page > 1  %>
+      <a href="<%= paging_link(current_page - 1)  %>" class="previous" />
+<%  else %>
+      <span class="previous"></span>
+<%  end
+    (1..total_pages).each do |page|
+      if page == current_page  %>
+        <span class="pagination-number pagination-selected"><%= current_page %></span>
+<%    else  %>
+        <a href='<%= paging_link(page) %>' class='pagination-number'><%= page %></a>
+<%    end
+    end
+    if current_page < total_pages  %>
+      <a href="<%= paging_link(current_page + 1)  %>" class="next"></a>
+<%  else  %>
+      <span class="next"></span>
+<%  end
+  else
+    if current_page > 1  %>
+      <a href="<%= paging_link(current_page - 1)  %>" class="previous"></a>
+      <a href='<%= paging_link(1) %>' class='pagination-number'>1</a>
+<%  else  %>
+      <span class="previous"></span>
+      <span class="pagination-number pagination-selected">1</span>
+<%  end
+    if current_page > 3  %>
+      <span>...</span>
+<%  end
+    (0..[3, current_page + 1].max).each do |page|
+      if (page > 1 && page < total_pages && page > (current_page - 2) || ((page == (total_pages - 2)) && (page > (current_page - 3))))
+        if current_page == page  %>
+          <span class="pagination-number pagination-selected"><%= current_page %></span>
+<%      else  %>
+          <a href='<%= paging_link(page) %>' class='pagination-number'><%= page %></a>
+<%      end
+      end
+    end
+    if current_page < (total_pages - 2)  %>
+      <span>...</span>
+<%  end
+    if current_page < total_pages  %>
+      <a href='<%= paging_link(total_pages) %>' class='pagination-number'><%= total_pages %></a>
+      <a href="<%= paging_link(current_page + 1)  %>" class="next"></a>
+<%  else  %>
+      <span class="pagination-number pagination-selected"><%= total_pages %></span>
+      <span class="next"></span>
+<%
+    end
+  end%>
+</div>
+<%
+end
+%>

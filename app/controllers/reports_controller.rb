@@ -28,13 +28,24 @@ class ReportsController < ApplicationController
   def show
     @tab = :view_report
     @report = Report.find(params[:id])
-    @docs = []
     
-    # TODO: paging
-    @report.report_dois.each do |report_doi|
+    # TODO: sort in a better way than alphabetically by DOI?
+    dois = @report.report_dois.collect{|report_doi| report_doi.doi}.sort
+    @total_found = dois.length
+    set_paging_vars(params[:current_page], 5)
+    dois = dois[(@start_result) - 1..(@end_result - 1)]
+    
+    @docs = []
+    i = @start_result
+    dois.each do |doi|
       
       # TODO: same TODOs as HomeController.preview_list.  Cache results from solr.
-      @docs << SolrRequest.get_article(report_doi.doi)
+      doc = SolrRequest.get_article(doi)
+      
+      # Set the display index as a property on the doc for rendering.
+      doc[:display_index] = i
+      i += 1
+      @docs << doc
     end
   end
   

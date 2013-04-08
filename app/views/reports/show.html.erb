@@ -10,12 +10,12 @@
     </span>
   </div>
   <div class="metrics-left-content">
-  <p class="metrics-article albert-light-normal">1-5 of 76 articles</p>
+  <p class="metrics-article albert-light-normal"><%= @start_result %>-<%= @end_result %> of <%= @total_found %> articles</p>
   
   <div class="metrics-list">
   
-    <% @docs.each_with_index do |doc, i| %>
-    <span class="list-numbers"><%= i + 1 %></span>
+    <% @docs.each do |doc| %>
+    <span class="list-numbers"><%= doc[:display_index] %></span>
     <h2 class="albert-light-normal"><%= doc["title"] %></h2>
     <p class="metrics-para">
       <% doc["author_display"].each_with_index do |author, idx| %>
@@ -160,13 +160,6 @@
     </div>
   </div>
   <div class="pagination metrics-pagination">
-    <a href="fixme" class="previous"></a>
-    <a href="fixme" class="pagination-number">1</a>
-    <a href="fixme" class="pagination-number">2</a>
-    <a href="fixme" class="pagination-number">3</a>
-    <a href="fixme" class="pagination-number">4</a>
-    <a href="fixme" class="pagination-number">5</a>
-    <span class="pagination-number pagination-selected">6</span>
-    <span class="next"></span>
+    <%= render "pager", :results_per_page => 5 %>
   </div>
 </div>

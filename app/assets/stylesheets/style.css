@@ -1304,6 +1304,7 @@ span.next {
 .metrics-left-content {
   width: 715px;
   display: inline-block;
+  color: #000;
 }
 
 .metrics-list {

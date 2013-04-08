@@ -11,17 +11,6 @@ class HomeController < ApplicationController
     # Add a fake entry for "all journals"
     @journals = journals.unshift([SolrRequest.ALL_JOURNALS, SolrRequest.ALL_JOURNALS])
   end
-  
-  
-  # Sets fields used by the UI for results paging of articles.
-  # A precondition of this method is that @total_found is set appropriately.
-  def set_paging_vars(current_page)
-    current_page = current_page.nil? ? "1" : current_page
-    @start_result = (current_page.to_i - 1) * $RESULTS_PER_PAGE + 1
-    @end_result = @start_result + $RESULTS_PER_PAGE - 1
-    @end_result = [@end_result, @total_found].min
-  end
-  private :set_paging_vars
 
   
   def add_articles
