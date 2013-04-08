@@ -1,0 +1,10 @@
+<%
+  
+# Partial that renders a single table row on the report-metrics page; zeros
+# are not shown.
+if !stat.nil? && stat > 0  %>
+  <tr>
+   <td class="list-names"><%= label %></td>
+   <td class="metrics-list-value"><%= number_with_delimiter(stat, :delimiter => ',') %></td>
+  </tr>
+<% end %>

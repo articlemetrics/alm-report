@@ -35,112 +35,58 @@
       <div class="metric-row-content">
         <table class="metrics-table">
           <caption>Usage</caption>
-           <tr>
-             <td class="list-names">PLOS views</td>
-             <td class="metrics-list-value">2,021</td>
-            </tr>
-            <tr>
-              <td class="list-names">PLOS PDF downloads</td>
-              <td class="metrics-list-value">4,567</td>
-            </tr>
-             <tr>
-              <td class="list-names">PLOS XML downloads</td>
-              <td class="metrics-list-value">5,234</td>
-            </tr>
-            <tr>
-              <td class="list-names">PMC views</td>
-              <td class="metrics-list-value">8,345</td>
-            </tr>
-            <tr>
-              <td class="list-names">PMC PDF downloads</td>
-              <td class="metrics-list-value">10,032</td>
-            </tr>
-            <tr>
-              <th class="list-names total-usage">Total usage</th>
-              <th class="metrics-list-value total-usage">120,654</th>
-            </tr>
-          </table>
-          <table class="metrics-table">
-            <caption>Social Network</caption>
-            <tr>
-              <td class="list-names">CiteULike</td>
-              <td class="metrics-list-value">3</td>
-            </tr>
-            <tr>
-              <td class="list-names">Connotea</td>
-              <td class="metrics-list-value">5</td>
-            </tr>
-             <tr>
-              <td class="list-names">Mendeley</td>
-              <td class="metrics-list-value">6</td>
-            </tr>
-            <tr>
-              <td class="list-names">Twitter</td>
-              <td class="metrics-list-value">7</td>
-            </tr>
-            <tr>
-              <td class="list-names">Facebook</td>
-              <td class="metrics-list-value">8</td>
-            </tr>
-          </table>
-        </div>
-        <div class="metric-row-content">
-          <table class="metrics-table">
-            <caption>Citation</caption>
-            <tr>
-              <td class="list-names">PubMed Central</td>
-              <td class="metrics-list-value">7</td>
-            </tr>
-            <tr>
-              <td class="list-names">CrossRef</td>
-              <td class="metrics-list-value">3</td>
-            </tr>
-             <tr>
-              <td class="list-names">Scopus</td>
-              <td class="metrics-list-value">78</td>
-            </tr>
-            <tr>
-              <td class="list-names">Web of Science</td>
-              <td class="metrics-list-value">1</td>
-            </tr>
-          </table>
-          <table class="metrics-table">
-            <caption>Blogs &amp; Media</caption>
-            <tr>
-              <td class="list-names">Nature Blogs</td>
-              <td class="metrics-list-value">5</td>
-            </tr>
-            <tr>
-              <td class="list-names">Research Blogging</td>
-              <td class="metrics-list-value">6</td>
-            </tr>
-             <tr>
-              <td class="list-names">Trackbacks</td>
-              <td class="metrics-list-value">7</td>
-            </tr>
-            <tr>
-              <td class="list-names">Wikipedia</td>
-              <td class="metrics-list-value">8</td>
-            </tr>
-          </table>
-        </div>
-        <div class="metric-row-content">
-          <table class="metrics-table  plos-table">
-            <caption>PLOS Community</caption>
-            <tr>
-              <td class="list-names">Comments</td>
-              <td class="metrics-list-value">2</td>
-            </tr>
-            <tr>
-              <td class="list-names">Notes</td>
-              <td class="metrics-list-value">5</td>
-            </tr>
-          </table>
-        </div>
+          <%= render "alm_stat", :stat => doc[:alm_data][:plos_html], :label => "PLOS views" %>
+          <%= render "alm_stat", :stat => doc[:alm_data][:plos_pdf], :label => "PLOS PDF downloads" %>
+          <%= render "alm_stat", :stat => doc[:alm_data][:plos_xml], :label => "PLOS XML downloads" %>
+          <%= render "alm_stat", :stat => doc[:alm_data][:pmc_views], :label => "PMC views" %>
+          <%= render "alm_stat", :stat => doc[:alm_data][:pmc_pdf], :label => "PMC PDF downloads" %>
+          <%= render "alm_stat", :stat => doc[:alm_data][:total_usage], :label => "Total usage" %>
+        </table>
+        <table class="metrics-table">
+          <caption>Social Network</caption>
+          <%= render "alm_stat", :stat => doc[:alm_data][:citeulike], :label => "CiteULike" %>
+          <%= render "alm_stat", :stat => doc[:alm_data][:connotea], :label => "Connotea" %>
+          <%= render "alm_stat", :stat => doc[:alm_data][:mendeley], :label => "Mendeley" %>
+          <%= render "alm_stat", :stat => doc[:alm_data][:twitter], :label => "Twitter" %>
+          <%= render "alm_stat", :stat => doc[:alm_data][:facebook], :label => "Facebook" %>
+        </table>
       </div>
-      <% end %>
+      <div class="metric-row-content">
+        <table class="metrics-table">
+          <caption>Citation</caption>
+          <%= render "alm_stat", :stat => doc[:alm_data][:pmc_citations], :label => "PubMed Central" %>
+          <%= render "alm_stat", :stat => doc[:alm_data][:crossref_citations], :label => "CrossRef" %>
+          <%= render "alm_stat", :stat => doc[:alm_data][:scopus_citations], :label => "Scopus" %>
+          <%# TODO: web of science.  It is in the mockups, but not in ALM today.  %>
+        </table>
+        <table class="metrics-table">
+          <caption>Blogs &amp; Media</caption>
+          <%= render "alm_stat", :stat => doc[:alm_data][:nature], :label => "Nature Blogs" %>
+          <%= render "alm_stat", :stat => doc[:alm_data][:research_blogging], :label => "Research Blogging" %>
+          <%# TODO: trackbacks.  Not in ALM--get from ambra DB?  %>
+          <%= render "alm_stat", :stat => doc[:alm_data][:wikipedia], :label => "Wikipedia" %>
+        </table>
+      </div>
+      <div class="metric-row-content">
+        <table class="metrics-table  plos-table">
+          <caption>PLOS Community</caption>
+          <%# TODO: get these from ambra DB  %>
+<!--
+          <tr>
+            <td class="list-names">Comments</td>
+            <td class="metrics-list-value">2</td>
+          </tr>
+          <tr>
+            <td class="list-names">Notes</td>
+            <td class="metrics-list-value">5</td>
+          </tr>
+-->
+        </table>
+      </div>
     </div>
+    <% end %>
   </div>
+</div>
 
   <div class="report-downloads">
     <h2 class="albert-light-normal">Downloads</h2>
