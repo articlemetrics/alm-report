@@ -1,5 +1,3 @@
-      </div>
-    </header>
 
     <div class="content wrapper">
     <%= form_tag("/add-articles", :method => "get", :class => "home-form") do %>
@@ -47,14 +45,14 @@
           <%= text_field_tag(:financial_disclosure) %>
         </div>
         <div class="input-holder">
-          <%= submit_tag("Search") %>
-          <input type="reset" value="Clear All" />
+          <%= submit_tag "Search", :class => "button-hover-dark-black submit-btn" %>
+          <input class="reset-btn" type="reset" value="Clear All" />
         </div>
       <% end %>
       <div class="aside aside-container">
         <h2 class="albert-light-normal">Find Specific Articles</h2>
-        <a href="fixme">By DOI or PMID</a>
-        <a href="fixme">Upload File</a>
+        <a class="button-hover-dark-black submit-btn" href="fixme">By DOI/PMID</a>
+        <a class="button-hover-dark-black submit-btn" href="fixme">Upload File</a>        
       </div>
       <div class="articles-list cf">
         <h2 class="albert-light-normal">Browse the 'Best in Class' articles from PLOS</h2>

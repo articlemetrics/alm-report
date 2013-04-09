@@ -14,5 +14,5 @@
 //= require jquery_ujs
 //= require jquery-ui
 //= require jquery.placeholder
-//= require custom-select-box
+//= require jquery.uniform
 //= require script
