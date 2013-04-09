@@ -1,5 +1,9 @@
   </div>
 </header>
+<%
+  require "time"
+  now = Time.new
+%>
 <div class="content wrapper">
   <%= render "reports_nav" %>
 
@@ -7,12 +11,16 @@
     <div class="visualizations-list">
       <span class="list-numbers">1</span>
       <h2 class="albert-light-normal">Article Usage and Citations as a function of Age</h2>
-      <img src="assets/img/sample.reports.img1.plos-alm.png" height="387" width="577" alt="" />
+      <div id="article_usage_and_citations_div" style="width: 577px; height: 387px;"></div>
       <p class="info">Total views are combined HTML vies and PDF downloads from the PLOS website.
         Bubble size correlates with Scopus citations, and bubble color with the PLOS journal.
-        Data collected August 22, 2012.
+        Data collected <%= now.strftime("%B %d, %Y") %>
       </p>
-      <p>SOURCE: 75 published articles from Sept 25, 2009 to January 12, 2011</p>
+      <p>
+        SOURCE: <%= @report.report_dois.length %> published articles from
+        <%= @report.get_earliest_report_date.strftime("%B %d, %Y") %>
+        to <%= @report.get_latest_report_date.strftime("%B %d, %Y") %>
+      </p>
     </div>
     <div class="visualizations-list">
       <span class="list-numbers">2</span>

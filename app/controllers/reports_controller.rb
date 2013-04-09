@@ -29,27 +29,20 @@ class ReportsController < ApplicationController
     @tab = :view_report
     @report_sub_tab = :metrics
     @report = Report.find(params[:id])
-    
-    # TODO: sort in a better way than alphabetically by DOI?
-    dois = @report.report_dois.collect{|report_doi| report_doi.doi}.sort
-    @total_found = dois.length
+    @total_found = @report.report_dois.length
     set_paging_vars(params[:current_page], 5)
-    dois = dois[(@start_result) - 1..(@end_result - 1)]
     
-    @docs = []
+    # Create a new array for display that is only the articles on the current page,
+    # to limit what we have to load from solr and ALM.
+    @dois = @report.report_dois[(@start_result) - 1..(@end_result - 1)]
     i = @start_result
-    dois.each do |doi|
+    @dois.each do |doi|
+      doi.load_from_solr
+      doi.load_from_alm
       
-      # TODO: same TODOs as HomeController.preview_list.  Cache results from solr.
-      doc = SolrRequest.get_article(doi)
-      
-      # TODO: cache results from ALM
-      doc[:alm_data] = AlmRequest.get_article_data(doi)
-      
-      # Set the display index as a property on the doc for rendering.
-      doc[:display_index] = i
+      # Set the display index as a property for rendering.
+      doi[:display_index] = i
       i += 1
-      @docs << doc
     end
   end
   
@@ -58,9 +51,7 @@ class ReportsController < ApplicationController
     @tab = :view_report
     @report_sub_tab = :visualizations
     @report = Report.find(params[:id])
-    
-    # TODO
-    
+    @report.load_articles_from_solr
   end
   
 end
