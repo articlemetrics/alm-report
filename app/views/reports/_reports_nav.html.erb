@@ -1,0 +1,10 @@
+<div class="view-report">
+  <a href="/reports/metrics?id=<%= params[:id] %>"
+      class="metrics-icon<%= @report_sub_tab == :metrics ? ' metrics-icon-active' : '' %>">Metrics Data</a>
+  <a href="/reports/visualizations?id=<%= params[:id] %>"
+      class="chart-view<%= @report_sub_tab == :visualizations ? ' chart-view-active' : '' %>">Visualizations</a>
+  <span class="download-visuals">
+    <a href="fixme" class="edit-list">Edit List</a>
+    <a href="fixme" class="start-over">Start Over</a>
+  </span>
+</div>

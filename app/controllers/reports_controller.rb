@@ -17,7 +17,7 @@ class ReportsController < ApplicationController
     dois.each {|doi| @report.report_dois.create(:doi => doi)}
     
     if @report.save
-      redirect_to :action => "show", :id => @report.id
+      redirect_to :action => "metrics", :id => @report.id
     else
       
       # TODO
@@ -25,8 +25,9 @@ class ReportsController < ApplicationController
   end
   
   
-  def show
+  def metrics
     @tab = :view_report
+    @report_sub_tab = :metrics
     @report = Report.find(params[:id])
     
     # TODO: sort in a better way than alphabetically by DOI?
@@ -50,6 +51,16 @@ class ReportsController < ApplicationController
       i += 1
       @docs << doc
     end
+  end
+  
+  
+  def visualizations
+    @tab = :view_report
+    @report_sub_tab = :visualizations
+    @report = Report.find(params[:id])
+    
+    # TODO
+    
   end
   
 end

@@ -12,6 +12,8 @@ AlmReport::Application.routes.draw do
 
   match "/reports/generate" => "reports#generate"
   
-  match "/reports" => "reports#show"
+  match "/reports/metrics" => "reports#metrics"
+  
+  match "/reports/visualizations" => "reports#visualizations"
 
 end

@@ -1,14 +1,8 @@
   </div>
 </header>
 <div class="content wrapper">
-  <div class="view-report metrics-view-report">
-    <a class="metrics-icon metrics-icon-active">Metrics Data</a>
-    <a href="fixme" class="chart-view">Visualizations</a>
-    <span class="download-visuals">
-    <a href="fixme" class="edit-list">Edit List</a>
-    <a href="fixme" class="start-over">Start Over</a>
-    </span>
-  </div>
+  <%= render "reports_nav" %>
+
   <div class="metrics-left-content">
   <p class="metrics-article albert-light-normal"><%= @start_result %>-<%= @end_result %> of <%= @total_found %> articles</p>
   
