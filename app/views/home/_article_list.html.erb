@@ -15,7 +15,7 @@
         <span>|</span>
         published <%= doc["publication_date"].strftime("%d %b %Y") %>
         <span>|</span>
-        <%= doc["journal"] %>
+        <%= doc["cross_published_journal_name"][0] %>
       </p>
     </div>
   <% end %>

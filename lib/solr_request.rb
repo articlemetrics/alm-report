@@ -17,7 +17,7 @@ class SolrRequest
   @@FILTER = "fq=doc_type:full&fq=article_type_facet:#{URI::encode("\"Research Article\"")}"
   
   # The fields we want solr to return for each article.
-  @@FL = "fl=id,publication_date,title,journal,author_display"
+  @@FL = "fl=id,publication_date,title,cross_published_journal_name,author_display"
   
   @@ALL_JOURNALS = "All Journals"
   
