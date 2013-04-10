@@ -13,11 +13,15 @@
       <input class="check-save-article" type="checkbox"
           <%= @articles_checked ? 'checked="yes"' : '' %> name="" id="" value="<%= doc_key %>">
       <a href="http://dx.doi.org/info:doi/<%= doc['id'] %>"><%= doc["title"] %></a>
+
+      <% if !doc["author_display"].nil? %>
       <p>
         <% doc["author_display"].each_with_index do |author, idx| %>
           <%= author %><% if idx < doc["author_display"].length - 1 %>,<% end %>
         <% end %>
       </p>
+      <% end %>
+      
       <p>
         <%= doc["article_type"] %>
         <span>|</span>
