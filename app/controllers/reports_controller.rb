@@ -14,8 +14,10 @@ class ReportsController < ApplicationController
     if !@report.save
       raise "Error saving report"
     end
-    dois.each {|doi| @report.report_dois.create(:doi => doi)}
     
+    # Convert to array, sorted in descending order by timestamp, then throw away the timestamps.
+    dois = dois.sort_by{|doi, timestamp| -timestamp}.collect{|x| x[0]}
+    @report.add_all_dois(dois)
     if @report.save
       redirect_to :action => "metrics", :id => @report.id
     else

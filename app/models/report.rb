@@ -3,7 +3,14 @@ class Report < ActiveRecord::Base
   
   # TODO: figure out what we want the default sort order to be.
   # doi is likely not a good solution.
-  has_many :report_dois, :order => 'doi'
+  has_many :report_dois, :order => 'sort_order'
+  
+  
+  # Creates a child ReportDoi object for each DOI passed in in the input array.
+  # Sort order is determined by the position in the array.
+  def add_all_dois(dois)
+    dois.each_with_index {|doi, i| report_dois.create(:doi => doi, :sort_order => i)}
+  end
   
   
   # Loads solr data for each article in this report.
