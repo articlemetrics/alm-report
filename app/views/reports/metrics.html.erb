@@ -1,95 +1,95 @@
 
 <div class="content wrapper">
+  
   <%= render "reports_nav" %>
 
   <div class="metrics-left-content">
-  <p class="metrics-article albert-light-normal"><%= @start_result %>-<%= @end_result %> of <%= @total_found %> articles</p>
-  
-  <div class="visualizations-list">
+    <p class="metrics-article albert-light-normal"><%= @start_result %>-<%= @end_result %> of <%= @total_found %> articles</p>
   
     <% @dois.each do |doi| %>
-    <span class="list-numbers"><%= doi[:display_index] %></span>
-    <h2 class="albert-light-normal"><%= doi.solr["title"] %></h2>
-    <% if !doi.solr["author_display"].nil? %>
-    <p class="metrics-para">
-      <% doi.solr["author_display"].each_with_index do |author, idx| %>
-        <%= author %><% if idx < doi.solr["author_display"].length - 1 %>,<% end %>
+    <div class="visualizations-list">
+      <span class="list-numbers"><%= doi[:display_index] %></span>
+      <h2 class="albert-light-normal"><%= doi.solr["title"] %></h2>
+      <% if !doi.solr["author_display"].nil? %>
+      <p class="metrics-para">
+        <% doi.solr["author_display"].each_with_index do |author, idx| %>
+          <%= author %><% if idx < doi.solr["author_display"].length - 1 %>,<% end %>
+        <% end %>
+      </p>
       <% end %>
-    </p>
-    <% end %>
-    <p class="metrics-description">
-      Research Article
-      <span class="vertical-separator">|</span>
-      published <%= doi.solr["publication_date"].strftime("%d %b %Y") %>
-      <span class="vertical-separator">|</span>
-      <%= doi.solr["cross_published_journal_name"][0] %>
-    </p>
-    <p class="metrics-description"><%= doi.doi %></p>
-    <a href="fixme">Show all ALMs<span></span></a>
-    <div class="metrics-table-content">
-      <div class="metric-row-content">
-        <% if doi.alm[:usage_data_present] %>
-          <table class="metrics-table">
-            <caption>Usage</caption>
-            <%= render "alm_stat", :stat => doi.alm[:plos_html], :label => "PLOS views" %>
-            <%= render "alm_stat", :stat => doi.alm[:plos_pdf], :label => "PLOS PDF downloads" %>
-            <%= render "alm_stat", :stat => doi.alm[:plos_xml], :label => "PLOS XML downloads" %>
-            <%= render "alm_stat", :stat => doi.alm[:pmc_views], :label => "PMC views" %>
-            <%= render "alm_stat", :stat => doi.alm[:pmc_pdf], :label => "PMC PDF downloads" %>
-            <%= render "alm_stat", :stat => doi.alm[:total_usage], :label => "Total usage" %>
+      <p class="metrics-description">
+        Research Article
+        <span class="vertical-separator">|</span>
+        published <%= doi.solr["publication_date"].strftime("%d %b %Y") %>
+        <span class="vertical-separator">|</span>
+        <%= doi.solr["cross_published_journal_name"][0] %>
+      </p>
+      <p class="metrics-description"><%= doi.doi %></p>
+      <a href="fixme">Show all ALMs<span></span></a>
+      <div class="metrics-table-content">
+        <div class="metric-row-content">
+          <% if doi.alm[:usage_data_present] %>
+            <table class="metrics-table">
+              <caption>Usage</caption>
+              <%= render "alm_stat", :stat => doi.alm[:plos_html], :label => "PLOS views" %>
+              <%= render "alm_stat", :stat => doi.alm[:plos_pdf], :label => "PLOS PDF downloads" %>
+              <%= render "alm_stat", :stat => doi.alm[:plos_xml], :label => "PLOS XML downloads" %>
+              <%= render "alm_stat", :stat => doi.alm[:pmc_views], :label => "PMC views" %>
+              <%= render "alm_stat", :stat => doi.alm[:pmc_pdf], :label => "PMC PDF downloads" %>
+              <%= render "alm_stat", :stat => doi.alm[:total_usage], :label => "Total usage" %>
+            </table>
+          <% end %>
+          <% if doi.alm[:social_network_data_present] %>
+            <table class="metrics-table">
+              <caption>Social Network</caption>
+              <%= render "alm_stat", :stat => doi.alm[:citeulike], :label => "CiteULike" %>
+              <%= render "alm_stat", :stat => doi.alm[:connotea], :label => "Connotea" %>
+              <%= render "alm_stat", :stat => doi.alm[:mendeley], :label => "Mendeley" %>
+              <%= render "alm_stat", :stat => doi.alm[:twitter], :label => "Twitter" %>
+              <%= render "alm_stat", :stat => doi.alm[:facebook], :label => "Facebook" %>
+            </table>
+          <% end %>
+        </div>
+        <div class="metric-row-content">
+          <% if doi.alm[:citation_data_present] %>
+            <table class="metrics-table">
+              <caption>Citation</caption>
+              <%= render "alm_stat", :stat =>doi.alm[:pmc_citations], :label => "PubMed Central" %>
+              <%= render "alm_stat", :stat => doi.alm[:crossref_citations], :label => "CrossRef" %>
+              <%= render "alm_stat", :stat => doi.alm[:scopus_citations], :label => "Scopus" %>
+              <%# TODO: web of science.  It is in the mockups, but not in ALM today.  %>
+            </table>
+          <% end %>
+          <% if doi.alm[:blogs_data_present] %>
+            <table class="metrics-table">
+              <caption>Blogs &amp; Media</caption>
+              <%= render "alm_stat", :stat => doi.alm[:nature], :label => "Nature Blogs" %>
+              <%= render "alm_stat", :stat => doi.alm[:research_blogging], :label => "Research Blogging" %>
+              <%# TODO: trackbacks.  Not in ALM--get from ambra DB?  %>
+              <%= render "alm_stat", :stat => doi.alm[:wikipedia], :label => "Wikipedia" %>
+            </table>
+          <% end %>
+        </div>
+        <div class="metric-row-content">
+          <%# TODO: get these from ambra DB  %>
+  <!--
+          <table class="metrics-table  plos-table">
+            <caption>PLOS Community</caption>
+            <tr>
+              <td class="list-names">Comments</td>
+              <td class="metrics-list-value">2</td>
+            </tr>
+            <tr>
+              <td class="list-names">Notes</td>
+              <td class="metrics-list-value">5</td>
+            </tr>
           </table>
-        <% end %>
-        <% if doi.alm[:social_network_data_present] %>
-          <table class="metrics-table">
-            <caption>Social Network</caption>
-            <%= render "alm_stat", :stat => doi.alm[:citeulike], :label => "CiteULike" %>
-            <%= render "alm_stat", :stat => doi.alm[:connotea], :label => "Connotea" %>
-            <%= render "alm_stat", :stat => doi.alm[:mendeley], :label => "Mendeley" %>
-            <%= render "alm_stat", :stat => doi.alm[:twitter], :label => "Twitter" %>
-            <%= render "alm_stat", :stat => doi.alm[:facebook], :label => "Facebook" %>
-          </table>
-        <% end %>
-      </div>
-      <div class="metric-row-content">
-        <% if doi.alm[:citation_data_present] %>
-          <table class="metrics-table">
-            <caption>Citation</caption>
-            <%= render "alm_stat", :stat =>doi.alm[:pmc_citations], :label => "PubMed Central" %>
-            <%= render "alm_stat", :stat => doi.alm[:crossref_citations], :label => "CrossRef" %>
-            <%= render "alm_stat", :stat => doi.alm[:scopus_citations], :label => "Scopus" %>
-            <%# TODO: web of science.  It is in the mockups, but not in ALM today.  %>
-          </table>
-        <% end %>
-        <% if doi.alm[:blogs_data_present] %>
-          <table class="metrics-table">
-            <caption>Blogs &amp; Media</caption>
-            <%= render "alm_stat", :stat => doi.alm[:nature], :label => "Nature Blogs" %>
-            <%= render "alm_stat", :stat => doi.alm[:research_blogging], :label => "Research Blogging" %>
-            <%# TODO: trackbacks.  Not in ALM--get from ambra DB?  %>
-            <%= render "alm_stat", :stat => doi.alm[:wikipedia], :label => "Wikipedia" %>
-          </table>
-        <% end %>
-      </div>
-      <div class="metric-row-content">
-        <%# TODO: get these from ambra DB  %>
-<!--
-        <table class="metrics-table  plos-table">
-          <caption>PLOS Community</caption>
-          <tr>
-            <td class="list-names">Comments</td>
-            <td class="metrics-list-value">2</td>
-          </tr>
-          <tr>
-            <td class="list-names">Notes</td>
-            <td class="metrics-list-value">5</td>
-          </tr>
-        </table>
--->
+  -->
+        </div>
       </div>
     </div>
     <% end %>
   </div>
-</div>
 
   <div class="report-downloads">
     <h2 class="albert-light-normal">Downloads</h2>
@@ -108,7 +108,9 @@
       </div>
     </div>
   </div>
+  
   <div class="pagination metrics-pagination">
     <%= render "pager", :results_per_page => 5 %>
   </div>
+
 </div>
