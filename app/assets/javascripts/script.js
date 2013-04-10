@@ -18,14 +18,23 @@ jQuery(function(d, $){
         $('.check-save-article').on("click", jQuery.proxy(this.checkboxClickHandler, this));
         $('.select-all-articles-link').on("click", { 'mode' : "SAVE" }, jQuery.proxy(this.toggleAllArticles, this));
         $('.unselect-all-articles-link').on("click", { 'mode' : "REMOVE" }, jQuery.proxy(this.toggleAllArticles, this));
+        $('.reset-btn').on("click", { 'mode' : "REMOVE" }, jQuery.proxy(this.toggleAllArticles, this));
       },
 
+      // Replaces the preview list counts in the UI with the new value.
       updateListCount : function(new_count) {
         // update "your list" box in header
         $list_count.text(new_count);
 
         // update preview list button
         $preview_list_count.val("Preview List (" + new_count + ")");
+      },
+      
+      // Increments the preview list counts in the UI by the specified delta, which
+      // can be positive or negative.
+      incrementListCount : function(delta) {
+        var count = parseInt($('.list-count').text(), 10);
+        this.updateListCount(count + delta);
       },
 
       checkboxClickHandler : function(e) {
@@ -34,7 +43,7 @@ jQuery(function(d, $){
         // create some data that we want to send to the server
         var ajax_data = {
           // grab the article ID from the checkbox value
-          article_id : [$checkbox.val()],
+          article_ids : [$checkbox.val()],
 
           // set the "mode" based on what state the checkbox is transitioning to
           // NOTE: this handler runs *after* the checkbox element has been 
@@ -116,44 +125,32 @@ jQuery(function(d, $){
       updateServer : function(ajax_data, $checkboxes, $containers) {
         // disable the checkboxes while we await confirmation the server that it's been updated
         $checkboxes.prop('disabled', true);
+        $.ajax('/update-session', {
+          type: 'POST',
 
-        // // make your AJAX request here, maybe like this:
-        // $.ajax('/updateSession', {
-        //   type: 'POST',
-        //   data : ajax_data,
-        // 
-        //   // NOTE: ajaxResponseHandler requires checkboxes and containers passed in to the handler
-        //   //  so that we can update the correct article(s)!
-        //   complete : jQuery.proxy(this.ajaxResponseHandler, this, $checkboxes, $containers)
-        // });
-
-        // for now, we'll just mock the AJAX request with a setTimeout call
-        // console.log("AJAX REQ", ajax_data);
-        setTimeout(jQuery.proxy(
-          this.ajaxResponseHandler, 
-          this, 
-          ajax_data.mode,
-          $checkboxes, 
-          $containers, 
-          { }, // a mock (empty) XHR object that is not used
-          (function randomStatus() { return !!Math.floor(Math.random(new Date()) * 2) ? "success" : "error"; })()
-        ), 500);
+          // Unless we set this header, rails will silently refuse to save anything
+          // to the session!
+          beforeSend: function(xhr) {
+              xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))
+              },
+          data : ajax_data,
+        
+          // NOTE: ajaxResponseHandler requires checkboxes and containers passed in to the handler
+          // so that we can update the correct article(s)!
+          complete : jQuery.proxy(this.ajaxResponseHandler, this, ajax_data.mode, $checkboxes, $containers)
+        });
       },
 
       // expects a jquery collections of checkboxes and containers
       ajaxResponseHandler : function(mode, $checkboxes, $containers, xhr, status) {
+        var json_resp = $.parseJSON(xhr.responseText);
+
         // collection of values that controls what kind of status message gets 
         // inserted. values change based on XHR status
         var status_data;
 
         // flag to determine if resetting checkboxes is necessary
         var error_occurred = false;
-
-        // FIXME: !!! ATTENTION !!!
-        // this logic will most certainly need to be modified once the JS API is 
-        // written in order to handle the multiple layers of status (HTTP, 
-        // businiess logic, etc.)
-
         switch(status) {
 
           // possible values for 'status' from AJAX call per jquery docs
@@ -210,7 +207,7 @@ jQuery(function(d, $){
         var selected_articles_count = $(".check-save-article:checked").length;
 
         // update "your list" and "preview list" buttons with new article count
-        this.updateListCount(initial_list_count + selected_articles_count);
+        this.incrementListCount(json_resp.delta);
 
         // one last thing to do if no errors occurred...
         if (!error_occurred) {
@@ -251,8 +248,7 @@ jQuery(function(d, $){
           // var updated_msg = c.find("." + status_data.class_name);
           // setTimeout(function() { updated_msg.fadeOut(2000); }, 3000);
         });
-      }
-
+      },
     };
 
   })().init();
@@ -360,7 +356,6 @@ jQuery(function(d, $){
     $current_element.siblings('input').val('');
     $current_element.remove();
   });
-
 }(document, jQuery));
 
 
@@ -378,7 +373,7 @@ jQuery(function(d, $){
 
   var $date_input_fields = $(".date-input-fields");
 
-  $('#publication-date').change(function() {
+  $('#publication_days_ago').change(function() {
     var option = this.options[this.selectedIndex];
 
     if (($(option).text()) == "Custom date range") {
