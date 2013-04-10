@@ -14,7 +14,7 @@ class SolrRequest
   
   @@SOLR_TIMESTAMP_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
   
-  @@FILTER = "fq=doc_type:full&fq=article_type_facet:#{URI::encode("\"Research Article\"")}"
+  @@FILTER = "fq=doc_type:full&fq=!article_type_facet:#{URI::encode("\"Issue Image\"")}"
   
   # The fields we want solr to return for each article.
   @@FL = "fl=id,publication_date,title,cross_published_journal_name,author_display"
