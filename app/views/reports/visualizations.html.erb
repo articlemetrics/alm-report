@@ -14,10 +14,31 @@
     var article_usage_citations_age_data = google.visualization.arrayToDataTable(<%= raw @article_usage_citations_age_data %>);
     var options = {
         title: 'Article Usage and Citations as a function of Age',
-        hAxis: {title: 'Months'},
-        vAxis: {title: 'Total Views', maxValue: 12000 },
+        hAxis: {
+          title: 'Months',
+          baselineColor: 'b4b4b4',
+          gridlines: {
+            color: '#efefef'
+          },
+          titleTextStyle: {color: '838383'}
+        },
+        vAxis: {
+          title: 'Total Views',
+          maxValue: 12000,
+          baselineColor: 'b4b4b4',
+            gridlines: {
+              color: '#efefef'
+            },
+          titleTextStyle: {color: '838383'}
+        },
         bubble: {textStyle: {color: 'none'}},
-        backgroundColor: '#efefef'
+        backgroundColor: '#efefef',
+        chartArea: {left: 75, top: 20, width: "80%", height: "80%"},
+
+        // TODO: confirm colors with product.  The mockups only show 3 max.
+        colors: ['fda328', '1ebd21', 'b526fb', '3366cc', 'dc3912'],
+        legend: {position: 'none'},
+        titlePosition: 'none'
     };
     var chart = new google.visualization.BubbleChart(document.getElementById('article_usage_and_citations_age_div'));
     chart.draw(article_usage_citations_age_data, options);
@@ -30,9 +51,11 @@
 
   <div class="visualizations-container">
     <div class="visualizations-list">
-      <span class="list-numbers">1</span>
-      <h2 class="albert-light-normal">Article Usage and Citations as a function of Age</h2>
-      <div id="article_usage_and_citations_age_div" style="width: 577px; height: 387px;"></div>
+      <div class="reports-header-div">
+        <span class="list-numbers">1</span>
+        <h2 class="albert-light-normal">Article Usage and Citations as a function of Age</h2>
+      </div>
+      <div id="article_usage_and_citations_age_div" style="width: 670px; height: 392px;"></div>
       <p class="info">Total views are combined HTML vies and PDF downloads from the PLOS website.
         Bubble size correlates with Scopus citations, and bubble color with the PLOS journal.
         Data collected <%= now.strftime("%B %d, %Y") %>
