@@ -10,11 +10,13 @@
     <% @dois.each do |doi| %>
     <span class="list-numbers"><%= doi[:display_index] %></span>
     <h2 class="albert-light-normal"><%= doi.solr["title"] %></h2>
+    <% if !doi.solr["author_display"].nil? %>
     <p class="metrics-para">
       <% doi.solr["author_display"].each_with_index do |author, idx| %>
         <%= author %><% if idx < doi.solr["author_display"].length - 1 %>,<% end %>
       <% end %>
     </p>
+    <% end %>
     <p class="metrics-description">
       Research Article
       <span class="vertical-separator">|</span>

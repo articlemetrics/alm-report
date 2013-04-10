@@ -11,16 +11,16 @@ module AlmRequest
   
   # Processes the "Counter" data source and returns a tuple of (HTML views, PDF views, XML views)
   # for a given article.
-  def self.aggregate_plos_views(plos_source)
+  def self.aggregate_plos_views(events_data)
     views = 0
     pdfs = 0
     xmls = 0
-    plos_source["events"].each do |event|
+    events_data.each do |event|
       views += event["html_views"].to_i
       pdfs += event["pdf_views"].to_i
       xmls += event["xml_views"].to_i
     end
-    return views, pdfs, xmls
+    return {:html => views, :pdf => pdfs, :xml => xmls}
   end
   
   
@@ -99,60 +99,80 @@ module AlmRequest
   end
 
 
+  # Returns a dict containing ALM usage data for a given list of articles.
   def self.get_data_for_articles(report_dois)
-    # TODO 50 articles at a time
-    dois = report_dois.map { |report_doi| report_doi.doi }
-    params = {}
-    params[:ids] = dois.join(",")
-    params[:info] = 'event'
-
-    url = "#{@@URL}/?#{params.to_param}"
-
-    puts "#{url}"
-
-    resp = Net::HTTP.get_response(URI.parse(url))
-
-    # TODO check http response
-
-    json = JSON.parse(resp.body)
 
     all_results = {}
-    json.each do | article |
-      sources = article["sources"].map { | source | [source["name"], source["metrics"]] }
-      sources_dict = Hash[*sources.flatten]
 
-      results = {}
+    dois = report_dois.map { |report_doi| report_doi.doi }
 
-      # TODO waiting for an alm bug to be fixed
-      results[:plos_html] = sources_dict["counter"]["html"]
-      results[:plos_pdf] = sources_dict["counter"]["pdf"]
-      # TODO get xml data
-      results[:plos_xml] = 0
+    # https://github.com/articlemetrics/alm/wiki/API
+    # Queries for up to 50 articles at a time are supported.
+    # TODO configure
+    num_articles = 50
 
-      results[:pmc_views] = sources_dict["pmc"]["html"]
-      results[:pmc_pdf] = sources_dict["pmc"]["pdf"]
+    start_index = 0
+    end_index = start_index + num_articles
+    subset_dois = dois[start_index, end_index]
 
-      results[:total_usage] = results[:plos_html] + results[:plos_pdf] + results[:plos_xml] + results[:pmc_views] + results[:pmc_pdf]
-      results[:usage_data_present] = (results[:total_usage] > 0)
+    while (!subset_dois.nil?)
+      params = {}
+      params[:ids] = subset_dois.join(",")
+      params[:info] = 'event'
 
-      results[:pmc_citations] = sources_dict["pubmed"]["total"]
-      results[:crossref_citations] = sources_dict["crossref"]["total"]
-      results[:scopus_citations] = sources_dict["scopus"]["total"]
-      results[:citation_data_present] = (results[:pmc_citations] + results[:crossref_citations] + results[:scopus_citations]) > 0
+      url = "#{@@URL}/?#{params.to_param}"
 
-      results[:citeulike] = sources_dict["citeulike"]["total"]
-      results[:connotea] = sources_dict["connotea"]["total"]
-      results[:mendeley] = sources_dict["mendeley"]["total"]
-      results[:twitter] = sources_dict["twitter"]["total"]
-      results[:facebook] = sources_dict["facebook"]["total"]
-      results[:social_network_data_present] = (results[:citeulike] + results[:connotea] + results[:mendeley] + results[:twitter] + results[:facebook]) > 0
+      Rails.logger.debug("ALM DATA REQUEST: #{url}")
 
-      results[:nature] = sources_dict["nature"]["total"]
-      results[:research_blogging] = sources_dict["researchblogging"]["total"]
-      results[:wikipedia] = sources_dict["wikipedia"]["total"]
-      results[:blogs_data_present] = (results[:nature] + results[:research_blogging] + results[:wikipedia]) > 0
+      resp = Net::HTTP.get_response(URI.parse(url))
 
-      all_results[article["doi"]] = results
+      if !resp.kind_of?(Net::HTTPSuccess)
+        raise "Server returned #{resp.code}: " + resp.body
+      end
+
+      json = JSON.parse(resp.body)
+
+      json.each do | article |
+        sources = article["sources"].map { | source | (source["name"].casecmp("counter") != 0) ? [source["name"], source["metrics"]] : [source["name"], source["events"]] }
+        sources_dict = Hash[*sources.flatten(1)]
+
+        results = {}
+
+        views = aggregate_plos_views(sources_dict["counter"])
+        results[:plos_html] = views[:html]
+        results[:plos_pdf] = views[:pdf]
+        results[:plos_xml] = views[:xml]
+
+        results[:pmc_views] = sources_dict["pmc"]["html"].to_i
+        results[:pmc_pdf] = sources_dict["pmc"]["pdf"].to_i
+
+        results[:total_usage] = results[:plos_html] + results[:plos_pdf] + results[:plos_xml] + results[:pmc_views] + results[:pmc_pdf]
+        results[:usage_data_present] = (results[:total_usage] > 0)
+
+        results[:pmc_citations] = sources_dict["pubmed"]["total"].to_i
+        results[:crossref_citations] = sources_dict["crossref"]["total"].to_i
+        results[:scopus_citations] = sources_dict["scopus"]["total"].to_i
+        results[:citation_data_present] = (results[:pmc_citations] + results[:crossref_citations] + results[:scopus_citations]) > 0
+
+        results[:citeulike] = sources_dict["citeulike"]["total"].to_i
+        results[:connotea] = sources_dict["connotea"]["total"].to_i
+        results[:mendeley] = sources_dict["mendeley"]["total"].to_i
+        results[:twitter] = sources_dict["twitter"]["total"].to_i
+        results[:facebook] = sources_dict["facebook"]["total"].to_i
+        results[:social_network_data_present] = (results[:citeulike] + results[:connotea] + results[:mendeley] + results[:twitter] + results[:facebook]) > 0
+
+        results[:nature] = sources_dict["nature"]["total"].to_i
+        results[:research_blogging] = sources_dict["researchblogging"]["total"].to_i
+        results[:wikipedia] = sources_dict["wikipedia"]["total"].to_i
+        results[:blogs_data_present] = (results[:nature] + results[:research_blogging] + results[:wikipedia]) > 0
+
+        # TODO caching
+        all_results[article["doi"]] = results
+      end
+
+      start_index = end_index
+      end_index = start_index + num_articles
+      subset_dois = dois[start_index, end_index]
     end
 
     return all_results
