@@ -1,9 +1,17 @@
 <%= form_tag("/update-session") do %>
   <%= csrf_meta_tag %>
-  <% @docs.each do |doc| %>
+<%
+  require "date"
+  @docs.each do |doc|
+  
+    # Article info that we want to send to the server when the checkbox is clicked.
+    # We include publication_date since that is our default sort order on the
+    # preview list page (and we don't want to have to re-query solr for it).
+    doc_key = "#{doc['id']}|#{doc['publication_date'].strftime("%s")}"  # Convert to unix timestamp
+%>
     <div class="article-info cf">
       <input class="check-save-article" type="checkbox"
-          <%= @articles_checked ? 'checked="yes"' : '' %> name="" id="" value="<%= doc['id'] %>">
+          <%= @articles_checked ? 'checked="yes"' : '' %> name="" id="" value="<%= doc_key %>">
       <a href="http://dx.doi.org/info:doi/<%= doc['id'] %>"><%= doc["title"] %></a>
       <p>
         <% doc["author_display"].each_with_index do |author, idx| %>

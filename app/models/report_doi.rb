@@ -1,6 +1,6 @@
 class ReportDoi < ActiveRecord::Base
   belongs_to :report
-  attr_accessible :doi
+  attr_accessible :doi, :sort_order
   attr_reader :solr, :alm
   
   

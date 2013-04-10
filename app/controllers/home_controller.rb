@@ -1,4 +1,3 @@
-require "set"
 
 # TODO: separate out the methods into multiple Controller classes, if necessary.
 # Right now this is the entire app except for the report page.
@@ -35,10 +34,20 @@ class HomeController < ApplicationController
   end
   
   
+  # Parses date sent in the ajax call to update_session.  This is of the form
+  # "10.1371/journal.pone.0052192|12345678"; that is, a DOI and a timestamp separated by
+  # a '|' character.  Returns (doi, timestamp).
+  def parse_article_key(key)
+    fields = key.split("|")
+    return fields[0], fields[1].to_i
+  end
+  private :parse_article_key
+  
+  
   def update_session
     saved = session[:dois]
     if saved.nil?
-      saved = Set.new
+      saved = {}
     end
     initial_count = saved.length
     if params[:mode] == "SAVE"
@@ -46,9 +55,15 @@ class HomeController < ApplicationController
       # TODO: enforce a limit on the number of articles users can save to
       # their session.  (500?)
 
-      params[:article_ids].each {|doi| saved.add(doi)}
+      params[:article_ids].each do |doc_key|
+        doi, pub_date = parse_article_key(doc_key)
+        saved[doi] = pub_date
+      end
     elsif params[:mode] == "REMOVE"
-      params[:article_ids].each {|doi| saved.delete(doi)}
+      params[:article_ids].each do |doc_key|
+        doi, _ = parse_article_key(doc_key)
+        saved.delete(doi)
+      end
     else
       raise "Unexpected mode " + params[:mode]
     end
@@ -67,19 +82,19 @@ class HomeController < ApplicationController
     
     puts "Clearing session DOIs..."
     
-    session[:dois] = Set.new
+    session[:dois] = {}
     head :no_content
   end
   
   
   def preview_list
     @tab = :preview_list
-    dois = session[:dois].nil? ? Set.new : session[:dois]
+    dois = session[:dois].nil? ? {} : session[:dois]
     @total_found = dois.length
     set_paging_vars(params[:current_page])
-      
-    # TODO: sort in a better way than alphabetically by DOI?
-    dois = dois.to_a.sort
+    
+    # Convert to array, sorted in descending order by timestamp, then throw away the timestamps.
+    dois = dois.sort_by{|doi, timestamp| -timestamp}.collect{|x| x[0]}
     dois = dois[(@start_result) - 1..(@end_result - 1)]
     @docs = []
     
