@@ -50,7 +50,7 @@ if total_pages > 1
       <span class="pagination-number pagination-selected">1</span>
 <%  end
     if current_page > 3  %>
-      <span>...</span>
+      <span class="ellipses">...</span>
 <%  end
     (0..[3, current_page + 1].max).each do |page|
       if (page > 1 && page < total_pages && page > (current_page - 2) || ((page == (total_pages - 2)) && (page > (current_page - 3))))
@@ -62,7 +62,7 @@ if total_pages > 1
       end
     end
     if current_page < (total_pages - 2)  %>
-      <span>...</span>
+      <span class="ellipses">...</span>
 <%  end
     if current_page < total_pages  %>
       <a href='<%= paging_link(total_pages) %>' class='pagination-number'><%= total_pages %></a>

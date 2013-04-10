@@ -966,6 +966,10 @@ input[type="checkbox"] {
   font-weight: bold;
 }
 
+.pagination .ellipses {
+  color: #8d8d8d;
+}
+
 .previous {
   margin: 0 199px 0 0;
   background: url(/assets/sprite.png) no-repeat -249px -142px;
