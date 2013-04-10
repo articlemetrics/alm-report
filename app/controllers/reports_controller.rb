@@ -36,9 +36,12 @@ class ReportsController < ApplicationController
     # to limit what we have to load from solr and ALM.
     @dois = @report.report_dois[(@start_result) - 1..(@end_result - 1)]
     i = @start_result
+
+    alm_data = AlmRequest.get_data_for_articles(@dois)
+
     @dois.each do |doi|
       doi.load_from_solr
-      doi.load_from_alm
+      doi.alm = alm_data[doi.doi]
       
       # Set the display index as a property for rendering.
       doi[:display_index] = i

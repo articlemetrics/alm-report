@@ -1,7 +1,6 @@
 class ReportDoi < ActiveRecord::Base
   belongs_to :report
-  attr_accessible :doi
-  attr_reader :solr, :alm
+  attr_accessor :solr, :alm
   
   
   # Loads data from solr related to this article, and stores it in the solr
