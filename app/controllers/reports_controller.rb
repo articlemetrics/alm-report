@@ -45,6 +45,7 @@ class ReportsController < ApplicationController
   def metrics
     load_report(params[:id])
     @report_sub_tab = :metrics
+    @title = "Sample Metrics"
     @total_found = @report.report_dois.length
     set_paging_vars(params[:current_page], 5)
     
@@ -70,6 +71,7 @@ class ReportsController < ApplicationController
   def visualizations
     load_report(params[:id])
     @report_sub_tab = :visualizations
+    @title = "Report Visualizations"
     @report.load_articles_from_solr
     alm_data = AlmRequest.get_data_for_articles(@report.report_dois)
     @report.report_dois.each {|report_doi| report_doi.alm = alm_data[report_doi.doi]}
