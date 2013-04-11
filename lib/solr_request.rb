@@ -7,7 +7,7 @@ require "json"
 #
 # TODO: consider renaming this class.  Originally I thought there would also be a SolrResponse,
 # but that was not necessary.
-module SolrRequest
+class SolrRequest
   
   # Base URL of solr server.
   @@URL = "http://api.plos.org/search"
