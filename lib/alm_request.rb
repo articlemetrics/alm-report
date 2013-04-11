@@ -111,7 +111,7 @@ module AlmRequest
       results = Rails.cache.read("#{doi}.alm")
       if !results.nil?
         all_results[doi] = results
-        puts "CACHE #{results.inspect}"
+        Rails.logger.debug("cached alm data for #{doi} #{results.inspect}")
         true
       end
     end

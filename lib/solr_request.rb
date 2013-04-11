@@ -7,7 +7,7 @@ require "json"
 #
 # TODO: consider renaming this class.  Originally I thought there would also be a SolrResponse,
 # but that was not necessary.
-class SolrRequest
+module SolrRequest
   
   # Base URL of solr server.
   @@URL = "http://api.plos.org/search"
@@ -211,4 +211,40 @@ class SolrRequest
     return docs[0]
   end
 
+
+  # Looks up many articles in solr, given the list of DOIs.
+  def self.get_data_for_articles(report_dois)
+    
+    all_results = {}
+
+    dois = report_dois.map { |report_doi| report_doi.doi }
+
+    # get solr data from cache
+    dois.delete_if  do | doi |
+      results = Rails.cache.read("#{doi}.solr")
+      if !results.nil?
+        all_results[doi] = results
+        Rails.logger.debug("cached solr data for #{doi} #{results.inspect}")
+        true
+      end
+    end
+
+    q = dois.map { | doi | "id:\"#{doi}\"" }.join(" OR ")
+
+    url = "#{@@URL}?q=#{CGI::escape(q)}&#{@@FILTER}&#{@@FL}&wt=json&rows=#{dois.length}"
+
+    json = SolrRequest.send_query(url)
+
+    docs = json["response"]["docs"]
+    docs.each do |doc|
+      doc["publication_date"] = Date.strptime(doc["publication_date"], @@SOLR_TIMESTAMP_FORMAT)
+      all_results[doc["id"]] = doc
+
+      # store solr data in cache
+      Rails.cache.write("#{doc["id"]}.solr", doc, :expires_in => 1.day)
+    end
+
+    return all_results
+
+  end
 end
