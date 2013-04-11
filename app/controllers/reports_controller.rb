@@ -25,12 +25,26 @@ class ReportsController < ApplicationController
       # TODO
     end
   end
+
+
+  # Loads a report based on the report_id, and sets some other common variables used by
+  # the reports pages.
+  def load_report(id)
+    @tab = :view_report
+    @report = Report.find(id)
+
+    # Save the report DOIs in the session (overwriting whatever might already be there).
+    saved_dois = {}
+    @report.report_dois.each do |report_doi|
+      saved_dois[report_doi.doi] = report_doi.sort_order
+    end
+    session[:dois] = saved_dois
+  end
   
   
   def metrics
-    @tab = :view_report
+    load_report(params[:id])
     @report_sub_tab = :metrics
-    @report = Report.find(params[:id])
     @total_found = @report.report_dois.length
     set_paging_vars(params[:current_page], 5)
     
@@ -53,9 +67,8 @@ class ReportsController < ApplicationController
   
   
   def visualizations
-    @tab = :view_report
+    load_report(params[:id])
     @report_sub_tab = :visualizations
-    @report = Report.find(params[:id])
     @report.load_articles_from_solr
     alm_data = AlmRequest.get_data_for_articles(@report.report_dois)
     @report.report_dois.each {|report_doi| report_doi.alm = alm_data[report_doi.doi]}

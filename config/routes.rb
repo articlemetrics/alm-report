@@ -6,7 +6,7 @@ AlmReport::Application.routes.draw do
   
   match "/update-session" => "home#update_session"
   
-  match "/clear-session" => "home#clear_session"
+  match "/start-over" => "home#start_over"
   
   match "/preview-list" => "home#preview_list"
 
