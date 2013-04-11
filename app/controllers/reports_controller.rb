@@ -46,7 +46,7 @@ class ReportsController < ApplicationController
       doi.alm = alm_data[doi.doi]
       
       # Set the display index as a property for rendering.
-      doi[:display_index] = i
+      doi.display_index = i
       i += 1
     end
   end

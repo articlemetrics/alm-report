@@ -8,7 +8,7 @@
   
     <% @dois.each do |doi| %>
     <div class="visualizations-list">
-      <span class="list-numbers"><%= doi[:display_index] %></span>
+      <span class="list-numbers"><%= doi.display_index %></span>
       <h2 class="albert-light-normal"><%= doi.solr["title"] %></h2>
       <% if !doi.solr["author_display"].nil? %>
       <p class="metrics-para">
