@@ -40,3 +40,5 @@ gem 'jquery-rails', '2.1.4'
 group :test, :development do
   gem "rspec-rails", "~> 2.13.0"
 end
+
+gem "dalli", "~> 2.6.2"

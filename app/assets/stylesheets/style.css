@@ -757,6 +757,7 @@ select {
   color: #333;
 }
 
+/* TODO  this selector doesn't work (due to hidden elements genearted by ruby on rails */
 .preview-form p + .article-info {
   margin: 47px 0  21px 42px;
 }
@@ -965,6 +966,10 @@ input[type="checkbox"] {
   font-weight: bold;
 }
 
+.pagination .ellipses {
+  color: #8d8d8d;
+}
+
 .previous {
   margin: 0 199px 0 0;
   background: url(/assets/sprite.png) no-repeat -249px -142px;
@@ -990,7 +995,7 @@ span.previous {
 }
 
 .next {
-  margin: 0 0 0 100px;
+  margin: 0 0 0 200px;
   background: url(/assets/sprite.png) no-repeat -274px -142px;
 }
 

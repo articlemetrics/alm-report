@@ -106,6 +106,16 @@ module AlmRequest
 
     dois = report_dois.map { |report_doi| report_doi.doi }
 
+    # get alm data from cache
+    dois.delete_if  do | doi |
+      results = Rails.cache.read("#{doi}.alm")
+      if !results.nil?
+        all_results[doi] = results
+        puts "CACHE #{results.inspect}"
+        true
+      end
+    end
+
     # https://github.com/articlemetrics/alm/wiki/API
     # Queries for up to 50 articles at a time are supported.
     # TODO configure
@@ -115,7 +125,7 @@ module AlmRequest
     end_index = start_index + num_articles
     subset_dois = dois[start_index, end_index]
 
-    while (!subset_dois.nil?)
+    while (!subset_dois.nil? && !subset_dois.empty?)
       params = {}
       params[:ids] = subset_dois.join(",")
       params[:info] = 'event'
@@ -166,8 +176,10 @@ module AlmRequest
         results[:wikipedia] = sources_dict["wikipedia"]["total"].to_i
         results[:blogs_data_present] = (results[:nature] + results[:research_blogging] + results[:wikipedia]) > 0
 
-        # TODO caching
         all_results[article["doi"]] = results
+
+        # store alm data in cache
+        Rails.cache.write("#{article["doi"]}.alm", results, :expires_in => 1.day)
       end
 
       start_index = end_index
