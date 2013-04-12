@@ -77,13 +77,11 @@ class HomeController < ApplicationController
     end
   end
   
-  
-  def clear_session
-    
-    puts "Clearing session DOIs..."
-    
+
+  # Action that clears any DOIs in the session and redirects to home.
+  def start_over
     session[:dois] = {}
-    head :no_content
+    redirect_to :action => :index
   end
   
   
