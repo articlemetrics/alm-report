@@ -3,17 +3,6 @@
   require "time"
   now = Time.new
 %>
-<script type="text/javascript">
-
-  function getArticleUsageCitationsAgeData() {
-    return <%= raw @article_usage_citations_age_data %>;
-  }
-
-  function getArticleUsageMendeleyAgeData() {
-    return <%= raw @article_usage_mendeley_age_data %>;
-  }
-</script>
-<%= javascript_include_tag "charts" %>
 
 <div class="content wrapper">
   <%= render "reports_nav" %>
@@ -88,3 +77,15 @@
     </div>
   </div>
 </div>
+
+<script type="text/javascript">
+
+    function getArticleUsageCitationsAgeData() {
+        return <%= raw @article_usage_citations_age_data %>;
+    }
+
+    function getArticleUsageMendeleyAgeData() {
+        return <%= raw @article_usage_mendeley_age_data %>;
+    }
+</script>
+<%= javascript_include_tag "charts" %>
