@@ -72,8 +72,11 @@ class ReportsController < ApplicationController
     @report_sub_tab = :visualizations
     @report.load_articles_from_solr
     alm_data = AlmRequest.get_data_for_articles(@report.report_dois)
+    solr_data = SolrRequest.get_data_for_articles(@report.report_dois)
     @report.report_dois.each {|report_doi| report_doi.alm = alm_data[report_doi.doi]}
+    @report.report_dois.each {|report_doi| report_doi.solr = solr_data[report_doi.doi]}
     generate_data_for_article_usage_citations_age_chart
+    generate_data_for_articles_by_location_chart
   end
 
 
@@ -91,6 +94,39 @@ class ReportsController < ApplicationController
       @article_usage_citations_age_data << [report_doi.solr["title"], months, usage,
           report_doi.solr["cross_published_journal_name"][0], report_doi.alm[:scopus_citations]]
     end
+  end
+
+
+  def generate_data_for_articles_by_location_chart
+    @total_authors_data = 0
+    @article_locations_data = []
+
+    @report.report_dois.each do | report_doi |
+      solr_data = report_doi.solr
+
+      if (!solr_data["author_display"].nil?)
+        @total_authors_data = @total_authors_data + solr_data["author_display"].length
+      end
+
+      if (!solr_data["affiliate"].nil?)
+        solr_data["affiliate"].each do | affiliate |
+          aff_data = affiliate.split(",")
+          aff_data.map { |location| location.strip! }
+
+          @article_locations_data << [aff_data[-2, 2].join(", "), 1]
+        end
+      end
+    end
+    # get a unique list of locations
+    @article_locations_data.uniq!
+
+    # sizeAxis is a hack to make the marker smaller
+    @article_locations_data.unshift(["locations", "size"])
+
+    # TODO translate the location information to lat and lng
+    # https://developers.google.com/maps/documentation/geocoding/
+    # the reason why the graph is slow is the graph is translating the location information
+    # to lat and long
   end
   
 end

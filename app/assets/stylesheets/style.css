@@ -1522,6 +1522,10 @@ caption {
   margin: 31px 0 0 37px;
 }
 
+.visualizations-list .report-graph {
+  margin: 31px 0 0 37px;
+}
+
 .visualizations-list .info {
   margin: 24px 0 0 44px;
   padding: 0;

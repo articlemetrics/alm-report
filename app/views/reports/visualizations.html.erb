@@ -4,10 +4,11 @@
   now = Time.new
 %>
 <script type="text/javascript">
-  google.load('visualization', '1', {packages: ['table', 'corechart', 'geochart']});
+  google.load('visualization', '1', {packages: ['corechart', 'geochart']});
 
   function drawReportGraphs() {
     drawArticleUsageCitationsAge();
+    drawArticleLocation();
   }
 
   function drawArticleUsageCitationsAge() {
@@ -44,6 +45,23 @@
     chart.draw(article_usage_citations_age_data, options);
   }
 
+  function drawArticleLocation() {
+    var data = google.visualization.arrayToDataTable(<%= raw @article_locations_data %>);
+
+    // sizeAxis is a hack to make the marker smaller
+    var options = {
+      displayMode: 'markers',
+      sizeAxis: {
+        minSize: 3,
+        maxValue: 2
+      },
+      legend: 'none'
+    };
+
+    var chart = new google.visualization.GeoChart(document.getElementById('article_location_div'));
+    chart.draw(data, options);
+  };
+
   google.setOnLoadCallback(drawReportGraphs);
 </script>
 <div class="content wrapper">
@@ -55,7 +73,7 @@
         <span class="list-numbers">1</span>
         <h2 class="albert-light-normal">Article Usage and Citations as a function of Age</h2>
       </div>
-      <div id="article_usage_and_citations_age_div" style="width: 670px; height: 392px;"></div>
+      <div id="article_usage_and_citations_age_div" class="report-graph" style="width: 670px; height: 392px;"></div>
       <p class="info">Total views are combined HTML vies and PDF downloads from the PLOS website.
         Bubble size correlates with Scopus citations, and bubble color with the PLOS journal.
         Data collected <%= now.strftime("%B %d, %Y") %>
@@ -78,19 +96,29 @@
     </div>
     <div class="visualizations-list">
       <span class="list-numbers">3</span>
-      <h2 class="albert-light-normal">Article Usage and Citations by Subject Category</h2>
+      <h2 class="albert-light-normal">Article Usage and Citations by Subject Area</h2>
       <img src="assets/img/sample.reports.img3.plos-alm.png" height="392" width="609" alt="" />
       <p class="info">Rectangle size correlates with total views (HTML and PDF) from PLOS website.
         Color intensity correlates with number of Scopus citations.
       </p>
-      <p>SOURCE: 75 published articles from Sept 25, 2009 to January 12, 2011</p>
+      <p>
+        SOURCE: <%= @report.report_dois.length %> published articles from
+        <%= @report.get_earliest_report_date.strftime("%B %d, %Y") %>
+        to <%= @report.get_latest_report_date.strftime("%B %d, %Y") %>
+      </p>
     </div>
     <div class="visualizations-list last-visualizations-list">
-      <span class="list-numbers">4</span>
-      <h2 class="albert-light-normal">Research Articles by Location</h2>
-      <img src="assets/img/sample.reports.img4.plos-alm.jpg" height="394" width="604" alt="" />
-      <p class="info">Geolocation of 410 authors for 84 articles</p>
-      <p>SOURCE: 75 published articles from Sept 25, 2009 to January 12, 2011</p>
+      <div class="reports-header-div">
+        <span class="list-numbers">4</span>
+        <h2 class="albert-light-normal">Research Articles by Location</h2>
+      </div>
+      <div id="article_location_div" class="report-graph" style="width: 670px; height: 392px;"></div>
+      <p class="info">Geolocation of <%= @total_authors_data %> authors for <%= @report.report_dois.length %> articles</p>
+      <p>
+        SOURCE: <%= @report.report_dois.length %> published articles from
+        <%= @report.get_earliest_report_date.strftime("%B %d, %Y") %>
+        to <%= @report.get_latest_report_date.strftime("%B %d, %Y") %>
+      </p>
     </div>
   </div>
   <div class="report-downloads">

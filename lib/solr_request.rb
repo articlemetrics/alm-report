@@ -17,7 +17,7 @@ class SolrRequest
   @@FILTER = "fq=doc_type:full&fq=!article_type_facet:#{URI::encode("\"Issue Image\"")}"
   
   # The fields we want solr to return for each article.
-  @@FL = "fl=id,publication_date,title,cross_published_journal_name,author_display,article_type"
+  @@FL = "fl=id,publication_date,title,cross_published_journal_name,author_display,article_type,affiliate"
   
   @@ALL_JOURNALS = "All Journals"
   
@@ -215,6 +215,8 @@ class SolrRequest
   # Looks up many articles in solr, given the list of DOIs.
   def self.get_data_for_articles(report_dois)
     
+    # TODO add paging logic?  don't think we will use this function to request too many articles
+    # if we do, we should cap how many articles we request
     all_results = {}
 
     dois = report_dois.map { |report_doi| report_doi.doi }
