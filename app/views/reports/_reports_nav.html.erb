@@ -1,4 +1,4 @@
-<div class="view-report metrics-view-report">
+<div class="view-report<%= @report_sub_tab == :metrics ? ' metrics-view-report' : '' %>">
   <a href="/reports/metrics?id=<%= params[:id] %>"
       class="metrics-icon<%= @report_sub_tab == :metrics ? ' metrics-icon-active' : '' %>">Metrics Data</a>
   <a href="/reports/visualizations?id=<%= params[:id] %>"
