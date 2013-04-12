@@ -3,8 +3,10 @@
 # Right now this is the entire app except for the report page.
 class HomeController < ApplicationController
 
+
   def index
     @tab = :select_articles
+    @title = "Homepage"
     journals = SolrRequest.query_for_journals.collect{|x| [x, x]}
 
     # Add a fake entry for "all journals"
@@ -14,6 +16,7 @@ class HomeController < ApplicationController
   
   def add_articles
     @tab = :select_articles
+    @title = "Add Articles"
     
     # Strip out form params not relevant to solr.
     solr_params = {}
@@ -87,6 +90,7 @@ class HomeController < ApplicationController
   
   def preview_list
     @tab = :preview_list
+    @title = "Preview List"
     dois = session[:dois].nil? ? {} : session[:dois]
     @total_found = dois.length
     set_paging_vars(params[:current_page])

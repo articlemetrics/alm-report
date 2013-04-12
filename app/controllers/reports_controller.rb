@@ -45,6 +45,7 @@ class ReportsController < ApplicationController
   def metrics
     load_report(params[:id])
     @report_sub_tab = :metrics
+    @title = "Sample Metrics"
     @total_found = @report.report_dois.length
     set_paging_vars(params[:current_page], 5)
     
@@ -70,29 +71,37 @@ class ReportsController < ApplicationController
   def visualizations
     load_report(params[:id])
     @report_sub_tab = :visualizations
+    @title = "Report Visualizations"
+    
     @report.load_articles_from_solr
+    
     alm_data = AlmRequest.get_data_for_articles(@report.report_dois)
     solr_data = SolrRequest.get_data_for_articles(@report.report_dois)
     @report.report_dois.each {|report_doi| report_doi.alm = alm_data[report_doi.doi]}
     @report.report_dois.each {|report_doi| report_doi.solr = solr_data[report_doi.doi]}
-    generate_data_for_article_usage_citations_age_chart
+
+    generate_data_for_bubble_charts
     generate_data_for_articles_by_location_chart
   end
 
 
-  # Populates @article_usage_citations_age_data, used from javascript to generate a chart.
-  def generate_data_for_article_usage_citations_age_chart
+  # Populates @article_usage_citations_age_data and @article_usage_mendeley_age_data, used from
+  # javascript to generate the bubble charts.
+  def generate_data_for_bubble_charts
     @article_usage_citations_age_data = []
+    @article_usage_mendeley_age_data = []
     @article_usage_citations_age_data << ["Title", "Months", "Total Views", "Journal", "Scopus"]
+    @article_usage_mendeley_age_data << ["Title", "Months", "Total Views", "Journal", "Mendeley"]
     @report.report_dois.each do |report_doi|
       days = (Date.today - report_doi.solr["publication_date"]).to_i
       months = days / 30
 
-      # TODO: uncomment when ALM bug is fixed; for now use total_usage which is mostly from PMC.
-#      usage = report_doi.alm[:plos_html]
+      usage = report_doi.alm[:plos_html]
       usage = report_doi.alm[:total_usage]
       @article_usage_citations_age_data << [report_doi.solr["title"], months, usage,
           report_doi.solr["cross_published_journal_name"][0], report_doi.alm[:scopus_citations]]
+      @article_usage_mendeley_age_data << [report_doi.solr["title"], months, usage,
+          report_doi.solr["cross_published_journal_name"][0], report_doi.alm[:mendeley]]
     end
   end
 
