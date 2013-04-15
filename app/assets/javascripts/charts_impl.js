@@ -55,6 +55,9 @@ function drawArticleLocation() {
       minSize: 3,
       maxValue: 2
     },
+    tooltip: {
+      trigger: 'none'
+    },
     legend: 'none'
   };
 
