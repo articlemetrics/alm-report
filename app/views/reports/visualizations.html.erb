@@ -45,7 +45,7 @@
     <div class="visualizations-list">
       <span class="list-numbers">3</span>
       <h2 class="albert-light-normal">Article Usage and Citations by Subject Area</h2>
-      <img src="assets/img/sample.reports.img3.plos-alm.png" height="392" width="609" alt="" />
+      <div id="article_subject_div" class="report-graph" style="width: 670px; height: 392px;"></div>
       <p class="info">Rectangle size correlates with total views (HTML and PDF) from PLOS website.
         Color intensity correlates with number of Scopus citations.
       </p>
@@ -96,6 +96,10 @@
 
     function getArticleUsageMendeleyAgeData() {
         return <%= raw @article_usage_mendeley_age_data %>;
+    }
+
+    function getArticleUsageCitationSubjectAreaData() {
+      return <%= raw @article_usage_citation_subject_area_data %>;
     }
 
     function getArticleLocationData() {

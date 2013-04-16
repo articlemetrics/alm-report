@@ -1,6 +1,6 @@
 // Javascript used to generate the charts on the report visualizations page.
 
-google.load('visualization', '1', {packages: ['corechart', 'geochart']});
+google.load('visualization', '1', {packages: ['corechart', 'geochart', 'treemap']});
 
 // Returns the options for the first two bubble charts.
 function getBubbleChartOptions() {
@@ -45,6 +45,21 @@ function drawArticleUsageMendeleyAge() {
   chart.draw(data, getBubbleChartOptions());
 }
 
+function drawArticleUsageCitationSubjectArea() {
+  var chart = new google.visualization.TreeMap(document.getElementById('article_subject_div'));
+  var data = google.visualization.arrayToDataTable(getArticleUsageCitationSubjectAreaData());
+
+  var options = {
+    minColor: '#000000',
+    midColor: '#088A08',
+    maxColor: '#00FF40',
+    fontColor: '#FFFFFF',
+    showScale: true
+  };
+
+  chart.draw(data, options);
+}
+
 function drawArticleLocation() {
   var data = google.visualization.arrayToDataTable(getArticleLocationData());
 
@@ -70,6 +85,7 @@ function drawArticleLocation() {
 function drawReportGraphs() {
   drawArticleUsageCitationsAge();
   drawArticleUsageMendeleyAge();
+  drawArticleUsageCitationSubjectArea();
   drawArticleLocation();
 }
 

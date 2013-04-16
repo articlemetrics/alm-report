@@ -81,6 +81,7 @@ class ReportsController < ApplicationController
     @report.report_dois.each {|report_doi| report_doi.solr = solr_data[report_doi.doi]}
 
     generate_data_for_bubble_charts
+    generate_data_for_subject_area_chart
     generate_data_for_articles_by_location_chart
   end
 
@@ -105,6 +106,33 @@ class ReportsController < ApplicationController
     end
   end
 
+  def generate_data_for_subject_area_chart
+    @article_usage_citation_subject_area_data = []
+    # get the subject area 
+
+    @article_usage_citation_subject_area_data << ['subject', 'parent', 'size of node', 'color of node']
+    @article_usage_citation_subject_area_data << ['subject', "", 0, 0]
+
+    subject_area_data = {}
+
+    @report.report_dois.each do | report_doi |
+      if !report_doi.solr["subject"].nil?
+        report_doi.solr["subject"].each do | subject_full |
+          subjects = subject_full.split('/')
+          if subject_area_data[subjects[2]].nil?
+            subject_area_data[subjects[2]] = []
+          end
+          subject_area_data[subjects[2]] << report_doi
+        end
+      end
+    end
+
+    # loop through subjects
+    subject_area_data.each do | subject, report_dois |
+      total_usage = report_dois.inject(0) { | sum, report_doi | sum + report_doi.alm[:plos_total] }
+      @article_usage_citation_subject_area_data << [subject, 'subject', report_dois.size, total_usage]
+    end
+  end
 
   def generate_data_for_articles_by_location_chart
     @total_authors_data = 0

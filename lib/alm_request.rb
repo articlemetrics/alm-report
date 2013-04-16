@@ -152,6 +152,7 @@ module AlmRequest
         results[:plos_html] = views[:html]
         results[:plos_pdf] = views[:pdf]
         results[:plos_xml] = views[:xml]
+        results[:plos_total] = views[:html] + views[:pdf] + views[:xml]
 
         results[:pmc_views] = sources_dict["pmc"]["html"].to_i
         results[:pmc_pdf] = sources_dict["pmc"]["pdf"].to_i
