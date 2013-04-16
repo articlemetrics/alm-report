@@ -129,7 +129,7 @@ class ReportsController < ApplicationController
 
     # loop through subjects
     subject_area_data.each do | subject, report_dois |
-      total_usage = report_dois.inject(0) { | sum, report_doi | sum + report_doi.alm[:plos_total] }
+      total_usage = report_dois.inject(0) { | sum, report_doi | sum + report_doi.alm[:total_usage] }
       @article_usage_citation_subject_area_data << [subject, 'subject', report_dois.size, total_usage]
     end
   end

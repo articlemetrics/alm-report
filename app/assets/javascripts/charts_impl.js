@@ -54,8 +54,13 @@ function drawArticleUsageCitationSubjectArea() {
     midColor: '#088A08',
     maxColor: '#00FF40',
     fontColor: '#FFFFFF',
+    headerHeight: 0,
     showScale: true
   };
+
+  google.visualization.events.addListener(chart, 'onmouseover', function(e) {
+    $(event.target).parent().children("text").attr("fill", "#FFFFFF");
+  });
 
   chart.draw(data, options);
 }
