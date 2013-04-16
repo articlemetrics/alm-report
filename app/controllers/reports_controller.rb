@@ -91,13 +91,12 @@ class ReportsController < ApplicationController
   def generate_data_for_bubble_charts
     @article_usage_citations_age_data = []
     @article_usage_mendeley_age_data = []
-    @article_usage_citations_age_data << ["Title", "Months", "Total Views", "Journal", "Scopus"]
-    @article_usage_mendeley_age_data << ["Title", "Months", "Total Views", "Journal", "Mendeley"]
+    @article_usage_citations_age_data << ["Title", "Months", "Total Usage", "Journal", "Scopus"]
+    @article_usage_mendeley_age_data << ["Title", "Months", "Total Usage", "Journal", "Mendeley"]
     @report.report_dois.each do |report_doi|
       days = (Date.today - report_doi.solr["publication_date"]).to_i
       months = days / 30
 
-      usage = report_doi.alm[:plos_html]
       usage = report_doi.alm[:total_usage]
       @article_usage_citations_age_data << [report_doi.solr["title"], months, usage,
           report_doi.solr["cross_published_journal_name"][0], report_doi.alm[:scopus_citations]]

@@ -1,9 +1,4 @@
 
-<%
-  require "time"
-  now = Time.new
-%>
-
 <div class="content wrapper">
   <%= render "reports_nav" %>
 
@@ -14,9 +9,8 @@
         <h2 class="albert-light-normal">Article Usage and Citations as a function of Age</h2>
       </div>
       <div id="article_usage_and_citations_age_div" class="report-graph" style="width: 670px; height: 392px;"></div>
-      <p class="info">Total views are combined HTML vies and PDF downloads from the PLOS website.
-        Bubble size correlates with Scopus citations, and bubble color with the PLOS journal.
-        Data collected <%= now.strftime("%B %d, %Y") %>
+      <p class="info">Total usage includes page views and downloads from PLOS and PMC.  
+        Bubble size correlates with Scopus citations and bubble color with the PLOS journal.
       </p>
       <p>
         SOURCE: <%= @report.report_dois.length %> published articles from
@@ -31,9 +25,8 @@
         <h2 class="albert-light-normal">Article Usage and Mendeley Bookmarks as a Function of Time</h2>
       </div>
       <div id="article_usage_and_mendeley_age_div" class="report-graph" style="width: 670px; height: 392px;"></div>
-      <p class="info">Total views are combined HTML vies and PDF downloads from the PLOS website.
-        Bubble size correlates with Mendeley bookmarks, and bubble color with the PLOS journal.
-        Data collected <%= now.strftime("%B %d, %Y") %>
+      <p class="info">Total usage includes page views and downloads from PLOS and PMC.  
+        Bubble size correlates with Mendeley bookmarks and bubble color with the PLOS journal.
       </p>
       <p>
         SOURCE: <%= @report.report_dois.length %> published articles from
