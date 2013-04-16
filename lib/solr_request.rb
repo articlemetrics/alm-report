@@ -130,14 +130,18 @@ class SolrRequest
 
 
   # Performs a single solr search, based on the parameters set on this object.  Returns a tuple
-  # of the documents retrieved, and the total number of results.  TODO: results paging.
+  # of the documents retrieved, and the total number of results.
   def query
     page = @params.delete(:current_page)
     page = page.nil? ? "1" : page
     page = page.to_i - 1
+    sort = @params.delete(:sort)
     url = "#{@@URL}?#{URI::encode(build_query)}&#{@@FILTER}&#{@@FL}&wt=json&#{@@LIMIT}"
     if page > 0
       url << "&start=#{page * @@PAGE_SIZE + 1}"
+    end
+    if !sort.nil?
+      url << "&sort=#{URI::encode(sort)}"
     end
     json = SolrRequest.send_query(url)
     docs = SolrRequest.parse_docs(json)

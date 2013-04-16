@@ -34,12 +34,17 @@
    </ul>
    <div class="add-select-box-holder">
      <span class="add-select-label">Sort by</span>
-     <select id="add-article-select">
-       <option selected>Relevance</option>
-       <option></option>
-       <option></option>
-       <option></option>
-     </select>
+     <%= select_tag(:sort, options_for_select([
+             ["Relevance", ""],
+             ["Date, newest first", "publication_date desc"],
+             ["Date, oldest first", "publication_date asc"],
+             ["Most views, last 30 days", "counter_total_month desc"],
+             ["Most views, all time", "counter_total_all desc"],
+             ["Most cited, all time", "alm_scopusCiteCount desc"],
+             ["Most bookmarked", "sum(alm_citeulikeCount, alm_mendeleyCount) desc"],
+             ["Most shared in social media", "sum(alm_twitterCount, alm_facebookCount) desc"],
+             ], params[:sort]), :class => "styled", :id => "search_results_sort_order_select") %>
+
    </div>
    <p class="select-articles-message albert-light-normal invisible">
      <span id="select-articles-message-text"></span> <a href="fixme">Select all 87 articles</a>.

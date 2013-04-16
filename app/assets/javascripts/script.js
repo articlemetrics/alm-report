@@ -450,3 +450,11 @@ if (jQuery.fn.uniform) {
     });
   })
 }
+
+// Event handler for the sort select box on the add articles page.
+jQuery(function(d, $){
+  $('#search_results_sort_order_select').change(function() {
+    var sort_param = this.options[this.selectedIndex].value;
+    window.location.href = window.location.href + "&sort=" + encodeURIComponent(sort_param);
+  });
+}(document, jQuery));
