@@ -107,29 +107,34 @@ class ReportsController < ApplicationController
 
   def generate_data_for_subject_area_chart
     @article_usage_citation_subject_area_data = []
-    # get the subject area 
+    
+    placeholder_subject = 'subject'
 
-    @article_usage_citation_subject_area_data << ['subject', 'parent', 'size of node', 'color of node']
-    @article_usage_citation_subject_area_data << ['subject', "", 0, 0]
+    @article_usage_citation_subject_area_data << ['Subject Area', '', '# of articles', 'Total Usage']
+    @article_usage_citation_subject_area_data << [placeholder_subject, '', 0, 0]
 
     subject_area_data = {}
 
     @report.report_dois.each do | report_doi |
+      # get the subject area 
       if !report_doi.solr["subject"].nil?
-        report_doi.solr["subject"].each do | subject_full |
-          subjects = subject_full.split('/')
-          if subject_area_data[subjects[2]].nil?
-            subject_area_data[subjects[2]] = []
+        # collect the second leve subject areas
+        report_doi.solr["subject"].each do | subject_area_full |
+          subject_areas = subject_area_full.split('/')
+          subject_area = subject_areas[2]
+          if subject_area_data[subject_area].nil?
+            subject_area_data[subject_area] = []
           end
-          subject_area_data[subjects[2]] << report_doi
+          # associate article to the subject area
+          subject_area_data[subject_area] << report_doi
         end
       end
     end
 
     # loop through subjects
-    subject_area_data.each do | subject, report_dois |
+    subject_area_data.each do | subject_area, report_dois |
       total_usage = report_dois.inject(0) { | sum, report_doi | sum + report_doi.alm[:total_usage] }
-      @article_usage_citation_subject_area_data << [subject, 'subject', report_dois.size, total_usage]
+      @article_usage_citation_subject_area_data << [subject_area, placeholder_subject, report_dois.size, total_usage]
     end
   end
 
