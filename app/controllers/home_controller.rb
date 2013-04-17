@@ -100,11 +100,9 @@ class HomeController < ApplicationController
     dois = dois[(@start_result) - 1..(@end_result - 1)]
     @docs = []
     
-    # TODO: this performs a separate solr query to retrieve each DOI.  Probably
-    # bad.  Consider alternatives: cache a doi -> doc mapping for search results?
-    # Or multiple DOIs per query?
+    solr_data = SolrRequest.get_data_for_articles(dois)
     dois.each do |doi|
-      @docs << SolrRequest.get_article(doi)
+      @docs << solr_data[doi]
     end
   end
   

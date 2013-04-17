@@ -199,38 +199,26 @@ class SolrRequest
     end
   end
 
-  
-  # Looks up a single article in solr, given the DOI.  It's assumed the DOI is valid: if
-  # no article is found (or multiple articles are found), this will raise an exception.
-  def self.get_article(doi)
-    url = "#{@@URL}?q=id:#{URI::encode(doi)}&#{@@FILTER}&#{@@FL}&wt=json&#{@@LIMIT}"
-    json = SolrRequest.send_query(url)
-    docs = SolrRequest.parse_docs(json)
-    if docs.length != 1
-      raise "Retrieved #{docs.length} docs for DOI #{doi}"
-    end
-    
-    # TODO: consider caching this.  This method is normally used to retrieve details for
-    # articles the user has saved to their session, which will be needed for several requests.
-    return docs[0]
-  end
-
 
   # Looks up many articles in solr, given the list of DOIs.
   def self.get_data_for_articles(report_dois)
+    # TODO should we return emtpy array or nil if report_dois is nil / empty?
     
     # TODO add paging logic?  don't think we will use this function to request too many articles
     # if we do, we should cap how many articles we request
     all_results = {}
 
-    dois = report_dois.map { |report_doi| report_doi.doi }
+    if (report_dois.first.kind_of? String)
+      dois = report_dois.clone
+    else
+      dois = report_dois.map { |report_doi| report_doi.doi }
+    end
 
     # get solr data from cache
     dois.delete_if  do | doi |
       results = Rails.cache.read("#{doi}.solr")
       if !results.nil?
         all_results[doi] = results
-        Rails.logger.debug("cached solr data for #{doi} #{results.inspect}")
         true
       end
     end
