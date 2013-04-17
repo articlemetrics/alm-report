@@ -15,9 +15,8 @@ class Report < ActiveRecord::Base
   
   # Loads solr data for each article in this report.
   def load_articles_from_solr
-    
-    # TODO: something more efficient.  Bulk query?  Caching?  Both?
-    report_dois.each {|report_doi| report_doi.load_from_solr}
+
+    SolrRequest.get_data_for_articles(report_dois)
   end
   
   
