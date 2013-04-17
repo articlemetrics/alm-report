@@ -7,7 +7,10 @@ jQuery(function(d, $){
     var $preview_list_count = $('.preview-list-count');
     var results_span_pages = ($('.pagination-number').length > 1);
 
-    var ARTICLES_PER_PAGE = 25;
+    // Be sure to keep these two constants in sync with the ruby constants of
+    // the same name in custom.rb.
+    var RESULTS_PER_PAGE = 25;
+    var ARTICLE_LIMIT = 10;
 
     return {
       init : function() {
@@ -39,6 +42,14 @@ jQuery(function(d, $){
 
       checkboxClickHandler : function(e) {
         var $checkbox = $(e.target);
+        var count = parseInt($('.list-count').text(), 10);
+
+        // If we are over the limit, and it's a check event, don't do anything
+        // (and uncheck the checkbox).
+        if ($checkbox.prop("checked") && count >= ARTICLE_LIMIT) {
+          $checkbox.prop("checked", false);
+          return;
+        }
 
         // create some data that we want to send to the server
         var ajax_data = {
@@ -46,7 +57,7 @@ jQuery(function(d, $){
           article_ids : [$checkbox.val()],
 
           // set the "mode" based on what state the checkbox is transitioning to
-          // NOTE: this handler runs *after* the checkbox element has been 
+          // NOTE: this handler runs *after* the checkbox element has been
           // updated so we check the "checked" prop.
           mode : $checkbox.prop("checked") ? "SAVE" : "REMOVE"
         };
@@ -57,7 +68,7 @@ jQuery(function(d, $){
         this.displayProgressIndicators($container, ajax_data.mode);
 
         // pass the data to the server to update the session
-        // NOTE: update server expects an array (or collection) of checkboxes 
+        // NOTE: update server expects an array (or collection) of checkboxes
         // and containers to iterate over later on
         this.updateServer(ajax_data, $checkbox, $container);
       },
@@ -214,8 +225,8 @@ jQuery(function(d, $){
           // show "select all articles across all pages" message if this 
           // result set spans multiple pages and we've just checked all the 
           // articles on this page
-          if ( results_span_pages && (selected_articles_count == ARTICLES_PER_PAGE) ) {
-            $('#select-articles-message-text').html("The " + ARTICLES_PER_PAGE + " articles on this page have been selected.");
+          if ( results_span_pages && (selected_articles_count == RESULTS_PER_PAGE) ) {
+            $('#select-articles-message-text').html("The " + RESULTS_PER_PAGE + " articles on this page have been selected.");
             $('.select-articles-message').removeClass("invisible");
 
           // in all other cases, just hide it. (it's easier this way)
