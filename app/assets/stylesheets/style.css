@@ -1328,11 +1328,15 @@ span.next {
 }
 
 .visualizations-list a {
-  width: 115px;
+  width: 160px;
   margin: 21px 0 0 43px;
   display: inline-block;
   color: #369;
   font-size: 14px;
+}
+
+.visualizations-list a:hover { 
+  cursor: pointer;
 }
 
 .aside-container ul a:hover {
@@ -1384,11 +1388,6 @@ span.next {
   padding: 0 0 2px 8px;
 }
 
-.visualizations-list .metrics-table tr:first-child td {
-  border-top: 1px solid #aeaeae;
-  padding: 12px 10px 2px 8px;
-}
-
 .visualizations-list table th {
   padding: 0 0 0 8px;
   text-align: left;
@@ -1403,7 +1402,10 @@ caption {
   font-weight: bold;
   font-size: 18px;
   text-align: left;
-  margin: 0 0 0 8px;
+  margin: 0 0 10px 0;
+
+  border-bottom: 1px solid #aeaeae;
+  padding: 0 0 4px 8px;
 }
 
 .total-usage {
@@ -1414,6 +1416,10 @@ caption {
   width: 715px;
   margin: 55px 0 0 38px;
   padding: 0 0 38px;
+}
+
+.metric-without-data {
+  display: none;
 }
 
 /* 5.13. Report.visualizations

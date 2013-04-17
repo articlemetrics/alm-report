@@ -25,11 +25,10 @@
         <%= doi.solr["cross_published_journal_name"][0] %>
       </p>
       <p class="metrics-description"><%= doi.doi %></p>
-      <a href="fixme">Show all ALMs<span></span></a>
+      <a class="show-all-alms-link">Show all ALMs<span class="show-all-alms-link"></span></a>
       <div class="metrics-table-content">
         <div class="metric-row-content">
-          <% if doi.alm[:usage_data_present] %>
-            <table class="metrics-table">
+            <table class="metrics-table <%= "metric-without-data" if !doi.alm[:usage_data_present] %>" >
               <caption>Usage</caption>
               <%= render "alm_stat", :stat => doi.alm[:plos_html], :label => "PLOS views" %>
               <%= render "alm_stat", :stat => doi.alm[:plos_pdf], :label => "PLOS PDF downloads" %>
@@ -38,9 +37,8 @@
               <%= render "alm_stat", :stat => doi.alm[:pmc_pdf], :label => "PMC PDF downloads" %>
               <%= render "alm_stat", :stat => doi.alm[:total_usage], :label => "Total usage" %>
             </table>
-          <% end %>
-          <% if doi.alm[:social_network_data_present] %>
-            <table class="metrics-table">
+
+            <table class="metrics-table <%= "metric-without-data" if !doi.alm[:social_network_data_present] %>">
               <caption>Social Network</caption>
               <%= render "alm_stat", :stat => doi.alm[:citeulike], :label => "CiteULike" %>
               <%= render "alm_stat", :stat => doi.alm[:connotea], :label => "Connotea" %>
@@ -48,27 +46,23 @@
               <%= render "alm_stat", :stat => doi.alm[:twitter], :label => "Twitter" %>
               <%= render "alm_stat", :stat => doi.alm[:facebook], :label => "Facebook" %>
             </table>
-          <% end %>
         </div>
         <div class="metric-row-content">
-          <% if doi.alm[:citation_data_present] %>
-            <table class="metrics-table">
+            <table class="metrics-table <%= "metric-without-data" if !doi.alm[:citation_data_present] %>">
               <caption>Citation</caption>
               <%= render "alm_stat", :stat =>doi.alm[:pmc_citations], :label => "PubMed Central" %>
               <%= render "alm_stat", :stat => doi.alm[:crossref_citations], :label => "CrossRef" %>
               <%= render "alm_stat", :stat => doi.alm[:scopus_citations], :label => "Scopus" %>
               <%# TODO: web of science.  It is in the mockups, but not in ALM today.  %>
             </table>
-          <% end %>
-          <% if doi.alm[:blogs_data_present] %>
-            <table class="metrics-table">
+
+            <table class="metrics-table <%= "metric-without-data" if !doi.alm[:blogs_data_present] %>">
               <caption>Blogs &amp; Media</caption>
               <%= render "alm_stat", :stat => doi.alm[:nature], :label => "Nature Blogs" %>
               <%= render "alm_stat", :stat => doi.alm[:research_blogging], :label => "Research Blogging" %>
               <%# TODO: trackbacks.  Not in ALM--get from ambra DB?  %>
               <%= render "alm_stat", :stat => doi.alm[:wikipedia], :label => "Wikipedia" %>
             </table>
-          <% end %>
         </div>
         <div class="metric-row-content">
           <%# TODO: get these from ambra DB  %>
