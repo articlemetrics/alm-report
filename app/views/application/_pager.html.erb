@@ -10,11 +10,7 @@ if r > 0
 end
 
 def paging_link(page)
-  href = request.fullpath
-  if !href.index("?")
-    href += "?"
-  end
-  return "#{href}&current_page=#{page}"
+  url_for(params.merge(:current_page => page))
 end
 
 if total_pages > 1
