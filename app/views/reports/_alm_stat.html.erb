@@ -1,10 +1,9 @@
-<%
-  
-# Partial that renders a single table row on the report-metrics page; zeros
-# are not shown.
-if !stat.nil? && stat > 0  %>
-  <tr>
+<%#
+Partial that renders a single table row on the report-metrics page.
+zeros are not shown on initial page load
+%>
+
+  <tr class="<%= 'metric-without-data' if !(!stat.nil? && stat > 0) %>">
    <td class="list-names"><%= label %></td>
    <td class="metrics-list-value"><%= number_with_delimiter(stat, :delimiter => ',') %></td>
   </tr>
-<% end %>
