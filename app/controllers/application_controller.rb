@@ -3,6 +3,7 @@ class ApplicationController < ActionController::Base
   protect_from_forgery
   
   before_filter :set_preview_list_count
+  before_filter :display_nav
 
   # Sets the number of DOIs saved in the session as an instance field;
   # used across several pages.
@@ -22,4 +23,11 @@ class ApplicationController < ActionController::Base
   end
   protected :set_paging_vars
   
+  # The navigation UI element (1 Select Articles and etc) will not be displayed on the static pages
+  # That is the only change for the static pages so having a whole separate layout seemed like an overkill
+  # This might change in the future
+  def display_nav
+    @display_nav = true
+  end
+
 end
