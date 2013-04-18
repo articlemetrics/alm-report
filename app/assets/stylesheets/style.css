@@ -24,6 +24,7 @@
     5.15. Page: Upload-file
     5.16. Page: Upload file - Fix Errors
   6. Footer
+  7. Static content
 
   -------------------------------------------------------------------*/
   /*------------------------------------------------------------------
@@ -1844,7 +1845,7 @@ footer a:hover {
 
 .credits p {
   width: 240px;
-  margin: 23px 0 0;
+  margin: 113px 0 0;
   display: inline-block;
   color: #ccc;
   font-size: 12px;
@@ -2140,3 +2141,16 @@ div.selector select {
   height: 45px;
 }
 
+/* 7. Static content 
+   ========================================================================== */
+.static_content {
+  width: 635px;
+  margin: 45px 0 45px 60px;
+  position: relative;
+  display: inline-block;
+  color: #333;
+}
+
+.static_content h2 {
+  margin: 0 0 18px 0;
+}

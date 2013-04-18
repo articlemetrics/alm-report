@@ -63,11 +63,13 @@
           </div>
         </div>
         
+        <% if @display_nav %>
         <ul class="progress-bar">
           <li class="<%= @tab == :select_articles ? 'progress-bar-tab1-active progress-bar-tab1' : 'progress-bar-tab1' %>">Select Articles</li>
           <li class="<%= @tab == :preview_list ? 'progress-bar-tab2-active progress-bar-tab2' : 'progress-bar-tab2' %>">Preview List</li>
           <li class="<%= @tab == :view_report ? 'progress-bar-tab3-active progress-bar-tab3' : 'progress-bar-tab3' %>">View Report</li>
         </ul>
+        <% end %>
       </div>
     </header>        
 
@@ -77,15 +79,13 @@
       <div class="wrapper">
       	<div class="credits">
         	<a class="footer-logo" href="http://www.plos.org/"><%= image_tag "footer.logo.plos-alm.png", :height => '39', :width => '116', :alt => 'Public Library of Science' %></a>
-          <p><strong>Ambra</strong> Managed Colocation provided by <strong>Internet Systems Consortium.</strong></p>
+
           <p>
-            <a href="http://www.plosone.org/static/privacy">Privacy Policy</a>
+            <a href="/about">About</a>
             <span>|</span>
-            <a href="http://www.plosone.org/static/terms">Terms of Use</a>
+            <a href="/privacy_policy">Privacy Policy</a>
             <span>|</span>
-            <a href="http://www.plos.org/advertise/">Advertise</a>
-            <span>|</span>
-            <a href="http://www.plos.org/about/media-inquiries/">Media Inquiries</a>
+            <a href="/terms_of_use">Terms of Use</a>
           </p>
         </div>
         <div class="plos-links-holder">
