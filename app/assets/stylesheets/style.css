@@ -643,7 +643,7 @@ select {
 
 .sample-reports img + span + span {
   width: 168px;
-  min-height: 55px;
+  min-height: 38px;
   padding: 1px 28px 0 20px;
 }
 
