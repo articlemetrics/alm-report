@@ -177,6 +177,14 @@ body {
   font-style: italic;
 }
 
+.metrics-article-title {
+  margin: 0 0 0 43px;
+  font-family: "FS Albert Web Regular", Verdana , sans-serif;
+  font-size: 120%;
+  font-weight: normal;
+  font-style: normal;
+}
+
 .nav-area {
   width: 100%;
   background: #333;
@@ -1281,8 +1289,12 @@ span.next {
   line-height: 19px;
 }
 
+.metrics-article-count {
+  margin: 0 0 5px 83px;
+}
+
 .visualizations-list {
-  margin: 48px 0 4px 35px;
+  margin: 4px 0 4px 35px;
   display: inline-block;
   position: relative;
 }
