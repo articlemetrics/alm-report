@@ -57,21 +57,14 @@ module AlmRequest
     # https://github.com/articlemetrics/alm/wiki/API
     # Queries for up to 50 articles at a time are supported.
     # TODO configure
-    num_articles = 50
-
-    start_index = 0
-    end_index = start_index + num_articles
-    subset_dois = dois[start_index, end_index]
-
-    while (!subset_dois.nil? && !subset_dois.empty?)
+    num_articles = 30
+    while dois.length > 0 do
+      subset_dois = dois.slice!(0, num_articles)
       params = {}
       params[:ids] = subset_dois.join(",")
       params[:info] = 'event'
 
       url = "#{@@URL}/?#{params.to_param}"
-
-      Rails.logger.debug("ALM DATA REQUEST: #{url}")
-
       resp = Net::HTTP.get_response(URI.parse(url))
 
       if !resp.kind_of?(Net::HTTPSuccess)
@@ -119,10 +112,6 @@ module AlmRequest
         # store alm data in cache
         Rails.cache.write("#{article["doi"]}.alm", results, :expires_in => 1.day)
       end
-
-      start_index = end_index
-      end_index = start_index + num_articles
-      subset_dois = dois[start_index, end_index]
     end
 
     return all_results

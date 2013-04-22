@@ -72,9 +72,7 @@ class ReportsController < ApplicationController
     load_report(params[:id])
     @report_sub_tab = :visualizations
     @title = "Report Visualizations"
-    
-    @report.load_articles_from_solr
-    
+
     alm_data = AlmRequest.get_data_for_articles(@report.report_dois)
     solr_data = SolrRequest.get_data_for_articles(@report.report_dois)
     @report.report_dois.each {|report_doi| report_doi.alm = alm_data[report_doi.doi]}
@@ -153,8 +151,9 @@ class ReportsController < ApplicationController
         solr_data["affiliate"].each do | affiliate |
           aff_data = affiliate.split(",")
           aff_data.map { |location| location.strip! }
-
-          @article_locations_data << [aff_data[-2, 2].join(", "), 1]
+          if aff_data.length >= 3
+            @article_locations_data << [aff_data[-2, 2].join(", "), 1]
+          end
         end
       end
     end

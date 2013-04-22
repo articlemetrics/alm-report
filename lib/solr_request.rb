@@ -22,6 +22,11 @@ class SolrRequest
   @@ALL_JOURNALS = "All Journals"
   
   @@DEBUG = true
+  
+  # Maximum number of articles we query for in a single request, from the
+  # get_data_for_articles method.  If this is too high solr will return a
+  # 414 "Request-URI Too Large" error.
+  @@MAX_DOIS_PER_REQUEST = 100
 
 
   # Creates a solr request.  The query (q param in the solr request) will be based on
@@ -200,10 +205,7 @@ class SolrRequest
   def self.get_data_for_articles(report_dois)
     # TODO should we return emtpy array or nil if report_dois is nil / empty?
     
-    # TODO add paging logic?  don't think we will use this function to request too many articles
-    # if we do, we should cap how many articles we request
     all_results = {}
-
     if (report_dois.first.kind_of? String)
       dois = report_dois.clone
     else
@@ -219,19 +221,22 @@ class SolrRequest
       end
     end
 
-    q = dois.map { | doi | "id:\"#{doi}\"" }.join(" OR ")
+    while dois.length > 0 do
+      request_dois = dois.slice!(0, @@MAX_DOIS_PER_REQUEST)
+      q = request_dois.map { | doi | "id:\"#{doi}\"" }.join(" OR ")
+  
+      url = "#{@@URL}?q=#{CGI::escape(q)}&#{@@FILTER}&#{@@FL}&wt=json&rows=#{request_dois.length}"
 
-    url = "#{@@URL}?q=#{CGI::escape(q)}&#{@@FILTER}&#{@@FL}&wt=json&rows=#{dois.length}"
-
-    json = SolrRequest.send_query(url)
-
-    docs = json["response"]["docs"]
-    docs.each do |doc|
-      doc["publication_date"] = Date.strptime(doc["publication_date"], @@SOLR_TIMESTAMP_FORMAT)
-      all_results[doc["id"]] = doc
-
-      # store solr data in cache
-      Rails.cache.write("#{doc["id"]}.solr", doc, :expires_in => 1.day)
+      json = SolrRequest.send_query(url)
+  
+      docs = json["response"]["docs"]
+      docs.each do |doc|
+        doc["publication_date"] = Date.strptime(doc["publication_date"], @@SOLR_TIMESTAMP_FORMAT)
+        all_results[doc["id"]] = doc
+  
+        # store solr data in cache
+        Rails.cache.write("#{doc["id"]}.solr", doc, :expires_in => 1.day)
+      end
     end
 
     return all_results
