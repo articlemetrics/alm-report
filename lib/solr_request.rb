@@ -26,19 +26,15 @@ class SolrRequest
 
   # Creates a solr request.  The query (q param in the solr request) will be based on
   # the values of the params passed in, so these should all be valid entries in the PLOS schema.
-  def initialize(params)
+  def initialize(params, page_size)
     @params = params
+    @page_size = page_size
+    @limit = "rows=#{page_size}"
   end
 
 
   def self.ALL_JOURNALS
     return @@ALL_JOURNALS
-  end
-  
-  
-  def self.set_page_size(page_size)
-    @@PAGE_SIZE = page_size
-    @@LIMIT = "rows=#{page_size}"
   end
 
 
@@ -136,9 +132,9 @@ class SolrRequest
     page = page.nil? ? "1" : page
     page = page.to_i - 1
     sort = @params.delete(:sort)
-    url = "#{@@URL}?#{URI::encode(build_query)}&#{@@FILTER}&#{@@FL}&wt=json&#{@@LIMIT}"
+    url = "#{@@URL}?#{URI::encode(build_query)}&#{@@FILTER}&#{@@FL}&wt=json&#{@limit}"
     if page > 0
-      url << "&start=#{page * @@PAGE_SIZE + 1}"
+      url << "&start=#{page * @page_size + 1}"
     end
     if !sort.nil?
       url << "&sort=#{URI::encode(sort)}"

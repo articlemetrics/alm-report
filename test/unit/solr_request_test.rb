@@ -4,7 +4,7 @@ require "test_helper"
 class SolrRequestTest < ActiveSupport::TestCase
   
   def build_query_test_once(params, expected)
-    req = SolrRequest.new(params)
+    req = SolrRequest.new(params, 25)
     assert_equal(expected, req.build_query)
   end
   

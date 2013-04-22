@@ -10,8 +10,4 @@ $RESULTS_PER_PAGE = 25
 
 # Maximum number of articles that can be stored in a single report.
 # This constant must be kept in sync with the constant of the same name in script.js.
-$ARTICLE_LIMIT = 512
-
-# Hack required to get this constant into SolrRequest, since it's in lib/
-# and doesn't depend on this module.
-SolrRequest.set_page_size($RESULTS_PER_PAGE)
+$ARTICLE_LIMIT = 500

@@ -2167,3 +2167,25 @@ div.selector select {
 .static_content h2 {
   margin: 0 0 18px 0;
 }
+
+.ajax_spinner {
+  background: url(/assets/select_all_loader.gif) no-repeat 0 0;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  margin-left: -33px;
+  margin-top: -33px;
+  text-align: center;
+  z-index: 20;
+  overflow: auto;
+  width: 66px;
+  height: 68px;
+  display: none;
+}
+
+#gray-out-screen {
+  position: absolute;
+  left: 0;
+  top: 0;
+  background: #666;
+}

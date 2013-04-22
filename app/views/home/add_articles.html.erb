@@ -47,8 +47,10 @@
 
    </div>
    <p class="select-articles-message albert-light-normal invisible">
-     <span id="select-articles-message-text"></span> <a href="fixme">Select all 87 articles</a>.
+     <span id="select-articles-message-text"></span> <a href="#"
+         id="select_all_searchresults">Select all <%= number_with_delimiter(@total_found, :delimiter => ',') %> articles</a>.
    </p>
+   <div id="select-all-spinner" class="ajax_spinner"></div>
    <% @articles_checked = false %>
    <%= render "article_list" %>
  </div>
@@ -65,3 +67,5 @@
    </ul>
  </div>
 </div>
+
+<div id="gray-out-screen"></div>

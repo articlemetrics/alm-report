@@ -22,6 +22,7 @@ jQuery(function(d, $){
         $('.select-all-articles-link').on("click", { 'mode' : "SAVE" }, jQuery.proxy(this.toggleAllArticles, this));
         $('.unselect-all-articles-link').on("click", { 'mode' : "REMOVE" }, jQuery.proxy(this.toggleAllArticles, this));
         $('.reset-btn').on("click", { 'mode' : "REMOVE" }, jQuery.proxy(this.toggleAllArticles, this));
+        $('#select_all_searchresults').on("click", jQuery.proxy(this.selectAllSearchResults, this));
       },
 
       // Replaces the preview list counts in the UI with the new value.
@@ -57,7 +58,7 @@ jQuery(function(d, $){
           article_ids : [$checkbox.val()],
 
           // set the "mode" based on what state the checkbox is transitioning to
-          // NOTE: this handler runs *after* the checkbox element has been
+          // NOTE: this handler runs *after* the checkbox element has been 
           // updated so we check the "checked" prop.
           mode : $checkbox.prop("checked") ? "SAVE" : "REMOVE"
         };
@@ -68,7 +69,7 @@ jQuery(function(d, $){
         this.displayProgressIndicators($container, ajax_data.mode);
 
         // pass the data to the server to update the session
-        // NOTE: update server expects an array (or collection) of checkboxes
+        // NOTE: update server expects an array (or collection) of checkboxes 
         // and containers to iterate over later on
         this.updateServer(ajax_data, $checkbox, $container);
       },
@@ -260,6 +261,62 @@ jQuery(function(d, $){
           // setTimeout(function() { updated_msg.fadeOut(2000); }, 3000);
         });
       },
+      
+      // Handles the user clicking on the "Select all nnn articles" link.  Selects
+      // *all* of the articles from the search, not just those on the current page.
+      // (Subject to the article limit.)
+      selectAllSearchResults : function(e) {
+        var url_params = window.location.search.substr(1);  // Remove leading "?"
+        
+        // Convert to dict for ajax call.
+        var data = {};
+        var pairs = url_params.split("&");
+        for (i in pairs) {
+          var split = pairs[i].split("=");
+          
+          // We need to convert "+" to " ", which none of the stock javascript functions
+          // seem to handle correctly.  See http://unixpapa.com/js/querystring.html
+          data[split[0]] = decodeURIComponent(split[1].replace(/\+/g, " "));
+        }
+
+        $("#gray-out-screen").css({
+          opacity: 0.7,
+          "width": $(document).width(),
+          "height": $(document).height()
+        });
+        $("body").css({"overflow": "hidden"});
+        $("#select-all-spinner").css({"display": "block"});
+
+        $.ajax("/select-all-search-results", {
+          type: "POST",
+          
+          // Unless we set this header, rails will silently refuse to save anything
+          // to the session!
+          beforeSend: function(xhr) {
+              xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))
+              },
+          data: data,
+          complete: jQuery.proxy(this.selectAllSearchResultsResponseHandler, this)
+        });
+      },
+      
+      selectAllSearchResultsResponseHandler : function(xhr, status) {
+        $("#gray-out-screen").hide();
+        $("#select-all-spinner").hide();
+        $(".select-articles-message").hide();
+
+        var json_resp = $.parseJSON(xhr.responseText);
+        if (status == "success" && json_resp.status == "success") {
+          var $unchecked_checkboxes = $(".check-save-article:not(:checked)");
+          $unchecked_checkboxes.prop("checked", true);
+          this.incrementListCount(json_resp.delta);
+        } else {
+          var $checked_checkboxes = $(".check-save-article:checked");
+          $checked_checkboxes.prop("checked", false);
+          
+          // TODO: some other error handling?
+        }
+      }
     };
 
   })().init();
