@@ -108,7 +108,7 @@ class HomeController < ApplicationController
     docs, total_found = search_from_params($ARTICLE_LIMIT)
     docs.each {|doc| saved[doc["id"]] = doc["publication_date"].strftime("%s").to_i}
     session[:dois] = saved
-    payload = {:status => "error", :delta => saved.length - initial_count}
+    payload = {:status => "success", :delta => saved.length - initial_count}
     respond_to do |format|
       format.json { render :json => payload}
     end
