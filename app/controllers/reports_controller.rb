@@ -58,8 +58,19 @@ class ReportsController < ApplicationController
     solr_data = SolrRequest.get_data_for_articles(@dois)
 
     @dois.each do |doi|
-      doi.solr = solr_data[doi.doi]
-      doi.alm = alm_data[doi.doi]
+      solr = solr_data[doi.doi]
+      
+      # Fail fast if ALM or solr data is absent.  Otherwise we'll get an error
+      # from the presentation layer that's harder to debug.
+      if solr.nil?
+        raise "No solr data for #{doi.doi}!"
+      end
+      alm = alm_data[doi.doi]
+      if alm.nil?
+        raise "No ALM data for #{doi.doi}!"
+      end
+      doi.solr = solr
+      doi.alm = alm
       
       # Set the display index as a property for rendering.
       doi.display_index = i
