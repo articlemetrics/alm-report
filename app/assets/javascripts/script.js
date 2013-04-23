@@ -4,7 +4,8 @@ jQuery(function(d, $){
 
     var $list_count = $('.list-count');
     var initial_list_count = parseInt($list_count.text(), 10);
-    var $preview_list_count = $('.preview-list-count');
+    var preview_list_count = initial_list_count;
+    var $preview_list_count_elem = $('.preview-list-count');
     var results_span_pages = ($('.pagination-number').length > 1);
 
     // Be sure to keep these two constants in sync with the ruby constants of
@@ -27,27 +28,27 @@ jQuery(function(d, $){
 
       // Replaces the preview list counts in the UI with the new value.
       updateListCount : function(new_count) {
+        preview_list_count = new_count;
+        
         // update "your list" box in header
         $list_count.text(new_count);
 
         // update preview list button
-        $preview_list_count.val("Preview List (" + new_count + ")");
+        $preview_list_count_elem.val("Preview List (" + new_count + ")");
       },
       
       // Increments the preview list counts in the UI by the specified delta, which
       // can be positive or negative.
       incrementListCount : function(delta) {
-        var count = parseInt($('.list-count').text(), 10);
-        this.updateListCount(count + delta);
+        this.updateListCount(preview_list_count + delta);
       },
 
       checkboxClickHandler : function(e) {
         var $checkbox = $(e.target);
-        var count = parseInt($('.list-count').text(), 10);
 
         // If we are over the limit, and it's a check event, don't do anything
         // (and uncheck the checkbox).
-        if ($checkbox.prop("checked") && count >= ARTICLE_LIMIT) {
+        if ($checkbox.prop("checked") && preview_list_count >= ARTICLE_LIMIT) {
           $checkbox.prop("checked", false);
           this.showErrorDialog("article-limit-error-message");
           return;
@@ -225,7 +226,16 @@ jQuery(function(d, $){
           // articles on this page
           if ( results_span_pages && (selected_articles_count == RESULTS_PER_PAGE) ) {
             $('#select-articles-message-text').html("The " + RESULTS_PER_PAGE + " articles on this page have been selected.");
+            var select_all_message = $('#select-all-articles-message-text').html();
+            select_all_message = select_all_message.replace("__SELECT_ALL_NUM__",
+                ARTICLE_LIMIT - preview_list_count);
+            $('#select-all-articles-message-text').html(select_all_message);
             $('.select-articles-message').removeClass("invisible");
+            
+            // We have to re-add this onclick, since the above DOM manipulation
+            // apparently un-does it.
+            $('#select_all_searchresults').on("click",
+                jQuery.proxy(this.selectAllSearchResults, this));
 
           // in all other cases, just hide it. (it's easier this way)
           } else {
