@@ -15,10 +15,8 @@ class HomeController < ApplicationController
   
   
   # Performs a solr search based on the parameters passed into an action.
-  # Returns a tuple of (solr documents, total results found).  The length
-  # of the solr documents will be limited by the page size, while the total
-  # results found will not.
-  def search_from_params(page_size=$RESULTS_PER_PAGE)
+  # Returns a tuple of (solr documents, total results found).
+  def search_from_params
 
     # Strip out form params not relevant to solr.
     solr_params = {}
@@ -33,7 +31,7 @@ class HomeController < ApplicationController
     if !date_range.nil?
       solr_params[:publication_date] = date_range
     end
-    q = SolrRequest.new(solr_params, page_size)
+    q = SolrRequest.new(solr_params)
     q.query
   end
   private :search_from_params
@@ -94,13 +92,6 @@ class HomeController < ApplicationController
   # *all* of the articles from the search, not just those on the current page.
   # (Subject to the article limit.)
   def select_all_search_results
-
-    # Increment the user's page by one... important for article limit logic below.
-    page = params[:current_page]
-    page = page.nil? ? "1" : page
-    page = page.to_i + 1
-    params[:current_page] = page.to_s
-
     saved = session[:dois]
     if saved.nil?
       saved = {}
@@ -114,12 +105,21 @@ class HomeController < ApplicationController
       status = "limit"
     else
       status = "success"
-  
-      # For efficiency, only load as many articles as can be stored in the session.
-      # TODO: correct messaging of this to the user.
-      remaining = $ARTICLE_LIMIT - initial_count
-      docs, total_found = search_from_params(remaining)
-      docs[0..remaining - 1].each do |doc|
+      page = params.delete(:current_page)
+      
+      # For efficiency, we want to query solr for the smallest number of results.
+      # However, this is difficult because the user may have already selected
+      # some articles from various pages of the search results, and there is no
+      # easy way to determine the intersection of this with the search we're about
+      # to do.  Using $ARTICLE_LIMIT * 2 as our requested number of results handles
+      # various pathological cases such as the user having checked every other
+      # search result.
+      params[:rows] = $ARTICLE_LIMIT * 2
+      docs, total_found = search_from_params
+      docs.each do |doc|
+        if saved.length >= $ARTICLE_LIMIT
+          break
+        end
         saved[doc["id"]] = doc["publication_date"].strftime("%s").to_i
       end
       session[:dois] = saved

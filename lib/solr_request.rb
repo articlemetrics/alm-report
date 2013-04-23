@@ -31,10 +31,13 @@ class SolrRequest
 
   # Creates a solr request.  The query (q param in the solr request) will be based on
   # the values of the params passed in, so these should all be valid entries in the PLOS schema.
-  def initialize(params, page_size)
+  def initialize(params)
     @params = params
-    @page_size = page_size
-    @limit = "rows=#{page_size}"
+  end
+  
+  
+  def self.set_page_size(page_size)
+    @@PAGE_SIZE = page_size
   end
 
 
@@ -128,19 +131,36 @@ class SolrRequest
     end
     return docs
   end
+  
+  
+  # Returns the fragment of the URL having to do with paging; specifically, the rows
+  # and start parameters.  These can be passed in directly to the constructor, or calculated
+  # based on the current_page param, if it is present.
+  def build_page_block
+    rows = @params.delete(:rows)
+    page_size = rows.nil? ? @@PAGE_SIZE : rows
+    result = "rows=#{page_size}"
+    start = @params.delete(:start)
+    if start.nil?
+      page = @params.delete(:current_page)
+      page = page.nil? ? "1" : page
+      page = page.to_i - 1
+      if page > 0
+        result << "&start=#{page * @@PAGE_SIZE + 1}"
+      end
+    else  # start is specified
+      result << "&start=#{start}"
+    end
+    result
+  end
 
 
   # Performs a single solr search, based on the parameters set on this object.  Returns a tuple
   # of the documents retrieved, and the total number of results.
   def query
-    page = @params.delete(:current_page)
-    page = page.nil? ? "1" : page
-    page = page.to_i - 1
     sort = @params.delete(:sort)
-    url = "#{@@URL}?#{URI::encode(build_query)}&#{@@FILTER}&#{@@FL}&wt=json&#{@limit}"
-    if page > 0
-      url << "&start=#{page * @page_size + 1}"
-    end
+    page_block = build_page_block  # This needs to get called before build_query
+    url = "#{@@URL}?#{URI::encode(build_query)}&#{@@FILTER}&#{@@FL}&wt=json&#{page_block}"
     if !sort.nil?
       url << "&sort=#{URI::encode(sort)}"
     end
