@@ -49,6 +49,7 @@ jQuery(function(d, $){
         // (and uncheck the checkbox).
         if ($checkbox.prop("checked") && count >= ARTICLE_LIMIT) {
           $checkbox.prop("checked", false);
+          this.showErrorDialog("article-limit-error-message");
           return;
         }
 
@@ -163,12 +164,22 @@ jQuery(function(d, $){
 
         // flag to determine if resetting checkboxes is necessary
         var error_occurred = false;
-        if (status == "success" && json_resp.status == "success") {
+        if (status == "success") {
+          if (json_resp.status == "success") {
             status_data = {
               class_name : "success",
               text : (mode == "SAVE") ? "Saved" : "Removed",
               img_class_name : "success-tick"
             };
+          } else if (json_resp.status == "limit") {
+            error_occurred = true;
+            status_data = {
+              class_name : "error",
+              text : "Error!",
+              img_class_name : ""
+            };
+            this.showErrorDialog("article-limit-error-message");
+          }
         } else {
 
             // this branch indicates that an error has occurred, so set the flag
@@ -302,6 +313,15 @@ jQuery(function(d, $){
           
           // TODO: some other error handling?
         }
+      },
+      
+      // Displays an error message below the navigation links.  The argument is the
+      // ID of an element that contains the error message HTML.
+      showErrorDialog : function(error_message_id) {
+        var message = $("#" + error_message_id).html();
+        var error_div = $("#error-message-div");
+        error_div.html(message);
+        error_div.show();
       }
     };
 

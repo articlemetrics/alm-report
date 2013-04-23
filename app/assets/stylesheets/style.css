@@ -2189,3 +2189,15 @@ div.selector select {
   top: 0;
   background: #666;
 }
+
+#error-message-div {
+  background: #f0d5d8 url(/assets/warning.png) no-repeat 35px 10px;
+  color: #e4324f;
+  padding: 15px 30px 15px 80px;
+  width: 850px;
+  display: none;
+}
+
+#error-message-div a {
+  color: #000;
+}
