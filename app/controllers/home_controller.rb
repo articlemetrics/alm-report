@@ -63,14 +63,15 @@ class HomeController < ApplicationController
       saved = {}
     end
     initial_count = saved.length
+    status = "success"
     if params[:mode] == "SAVE"
-      
-      # TODO: enforce a limit on the number of articles users can save to
-      # their session.  (500?)
-
-      params[:article_ids].each do |doc_key|
-        doi, pub_date = parse_article_key(doc_key)
-        saved[doi] = pub_date
+      if initial_count >= $ARTICLE_LIMIT
+        status = "limit"
+      else
+        params[:article_ids][0..($ARTICLE_LIMIT - initial_count - 1)].each do |doc_key|
+          doi, pub_date = parse_article_key(doc_key)
+          saved[doi] = pub_date
+        end
       end
     elsif params[:mode] == "REMOVE"
       params[:article_ids].each do |doc_key|
@@ -82,7 +83,7 @@ class HomeController < ApplicationController
     end
     session[:dois] = saved
 
-    payload = {:status => "success", :delta => saved.length - initial_count}
+    payload = {:status => status, :delta => saved.length - initial_count}
     respond_to do |format|
       format.json { render :json => payload}
     end
@@ -93,22 +94,38 @@ class HomeController < ApplicationController
   # *all* of the articles from the search, not just those on the current page.
   # (Subject to the article limit.)
   def select_all_search_results
-    
-    # Just in case the user is not on the first page, we always want to start saving
-    # from the first.
-    params[:current_page] = "1"
+
+    # Increment the user's page by one... important for article limit logic below.
+    page = params[:current_page]
+    page = page.nil? ? "1" : page
+    page = page.to_i + 1
+    params[:current_page] = page.to_s
+
     saved = session[:dois]
     if saved.nil?
       saved = {}
     end
     initial_count = saved.length
 
-    # For efficiency, only load as many articles as can be stored in the session.
-    # TODO: correct messaging of this to the user.
-    docs, total_found = search_from_params($ARTICLE_LIMIT)
-    docs.each {|doc| saved[doc["id"]] = doc["publication_date"].strftime("%s").to_i}
-    session[:dois] = saved
-    payload = {:status => "success", :delta => saved.length - initial_count}
+    # This is a little weird... if the user has no more capacity before the
+    # article limit, return an error status, but if at least one article can
+    # be added, return success.
+    if initial_count >= $ARTICLE_LIMIT
+      status = "limit"
+    else
+      status = "success"
+  
+      # For efficiency, only load as many articles as can be stored in the session.
+      # TODO: correct messaging of this to the user.
+      remaining = $ARTICLE_LIMIT - initial_count
+      docs, total_found = search_from_params(remaining)
+      docs[0..remaining - 1].each do |doc|
+        saved[doc["id"]] = doc["publication_date"].strftime("%s").to_i
+      end
+      session[:dois] = saved
+    end
+
+    payload = {:status => status, :delta => saved.length - initial_count}
     respond_to do |format|
       format.json { render :json => payload}
     end

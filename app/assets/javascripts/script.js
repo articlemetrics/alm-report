@@ -10,7 +10,7 @@ jQuery(function(d, $){
     // Be sure to keep these two constants in sync with the ruby constants of
     // the same name in custom.rb.
     var RESULTS_PER_PAGE = 25;
-    var ARTICLE_LIMIT = 10;
+    var ARTICLE_LIMIT = 500;
 
     return {
       init : function() {
@@ -163,35 +163,21 @@ jQuery(function(d, $){
 
         // flag to determine if resetting checkboxes is necessary
         var error_occurred = false;
-        switch(status) {
-
-          // possible values for 'status' from AJAX call per jquery docs
-          //  - success
-          //  - notmodified
-          //  - error
-          //  - timeout
-          //  - abort
-          //  - parsererror
-
-          case "success" :
+        if (status == "success" && json_resp.status == "success") {
             status_data = {
               class_name : "success",
               text : (mode == "SAVE") ? "Saved" : "Removed",
               img_class_name : "success-tick"
             };
-            break;
+        } else {
 
-          case "error" :
-          default:
             // this branch indicates that an error has occurred, so set the flag
             error_occurred = true;
-
             status_data = {
               class_name : "error",
               text : "Error!",
               img_class_name : ""
             };
-            break;
         }
 
         // update the containers' progress indicators based on the status data
