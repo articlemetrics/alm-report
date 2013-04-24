@@ -320,8 +320,7 @@ jQuery(function(d, $){
         } else {
           var $checked_checkboxes = $(".check-save-article:checked");
           $checked_checkboxes.prop("checked", false);
-          
-          // TODO: some other error handling?
+          this.showErrorDialog("solr-500-error-message");
         }
       },
       

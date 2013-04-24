@@ -115,7 +115,16 @@ class HomeController < ApplicationController
       # various pathological cases such as the user having checked every other
       # search result.
       params[:rows] = $ARTICLE_LIMIT * 2
-      docs, total_found = search_from_params
+      begin
+        docs, total_found = search_from_params
+      rescue SolrError
+        
+        # Send a json response, instead of the rails 500 HTML page.
+        respond_to do |format|
+          format.json {render :json => {:status => "error"}, :status => 500}
+        end
+        return
+      end
       docs.each do |doc|
         if saved.length >= $ARTICLE_LIMIT
           break
