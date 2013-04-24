@@ -3,6 +3,11 @@ require "net/http"
 require "open-uri"
 require "json"
 
+# Exception class thrown when the solr server returns a 50x response.
+class SolrError < StandardError
+end
+
+
 # Interface to solr search for PLOS articles.  A thin wrapper around the solr http API.
 #
 # TODO: consider renaming this class.  Originally I thought there would also be a SolrResponse,
@@ -122,7 +127,7 @@ class SolrRequest
   def self.send_query(url)
     resp = Net::HTTP.get_response(URI.parse(url))
     if resp.code != "200"
-      raise "Server returned #{resp.code}: " + resp.body
+      raise SolrError, "Server returned #{resp.code}: " + resp.body
     end
     return JSON.parse(resp.body)
   end
