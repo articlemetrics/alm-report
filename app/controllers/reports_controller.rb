@@ -127,15 +127,20 @@ class ReportsController < ApplicationController
     @report.report_dois.each do | report_doi |
       # get the subject area 
       if !report_doi.solr["subject"].nil?
-        # collect the second leve subject areas
+        # collect the second level subject areas
+        # we are looking for unique list of second level subject areas
+        # (if they have different parent (different 1st level subject area term),
+        #  we are treating them as the same thing)
         report_doi.solr["subject"].each do | subject_area_full |
           subject_areas = subject_area_full.split('/')
           subject_area = subject_areas[2]
-          if subject_area_data[subject_area].nil?
-            subject_area_data[subject_area] = []
+          if !subject_area.nil?
+            if subject_area_data[subject_area].nil?
+              subject_area_data[subject_area] = []
+            end
+            # associate article to the subject area
+            subject_area_data[subject_area] << report_doi
           end
-          # associate article to the subject area
-          subject_area_data[subject_area] << report_doi
         end
       end
     end
