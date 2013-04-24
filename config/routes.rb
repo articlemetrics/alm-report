@@ -17,6 +17,8 @@ AlmReport::Application.routes.draw do
   match "/reports/metrics" => "reports#metrics"
   
   match "/reports/visualizations" => "reports#visualizations"
+  
+  match "/id/" => "id#index"
 
   match "/about" => "static_pages#about"
   match "/privacy_policy" => "static_pages#privacy_policy"
