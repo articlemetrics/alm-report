@@ -107,6 +107,11 @@ class SolrRequest
       end
     end
 
+    # if the user hasn't entered in anything, search for everything
+    if keys.empty?
+      query << "*:*"
+    end
+
     if @@DEBUG
       puts "solr query: #{query}"
     end
