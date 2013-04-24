@@ -22,6 +22,11 @@ class SolrRequest
   @@ALL_JOURNALS = "All Journals"
   
   @@DEBUG = true
+  
+  # Maximum number of articles we query for in a single request, from the
+  # get_data_for_articles method.  If this is too high solr will return a
+  # 414 "Request-URI Too Large" error.
+  @@MAX_DOIS_PER_REQUEST = 100
 
 
   # Creates a solr request.  The query (q param in the solr request) will be based on
@@ -29,16 +34,15 @@ class SolrRequest
   def initialize(params)
     @params = params
   end
-
-
-  def self.ALL_JOURNALS
-    return @@ALL_JOURNALS
-  end
   
   
   def self.set_page_size(page_size)
     @@PAGE_SIZE = page_size
-    @@LIMIT = "rows=#{page_size}"
+  end
+
+
+  def self.ALL_JOURNALS
+    return @@ALL_JOURNALS
   end
 
 
@@ -127,19 +131,36 @@ class SolrRequest
     end
     return docs
   end
+  
+  
+  # Returns the fragment of the URL having to do with paging; specifically, the rows
+  # and start parameters.  These can be passed in directly to the constructor, or calculated
+  # based on the current_page param, if it is present.
+  def build_page_block
+    rows = @params.delete(:rows)
+    page_size = rows.nil? ? @@PAGE_SIZE : rows
+    result = "rows=#{page_size}"
+    start = @params.delete(:start)
+    if start.nil?
+      page = @params.delete(:current_page)
+      page = page.nil? ? "1" : page
+      page = page.to_i - 1
+      if page > 0
+        result << "&start=#{page * @@PAGE_SIZE + 1}"
+      end
+    else  # start is specified
+      result << "&start=#{start}"
+    end
+    result
+  end
 
 
   # Performs a single solr search, based on the parameters set on this object.  Returns a tuple
   # of the documents retrieved, and the total number of results.
   def query
-    page = @params.delete(:current_page)
-    page = page.nil? ? "1" : page
-    page = page.to_i - 1
     sort = @params.delete(:sort)
-    url = "#{@@URL}?#{URI::encode(build_query)}&#{@@FILTER}&#{@@FL}&wt=json&#{@@LIMIT}"
-    if page > 0
-      url << "&start=#{page * @@PAGE_SIZE + 1}"
-    end
+    page_block = build_page_block  # This needs to get called before build_query
+    url = "#{@@URL}?#{URI::encode(build_query)}&#{@@FILTER}&#{@@FL}&wt=json&#{page_block}"
     if !sort.nil?
       url << "&sort=#{URI::encode(sort)}"
     end
@@ -204,10 +225,7 @@ class SolrRequest
   def self.get_data_for_articles(report_dois)
     # TODO should we return emtpy array or nil if report_dois is nil / empty?
     
-    # TODO add paging logic?  don't think we will use this function to request too many articles
-    # if we do, we should cap how many articles we request
     all_results = {}
-
     if (report_dois.first.kind_of? String)
       dois = report_dois.clone
     else
@@ -223,19 +241,22 @@ class SolrRequest
       end
     end
 
-    q = dois.map { | doi | "id:\"#{doi}\"" }.join(" OR ")
+    while dois.length > 0 do
+      request_dois = dois.slice!(0, @@MAX_DOIS_PER_REQUEST)
+      q = request_dois.map { | doi | "id:\"#{doi}\"" }.join(" OR ")
+  
+      url = "#{@@URL}?q=#{CGI::escape(q)}&#{@@FILTER}&#{@@FL}&wt=json&rows=#{request_dois.length}"
 
-    url = "#{@@URL}?q=#{CGI::escape(q)}&#{@@FILTER}&#{@@FL}&wt=json&rows=#{dois.length}"
-
-    json = SolrRequest.send_query(url)
-
-    docs = json["response"]["docs"]
-    docs.each do |doc|
-      doc["publication_date"] = Date.strptime(doc["publication_date"], @@SOLR_TIMESTAMP_FORMAT)
-      all_results[doc["id"]] = doc
-
-      # store solr data in cache
-      Rails.cache.write("#{doc["id"]}.solr", doc, :expires_in => 1.day)
+      json = SolrRequest.send_query(url)
+  
+      docs = json["response"]["docs"]
+      docs.each do |doc|
+        doc["publication_date"] = Date.strptime(doc["publication_date"], @@SOLR_TIMESTAMP_FORMAT)
+        all_results[doc["id"]] = doc
+  
+        # store solr data in cache
+        Rails.cache.write("#{doc["id"]}.solr", doc, :expires_in => 1.day)
+      end
     end
 
     return all_results

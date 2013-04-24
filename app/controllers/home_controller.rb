@@ -12,12 +12,12 @@ class HomeController < ApplicationController
     # Add a fake entry for "all journals"
     @journals = journals.unshift([SolrRequest.ALL_JOURNALS, SolrRequest.ALL_JOURNALS])
   end
-
   
-  def add_articles
-    @tab = :select_articles
-    @title = "Add Articles"
-    
+  
+  # Performs a solr search based on the parameters passed into an action.
+  # Returns a tuple of (solr documents, total results found).
+  def search_from_params
+
     # Strip out form params not relevant to solr.
     solr_params = {}
     params.keys.each do |key|
@@ -32,7 +32,15 @@ class HomeController < ApplicationController
       solr_params[:publication_date] = date_range
     end
     q = SolrRequest.new(solr_params)
-    @docs, @total_found = q.query
+    q.query
+  end
+  private :search_from_params
+
+  
+  def add_articles
+    @tab = :select_articles
+    @title = "Add Articles"
+    @docs, @total_found = search_from_params
     set_paging_vars(params[:current_page])
   end
   
@@ -53,14 +61,15 @@ class HomeController < ApplicationController
       saved = {}
     end
     initial_count = saved.length
+    status = "success"
     if params[:mode] == "SAVE"
-      
-      # TODO: enforce a limit on the number of articles users can save to
-      # their session.  (500?)
-
-      params[:article_ids].each do |doc_key|
-        doi, pub_date = parse_article_key(doc_key)
-        saved[doi] = pub_date
+      if initial_count >= $ARTICLE_LIMIT
+        status = "limit"
+      else
+        params[:article_ids][0..($ARTICLE_LIMIT - initial_count - 1)].each do |doc_key|
+          doi, pub_date = parse_article_key(doc_key)
+          saved[doi] = pub_date
+        end
       end
     elsif params[:mode] == "REMOVE"
       params[:article_ids].each do |doc_key|
@@ -71,10 +80,52 @@ class HomeController < ApplicationController
       raise "Unexpected mode " + params[:mode]
     end
     session[:dois] = saved
-    
-    puts "Saved DOIs in session: #{session[:dois].to_a}"
-    
-    payload = {:status => "success", :delta => saved.length - initial_count}
+
+    payload = {:status => status, :delta => saved.length - initial_count}
+    respond_to do |format|
+      format.json { render :json => payload}
+    end
+  end
+  
+  
+  # Ajax action that handles the "Select all nnn articles" link.  Selects
+  # *all* of the articles from the search, not just those on the current page.
+  # (Subject to the article limit.)
+  def select_all_search_results
+    saved = session[:dois]
+    if saved.nil?
+      saved = {}
+    end
+    initial_count = saved.length
+
+    # This is a little weird... if the user has no more capacity before the
+    # article limit, return an error status, but if at least one article can
+    # be added, return success.
+    if initial_count >= $ARTICLE_LIMIT
+      status = "limit"
+    else
+      status = "success"
+      page = params.delete(:current_page)
+      
+      # For efficiency, we want to query solr for the smallest number of results.
+      # However, this is difficult because the user may have already selected
+      # some articles from various pages of the search results, and there is no
+      # easy way to determine the intersection of this with the search we're about
+      # to do.  Using $ARTICLE_LIMIT * 2 as our requested number of results handles
+      # various pathological cases such as the user having checked every other
+      # search result.
+      params[:rows] = $ARTICLE_LIMIT * 2
+      docs, total_found = search_from_params
+      docs.each do |doc|
+        if saved.length >= $ARTICLE_LIMIT
+          break
+        end
+        saved[doc["id"]] = doc["publication_date"].strftime("%s").to_i
+      end
+      session[:dois] = saved
+    end
+
+    payload = {:status => status, :delta => saved.length - initial_count}
     respond_to do |format|
       format.json { render :json => payload}
     end

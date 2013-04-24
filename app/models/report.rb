@@ -13,13 +13,6 @@ class Report < ActiveRecord::Base
   end
   
   
-  # Loads solr data for each article in this report.
-  def load_articles_from_solr
-
-    SolrRequest.get_data_for_articles(report_dois)
-  end
-  
-  
   # Sets the @sorted_report_dates field.
   # Precondition: load_articles_from_solr has already been called.
   def sort_report_dates

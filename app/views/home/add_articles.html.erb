@@ -47,8 +47,10 @@
 
    </div>
    <p class="select-articles-message albert-light-normal invisible">
-     <span id="select-articles-message-text"></span> <a href="fixme">Select all 87 articles</a>.
+     <span id="select-articles-message-text"></span>
+     <span id="select-all-articles-message-text"><a href="#" id="select_all_searchresults">Select the first __SELECT_ALL_NUM__ articles</a>.</span>
    </p>
+   <div id="select-all-spinner" class="ajax_spinner"></div>
    <% @articles_checked = false %>
    <%= render "article_list" %>
  </div>
@@ -60,8 +62,16 @@
    <p class="albert-light-normal">Add more articles</p>
    <ul class="add-article-links">
      <li><a href="/" class="article-links">Search Again</a></li>
-     <li><a href="fixme" class="article-links">By DOI/PMID</a></li>
+     <li><a href="/id/" class="article-links">By DOI/PMID</a></li>
      <li><a href="fixme" class="article-links">Upload File</a></li>
    </ul>
  </div>
+</div>
+
+<div id="gray-out-screen"></div>
+
+<div id="article-limit-error-message" style="display: none;">
+  The maximum report size is <%= $ARTICLE_LIMIT %> articles. Go to
+  <a href="/preview-list">Preview List</a> and remove articles before adding
+  more to your selection.
 </div>

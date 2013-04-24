@@ -4,12 +4,12 @@
   <%= render "reports_nav" %>
 
   <div class="metrics-left-content">
-    <p class="metrics-article albert-light-normal"><%= @start_result %>-<%= @end_result %> of <%= @total_found %> articles</p>
+    <p class="albert-light-normal metrics-article-count"><%= @start_result %>-<%= @end_result %> of <%= @total_found %> articles</p>
   
     <% @dois.each do |doi| %>
     <div class="visualizations-list">
       <span class="list-numbers"><%= doi.display_index %></span>
-      <h2 class="albert-light-normal"><%= doi.solr["title"] %></h2>
+      <h3 class="metrics-article-title"><%= doi.solr["title"] %></h3>
       <% if !doi.solr["author_display"].nil? %>
       <p class="metrics-para">
         <% doi.solr["author_display"].each_with_index do |author, idx| %>

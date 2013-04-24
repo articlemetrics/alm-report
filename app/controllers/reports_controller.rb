@@ -58,8 +58,19 @@ class ReportsController < ApplicationController
     solr_data = SolrRequest.get_data_for_articles(@dois)
 
     @dois.each do |doi|
-      doi.solr = solr_data[doi.doi]
-      doi.alm = alm_data[doi.doi]
+      solr = solr_data[doi.doi]
+      
+      # Fail fast if ALM or solr data is absent.  Otherwise we'll get an error
+      # from the presentation layer that's harder to debug.
+      if solr.nil?
+        raise "No solr data for #{doi.doi}!"
+      end
+      alm = alm_data[doi.doi]
+      if alm.nil?
+        raise "No ALM data for #{doi.doi}!"
+      end
+      doi.solr = solr
+      doi.alm = alm
       
       # Set the display index as a property for rendering.
       doi.display_index = i
@@ -72,9 +83,7 @@ class ReportsController < ApplicationController
     load_report(params[:id])
     @report_sub_tab = :visualizations
     @title = "Report Visualizations"
-    
-    @report.load_articles_from_solr
-    
+
     alm_data = AlmRequest.get_data_for_articles(@report.report_dois)
     solr_data = SolrRequest.get_data_for_articles(@report.report_dois)
     @report.report_dois.each {|report_doi| report_doi.alm = alm_data[report_doi.doi]}
@@ -153,8 +162,9 @@ class ReportsController < ApplicationController
         solr_data["affiliate"].each do | affiliate |
           aff_data = affiliate.split(",")
           aff_data.map { |location| location.strip! }
-
-          @article_locations_data << [aff_data[-2, 2].join(", "), 1]
+          if aff_data.length >= 3
+            @article_locations_data << [aff_data[-2, 2].join(", "), 1]
+          end
         end
       end
     end

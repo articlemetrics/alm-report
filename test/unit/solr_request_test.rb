@@ -8,6 +8,7 @@ class SolrRequestTest < ActiveSupport::TestCase
     assert_equal(expected, req.build_query)
   end
   
+  
   test "build_query_test" do
     build_query_test_once({:everything => "everyFoo"}, "q=everything:everyFoo")
     build_query_test_once({:everything => "foo bar blaz"}, 'q=everything:"foo bar blaz"')
@@ -59,6 +60,40 @@ class SolrRequestTest < ActiveSupport::TestCase
         SolrRequest.build_date_range(start_date, end_date))
 
     # TODO: test end day before start day and other error cases.
+  end
+  
+  
+  def build_page_block_test_once(params, expected)
+    req = SolrRequest.new(params)
+    assert_equal(expected, req.build_page_block)
+  end
+  
+  
+  test "build_page_block_test" do
+    build_page_block_test_once({}, "rows=25")
+    
+    # Page 1 is the default
+    build_page_block_test_once({:current_page => "1"}, "rows=25")
+    
+    build_page_block_test_once({:current_page => "2"}, "rows=25&start=26")
+    build_page_block_test_once({:current_page => "3"}, "rows=25&start=51")
+    build_page_block_test_once({:current_page => "4"}, "rows=25&start=76")
+    
+    # If start and/or rows params are present, this should override the default paging.
+    build_page_block_test_once({:start => 17}, "rows=25&start=17")
+    build_page_block_test_once({:start => 100, :rows => 200}, "rows=200&start=100")
+    build_page_block_test_once({:rows => 500}, "rows=500")
+    
+    # Test that build_page_block doesn't interfere with build_query
+    params = {:everything => "hi", :title => "bye"}
+    req = SolrRequest.new(params)
+    assert_equal("rows=25", req.build_page_block)
+    assert_equal("q=everything:hi AND title:bye", req.build_query)
+    
+    params = {:everything => "bad", :title => "business", :start => 41, :rows => 475}
+    req = SolrRequest.new(params)
+    assert_equal("rows=475&start=41", req.build_page_block)
+    assert_equal("q=everything:bad AND title:business", req.build_query)
   end
 
 end

@@ -4,13 +4,14 @@ jQuery(function(d, $){
 
     var $list_count = $('.list-count');
     var initial_list_count = parseInt($list_count.text(), 10);
-    var $preview_list_count = $('.preview-list-count');
+    var preview_list_count = initial_list_count;
+    var $preview_list_count_elem = $('.preview-list-count');
     var results_span_pages = ($('.pagination-number').length > 1);
 
     // Be sure to keep these two constants in sync with the ruby constants of
     // the same name in custom.rb.
     var RESULTS_PER_PAGE = 25;
-    var ARTICLE_LIMIT = 10;
+    var ARTICLE_LIMIT = 500;
 
     return {
       init : function() {
@@ -22,32 +23,34 @@ jQuery(function(d, $){
         $('.select-all-articles-link').on("click", { 'mode' : "SAVE" }, jQuery.proxy(this.toggleAllArticles, this));
         $('.unselect-all-articles-link').on("click", { 'mode' : "REMOVE" }, jQuery.proxy(this.toggleAllArticles, this));
         $('.reset-btn').on("click", { 'mode' : "REMOVE" }, jQuery.proxy(this.toggleAllArticles, this));
+        $('#select_all_searchresults').on("click", jQuery.proxy(this.selectAllSearchResults, this));
       },
 
       // Replaces the preview list counts in the UI with the new value.
       updateListCount : function(new_count) {
+        preview_list_count = new_count;
+        
         // update "your list" box in header
         $list_count.text(new_count);
 
         // update preview list button
-        $preview_list_count.val("Preview List (" + new_count + ")");
+        $preview_list_count_elem.val("Preview List (" + new_count + ")");
       },
       
       // Increments the preview list counts in the UI by the specified delta, which
       // can be positive or negative.
       incrementListCount : function(delta) {
-        var count = parseInt($('.list-count').text(), 10);
-        this.updateListCount(count + delta);
+        this.updateListCount(preview_list_count + delta);
       },
 
       checkboxClickHandler : function(e) {
         var $checkbox = $(e.target);
-        var count = parseInt($('.list-count').text(), 10);
 
         // If we are over the limit, and it's a check event, don't do anything
         // (and uncheck the checkbox).
-        if ($checkbox.prop("checked") && count >= ARTICLE_LIMIT) {
+        if ($checkbox.prop("checked") && preview_list_count >= ARTICLE_LIMIT) {
           $checkbox.prop("checked", false);
+          this.showErrorDialog("article-limit-error-message");
           return;
         }
 
@@ -57,7 +60,7 @@ jQuery(function(d, $){
           article_ids : [$checkbox.val()],
 
           // set the "mode" based on what state the checkbox is transitioning to
-          // NOTE: this handler runs *after* the checkbox element has been
+          // NOTE: this handler runs *after* the checkbox element has been 
           // updated so we check the "checked" prop.
           mode : $checkbox.prop("checked") ? "SAVE" : "REMOVE"
         };
@@ -68,7 +71,7 @@ jQuery(function(d, $){
         this.displayProgressIndicators($container, ajax_data.mode);
 
         // pass the data to the server to update the session
-        // NOTE: update server expects an array (or collection) of checkboxes
+        // NOTE: update server expects an array (or collection) of checkboxes 
         // and containers to iterate over later on
         this.updateServer(ajax_data, $checkbox, $container);
       },
@@ -162,35 +165,31 @@ jQuery(function(d, $){
 
         // flag to determine if resetting checkboxes is necessary
         var error_occurred = false;
-        switch(status) {
-
-          // possible values for 'status' from AJAX call per jquery docs
-          //  - success
-          //  - notmodified
-          //  - error
-          //  - timeout
-          //  - abort
-          //  - parsererror
-
-          case "success" :
+        if (status == "success") {
+          if (json_resp.status == "success") {
             status_data = {
               class_name : "success",
               text : (mode == "SAVE") ? "Saved" : "Removed",
               img_class_name : "success-tick"
             };
-            break;
-
-          case "error" :
-          default:
-            // this branch indicates that an error has occurred, so set the flag
+          } else if (json_resp.status == "limit") {
             error_occurred = true;
-
             status_data = {
               class_name : "error",
               text : "Error!",
               img_class_name : ""
             };
-            break;
+            this.showErrorDialog("article-limit-error-message");
+          }
+        } else {
+
+            // this branch indicates that an error has occurred, so set the flag
+            error_occurred = true;
+            status_data = {
+              class_name : "error",
+              text : "Error!",
+              img_class_name : ""
+            };
         }
 
         // update the containers' progress indicators based on the status data
@@ -227,7 +226,16 @@ jQuery(function(d, $){
           // articles on this page
           if ( results_span_pages && (selected_articles_count == RESULTS_PER_PAGE) ) {
             $('#select-articles-message-text').html("The " + RESULTS_PER_PAGE + " articles on this page have been selected.");
+            var select_all_message = $('#select-all-articles-message-text').html();
+            select_all_message = select_all_message.replace("__SELECT_ALL_NUM__",
+                ARTICLE_LIMIT - preview_list_count);
+            $('#select-all-articles-message-text').html(select_all_message);
             $('.select-articles-message').removeClass("invisible");
+            
+            // We have to re-add this onclick, since the above DOM manipulation
+            // apparently un-does it.
+            $('#select_all_searchresults').on("click",
+                jQuery.proxy(this.selectAllSearchResults, this));
 
           // in all other cases, just hide it. (it's easier this way)
           } else {
@@ -260,6 +268,71 @@ jQuery(function(d, $){
           // setTimeout(function() { updated_msg.fadeOut(2000); }, 3000);
         });
       },
+      
+      // Handles the user clicking on the "Select all nnn articles" link.  Selects
+      // *all* of the articles from the search, not just those on the current page.
+      // (Subject to the article limit.)
+      selectAllSearchResults : function(e) {
+        var url_params = window.location.search.substr(1);  // Remove leading "?"
+        
+        // Convert to dict for ajax call.
+        var data = {};
+        var pairs = url_params.split("&");
+        for (i in pairs) {
+          var split = pairs[i].split("=");
+          
+          // We need to convert "+" to " ", which none of the stock javascript functions
+          // seem to handle correctly.  See http://unixpapa.com/js/querystring.html
+          data[split[0]] = decodeURIComponent(split[1].replace(/\+/g, " "));
+        }
+
+        $("#gray-out-screen").css({
+          opacity: 0.7,
+          "width": $(document).width(),
+          "height": $(document).height()
+        });
+        $("body").css({"overflow": "hidden"});
+        $("#select-all-spinner").css({"display": "block"});
+
+        $.ajax("/select-all-search-results", {
+          type: "POST",
+          
+          // Unless we set this header, rails will silently refuse to save anything
+          // to the session!
+          beforeSend: function(xhr) {
+              xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))
+              },
+          data: data,
+          complete: jQuery.proxy(this.selectAllSearchResultsResponseHandler, this)
+        });
+      },
+      
+      selectAllSearchResultsResponseHandler : function(xhr, status) {
+        $("#gray-out-screen").hide();
+        $("#select-all-spinner").hide();
+        $(".select-articles-message").hide();
+
+        var json_resp = $.parseJSON(xhr.responseText);
+        if (status == "success" && json_resp.status == "success") {
+          var $unchecked_checkboxes = $(".check-save-article:not(:checked)");
+          $unchecked_checkboxes.prop("checked", true);
+          this.incrementListCount(json_resp.delta);
+        } else {
+          var $checked_checkboxes = $(".check-save-article:checked");
+          $checked_checkboxes.prop("checked", false);
+          
+          // TODO: some other error handling?
+        }
+      },
+      
+      // Displays an error message below the navigation links.  The argument is the
+      // ID of an element that contains the error message HTML.
+      showErrorDialog : function(error_message_id) {
+        var message = $("#" + error_message_id).html();
+        var error_div = $("#error-message-div");
+        error_div.html(message);
+        error_div.show();
+      }
     };
 
   })().init();

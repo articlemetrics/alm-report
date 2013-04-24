@@ -177,6 +177,14 @@ body {
   font-style: italic;
 }
 
+.metrics-article-title {
+  margin: 0 0 0 43px;
+  font-family: "FS Albert Web Regular", Verdana , sans-serif;
+  font-size: 120%;
+  font-weight: normal;
+  font-style: normal;
+}
+
 .nav-area {
   width: 100%;
   background: #333;
@@ -626,6 +634,7 @@ select {
   float: left;
   background: #333;
   font-size: 14px;
+  font-weight: bold;
 }
 
 .sample-reports img + span {
@@ -634,7 +643,7 @@ select {
 
 .sample-reports img + span + span {
   width: 168px;
-  min-height: 55px;
+  min-height: 38px;
   padding: 1px 28px 0 20px;
 }
 
@@ -1281,8 +1290,12 @@ span.next {
   line-height: 19px;
 }
 
+.metrics-article-count {
+  margin: 0 0 5px 83px;
+}
+
 .visualizations-list {
-  margin: 48px 0 4px 35px;
+  margin: 4px 0 4px 35px;
   display: inline-block;
   position: relative;
 }
@@ -2153,4 +2166,38 @@ div.selector select {
 
 .static_content h2 {
   margin: 0 0 18px 0;
+}
+
+.ajax_spinner {
+  background: url(/assets/select_all_loader.gif) no-repeat 0 0;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  margin-left: -33px;
+  margin-top: -33px;
+  text-align: center;
+  z-index: 20;
+  overflow: auto;
+  width: 66px;
+  height: 68px;
+  display: none;
+}
+
+#gray-out-screen {
+  position: absolute;
+  left: 0;
+  top: 0;
+  background: #666;
+}
+
+#error-message-div {
+  background: #f0d5d8 url(/assets/warning.png) no-repeat 35px 10px;
+  color: #e4324f;
+  padding: 15px 30px 15px 80px;
+  width: 850px;
+  display: none;
+}
+
+#error-message-div a {
+  color: #000;
 }

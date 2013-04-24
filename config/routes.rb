@@ -6,6 +6,8 @@ AlmReport::Application.routes.draw do
   
   match "/update-session" => "home#update_session"
   
+  match "/select-all-search-results" => "home#select_all_search_results"
+  
   match "/start-over" => "home#start_over"
   
   match "/preview-list" => "home#preview_list"
@@ -15,6 +17,8 @@ AlmReport::Application.routes.draw do
   match "/reports/metrics" => "reports#metrics"
   
   match "/reports/visualizations" => "reports#visualizations"
+  
+  match "/id/" => "id#index"
 
   match "/about" => "static_pages#about"
   match "/privacy_policy" => "static_pages#privacy_policy"
