@@ -21,8 +21,8 @@ class SolrRequest
   
   @@FILTER = "fq=doc_type:full&fq=!article_type_facet:#{URI::encode("\"Issue Image\"")}"
   
-  # The fields we want solr to return for each article.
-  @@FL = "fl=id,publication_date,title,cross_published_journal_name,author_display,article_type,affiliate,subject"
+  # The fields we want solr to return for each article by default.
+  @@FL = "id,publication_date,title,cross_published_journal_name,author_display,article_type,affiliate,subject"
   
   @@ALL_JOURNALS = "All Journals"
   
@@ -36,8 +36,15 @@ class SolrRequest
 
   # Creates a solr request.  The query (q param in the solr request) will be based on
   # the values of the params passed in, so these should all be valid entries in the PLOS schema.
-  def initialize(params)
+  # If the fl argument is non-nil, it will specify what result fields to return from
+  # solr; otherwise all fields that we are interested in will be returned.
+  def initialize(params, fl=nil)
     @params = params
+    if fl.nil?
+      @fl = "fl=#{@@FL}"
+    else
+      @fl = "fl=#{fl}"
+    end
   end
   
   
@@ -112,9 +119,7 @@ class SolrRequest
       end
     end
 
-    if @@DEBUG
-      puts "solr query: #{query}"
-    end
+    Rails.logger.debug("solr query: #{query}")
     return query
   end
 
@@ -165,7 +170,7 @@ class SolrRequest
   def query
     sort = @params.delete(:sort)
     page_block = build_page_block  # This needs to get called before build_query
-    url = "#{@@URL}?#{URI::encode(build_query)}&#{@@FILTER}&#{@@FL}&wt=json&#{page_block}"
+    url = "#{@@URL}?#{URI::encode(build_query)}&#{@@FILTER}&#{@fl}&wt=json&#{page_block}"
     if !sort.nil?
       url << "&sort=#{URI::encode(sort)}"
     end
@@ -250,7 +255,7 @@ class SolrRequest
       request_dois = dois.slice!(0, @@MAX_DOIS_PER_REQUEST)
       q = request_dois.map { | doi | "id:\"#{doi}\"" }.join(" OR ")
   
-      url = "#{@@URL}?q=#{CGI::escape(q)}&#{@@FILTER}&#{@@FL}&wt=json&rows=#{request_dois.length}"
+      url = "#{@@URL}?q=#{CGI::escape(q)}&#{@@FILTER}&fl=#{@@FL}&wt=json&rows=#{request_dois.length}"
 
       json = SolrRequest.send_query(url)
   

@@ -15,8 +15,9 @@ class HomeController < ApplicationController
   
   
   # Performs a solr search based on the parameters passed into an action.
-  # Returns a tuple of (solr documents, total results found).
-  def search_from_params
+  # Returns a tuple of (solr documents, total results found).  If argument fl
+  # is none-nil, it specifies what results fields we want to retrieve from solr.
+  def search_from_params(fl=nil)
 
     # Strip out form params not relevant to solr.
     solr_params = {}
@@ -31,7 +32,7 @@ class HomeController < ApplicationController
     if !date_range.nil?
       solr_params[:publication_date] = date_range
     end
-    q = SolrRequest.new(solr_params)
+    q = SolrRequest.new(solr_params, fl)
     q.query
   end
   private :search_from_params
@@ -88,6 +89,36 @@ class HomeController < ApplicationController
   end
   
   
+  # Queries solr for the results used by select_all_search_results.
+  def get_all_results
+    page = params.delete(:current_page)
+      
+    # For efficiency, we want to query solr for the smallest number of results.
+    # However, this is difficult because the user may have already selected
+    # some articles from various pages of the search results, and there is no
+    # easy way to determine the intersection of this with the search we're about
+    # to do.  Using $ARTICLE_LIMIT * 2 as our requested number of results handles
+    # various pathological cases such as the user having checked every other
+    # search result.
+    limit = $ARTICLE_LIMIT * 2
+    
+    # solr usually returns 500s if you try to retreive all 1000 articles at once,
+    # so we do paging here (with a larger page size than in the UI).
+    params[:start] = 1
+    page_size = 200
+    results = []
+    begin
+      rows = [page_size, limit - params[:start] + 1].min
+      params[:rows] = rows
+      docs, _ = search_from_params("id,publication_date")
+      results += docs
+      params[:start] = params[:start] + rows
+    end while params[:start] <= limit
+    results
+  end
+  private :get_all_results
+  
+  
   # Ajax action that handles the "Select all nnn articles" link.  Selects
   # *all* of the articles from the search, not just those on the current page.
   # (Subject to the article limit.)
@@ -105,19 +136,10 @@ class HomeController < ApplicationController
       status = "limit"
     else
       status = "success"
-      page = params.delete(:current_page)
-      
-      # For efficiency, we want to query solr for the smallest number of results.
-      # However, this is difficult because the user may have already selected
-      # some articles from various pages of the search results, and there is no
-      # easy way to determine the intersection of this with the search we're about
-      # to do.  Using $ARTICLE_LIMIT * 2 as our requested number of results handles
-      # various pathological cases such as the user having checked every other
-      # search result.
-      params[:rows] = $ARTICLE_LIMIT * 2
       begin
-        docs, total_found = search_from_params
+        docs = get_all_results
       rescue SolrError
+        logger.warn("Error querying solr: #{$!}")
         
         # Send a json response, instead of the rails 500 HTML page.
         respond_to do |format|
