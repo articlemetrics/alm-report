@@ -119,6 +119,11 @@ class SolrRequest
       end
     end
 
+    # if the user hasn't entered in anything, search for everything
+    if keys.empty?
+      query << "*:*"
+    end
+
     Rails.logger.debug("solr query: #{query}")
     return query
   end
