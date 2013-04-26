@@ -426,18 +426,44 @@ jQuery(function(d, $){
 }(document, jQuery));
 
 
-// handles the dismissing of error messages
+// handles the dismissing of error messages from the "Find Articles by DOI/PMID" page.
+var dismissDoiPmidErrors = function(event) {
+  var $current_element = $(event.target);
+  var $current_error_holder = $current_element.parent('.error-holder');
+
+  $current_error_holder.find('.error-message').remove();
+  $current_error_holder.parent('.input-holder').find('label').removeClass('error-color');
+  $current_error_holder.parent('.input-holder').find('div').removeClass('error-holder');
+  $current_element.siblings('input').val('');
+  $current_element.remove();
+};
+
+
 jQuery(function(d, $){
 
-  $('.doi-pmid-remove').on("click", function() {
-    var $current_element = $(this);                
-    var $current_error_holder = $current_element.parent('.error-holder');                    
+  $('.doi-pmid-remove').on("click", dismissDoiPmidErrors);
+}(document, jQuery));
 
-    $current_error_holder.find('.error-message').remove();
-    $current_error_holder.parent('.input-holder').find('label').removeClass('error-color');
-    $current_error_holder.parent('.input-holder').find('div').removeClass('error-holder');
-    $current_element.siblings('input').val('');
-    $current_element.remove();
+
+// Onchange handler for text fields on the "Find Articles by DOI/PMID" page.
+// Performs validation to ensure the values are DOIs.
+jQuery(function(d, $){
+
+  $('[id^=doi-pmid-]').on("change", function() {
+    var $element = $(this)[0];
+    var match = /(info:)?(doi\/)?(10\.1371\/journal\.p[a-z]{3}\.\d{7})/.exec($element.value);
+    if (match == null || match[3] == null) {
+      var $parent_div = $($element.parentNode);
+      $parent_div.attr('class', 'error-holder');
+      $parent_div.children('.input-example').remove();
+      $parent_div.append('<p class="error-message error-color">This DOI is not a PLOS article</p>');
+      $parent_div.append('<span class="doi-pmid-remove">Remove</span>');
+
+      // Need to re-add this listener since we recreated the element above.
+      $('.doi-pmid-remove').on("click", dismissDoiPmidErrors);
+    }
+    
+    // TODO: validate against solr.
   });
 }(document, jQuery));
 
