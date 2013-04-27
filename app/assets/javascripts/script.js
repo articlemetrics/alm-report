@@ -445,25 +445,46 @@ jQuery(function(d, $){
 }(document, jQuery));
 
 
+// Indicates that a single field on the DOI/PMID form is invalid.  The argument
+// is the jQuery text field.
+var highlightDoiPmidError = function($element) {
+  var $parent_div = $($element.parentNode);
+  $parent_div.attr('class', 'error-holder');
+  $parent_div.children('.input-example').remove();
+  $parent_div.append('<p class="error-message error-color">This DOI is not a PLOS article</p>');
+  $parent_div.append('<span class="doi-pmid-remove">Remove</span>');
+
+  // Need to re-add this listener since we recreated the element above.
+  $('.doi-pmid-remove').on("click", dismissDoiPmidErrors);
+};
+
+
 // Onchange handler for text fields on the "Find Articles by DOI/PMID" page.
-// Performs validation to ensure the values are DOIs.
+// Performs validation to ensure the values are valid PLOS DOIs.
 jQuery(function(d, $){
 
   $('[id^=doi-pmid-]').on("change", function() {
     var $element = $(this)[0];
     var match = /(info:)?(doi\/)?(10\.1371\/journal\.p[a-z]{3}\.\d{7})/.exec($element.value);
     if (match == null || match[3] == null) {
-      var $parent_div = $($element.parentNode);
-      $parent_div.attr('class', 'error-holder');
-      $parent_div.children('.input-example').remove();
-      $parent_div.append('<p class="error-message error-color">This DOI is not a PLOS article</p>');
-      $parent_div.append('<span class="doi-pmid-remove">Remove</span>');
-
-      // Need to re-add this listener since we recreated the element above.
-      $('.doi-pmid-remove').on("click", dismissDoiPmidErrors);
-    }
+      highlightDoiPmidError($element);
+    } else {
     
-    // TODO: validate against solr.
+      // Validate DOI against solr.  We need to make a jsonp request to get around the
+      // same-origin policy.
+      var query = 'id:"' + match[3] + '"';
+      $.ajax('http://api.plos.org/search', {
+          type: 'GET',
+          dataType: 'jsonp',
+          data: {wt: 'json', q: query, fl: 'id'},
+          jsonp: 'json.wrf',
+          success: function(resp) {
+            if (resp.response.numFound != 1) {
+              highlightDoiPmidError($element);
+            }
+          }
+      });
+    }
   });
 }(document, jQuery));
 
