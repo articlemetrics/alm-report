@@ -1,15 +1,79 @@
+
+# Exception class thrown when there is an attempt to save a new DOI in the session,
+# but the article limit has been reached.
+class DoiLimitReachedError < StandardError
+end
+
+
+# Wrapper around the session data which enforces the limit on the number of articles
+# per report.  Controller code should read and write through this interface instead
+# of the session directly.
+class SavedDois
+  
+  attr_reader :saved
+  
+  
+  def initialize(session_data)
+    @saved = session_data
+    if @saved.nil?
+      @saved = {}
+    end
+  end
+  
+  
+  def [](x)
+    return @saved[x]
+  end
+  
+  
+  def []=(x, val)
+    if @saved.length >= $ARTICLE_LIMIT
+      raise DoiLimitReachedError, "Reached limit of #{$ARTICLE_LIMIT} DOIs"
+    else
+      @saved[x] = val
+    end
+  end
+  
+  
+  def delete(val)
+    @saved.delete(val)
+  end
+  
+  
+  def clone
+    @saved.clone
+  end
+  
+  
+  def length
+    @saved.length
+  end
+  
+  
+  def clear
+    @saved = {}
+  end
+  
+end
+
+
 class ApplicationController < ActionController::Base
 
   protect_from_forgery
-  
-  before_filter :set_preview_list_count
-  before_filter :display_nav
 
-  # Sets the number of DOIs saved in the session as an instance field;
-  # used across several pages.
-  def set_preview_list_count
-    saved_dois = session[:dois]
-    @preview_list_count = saved_dois.nil? ? 0 : saved_dois.length
+  before_filter :display_nav
+  around_filter :save_session_dois
+  
+  
+  # Sets @saved_dois based on the contents of the session, and saves it back to the
+  # session after an action is run.
+  def save_session_dois
+    @saved_dois = SavedDois.new(session[:dois])
+    @preview_list_count = @saved_dois.length
+    
+    yield  # Run the action
+    
+    session[:dois] = @saved_dois.saved
   end
   
   
@@ -29,5 +93,5 @@ class ApplicationController < ActionController::Base
   def display_nav
     @display_nav = true
   end
-
+  
 end

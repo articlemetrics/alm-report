@@ -57,11 +57,7 @@ class HomeController < ApplicationController
   
   
   def update_session
-    saved = session[:dois]
-    if saved.nil?
-      saved = {}
-    end
-    initial_count = saved.length
+    initial_count = @saved_dois.length
     status = "success"
     if params[:mode] == "SAVE"
       if initial_count >= $ARTICLE_LIMIT
@@ -69,20 +65,19 @@ class HomeController < ApplicationController
       else
         params[:article_ids][0..($ARTICLE_LIMIT - initial_count - 1)].each do |doc_key|
           doi, pub_date = parse_article_key(doc_key)
-          saved[doi] = pub_date
+          @saved_dois[doi] = pub_date
         end
       end
     elsif params[:mode] == "REMOVE"
       params[:article_ids].each do |doc_key|
         doi, _ = parse_article_key(doc_key)
-        saved.delete(doi)
+        @saved_dois.delete(doi)
       end
     else
       raise "Unexpected mode " + params[:mode]
     end
-    session[:dois] = saved
 
-    payload = {:status => status, :delta => saved.length - initial_count}
+    payload = {:status => status, :delta => @saved_dois.length - initial_count}
     respond_to do |format|
       format.json { render :json => payload}
     end
@@ -123,11 +118,7 @@ class HomeController < ApplicationController
   # *all* of the articles from the search, not just those on the current page.
   # (Subject to the article limit.)
   def select_all_search_results
-    saved = session[:dois]
-    if saved.nil?
-      saved = {}
-    end
-    initial_count = saved.length
+    initial_count = @saved_dois.length
 
     # This is a little weird... if the user has no more capacity before the
     # article limit, return an error status, but if at least one article can
@@ -148,15 +139,15 @@ class HomeController < ApplicationController
         return
       end
       docs.each do |doc|
-        if saved.length >= $ARTICLE_LIMIT
+        begin
+          @saved_dois[doc["id"]] = doc["publication_date"].strftime("%s").to_i
+        rescue DoiLimitReachedError
           break
         end
-        saved[doc["id"]] = doc["publication_date"].strftime("%s").to_i
       end
-      session[:dois] = saved
     end
 
-    payload = {:status => status, :delta => saved.length - initial_count}
+    payload = {:status => status, :delta => @saved_dois.length - initial_count}
     respond_to do |format|
       format.json { render :json => payload}
     end
@@ -165,7 +156,7 @@ class HomeController < ApplicationController
 
   # Action that clears any DOIs in the session and redirects to home.
   def start_over
-    session[:dois] = {}
+    @saved_dois.clear
     redirect_to :action => :index
   end
   
@@ -173,7 +164,7 @@ class HomeController < ApplicationController
   def preview_list
     @tab = :preview_list
     @title = "Preview List"
-    dois = session[:dois].nil? ? {} : session[:dois]
+    dois = @saved_dois.clone
     @total_found = dois.length
     set_paging_vars(params[:current_page])
     
