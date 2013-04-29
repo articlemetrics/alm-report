@@ -20,6 +20,9 @@ AlmReport::Application.routes.draw do
   
   match "/id" => "id#index", :via => :get
   match "/id" => "id#save", :via => :post
+  
+  match "/upload" => "id#upload", :via => :get
+  match "/upload" => "id#process_upload", :via => :post
 
   match "/about" => "static_pages#about"
   match "/privacy_policy" => "static_pages#privacy_policy"
