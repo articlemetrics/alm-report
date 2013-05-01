@@ -1,0 +1,12 @@
+<div class="content wrapper">
+  <div class="upload-file">
+    <h2 class="albert-light-normal">Upload File</h2>
+    <p>Text copy with instructions on what types of ﬁles are acceptable and/or how ﬁles 
+      should be formatted for the ﬁle uploader. <a href="fixme">Sample File</a></p>
+    <%= form_tag("/upload", :method => "post", :class => "upload-file-form", :multipart => true) do %>
+      <%= label_tag(:"upload-file-field", "File path", :class => "hidden") %>
+      <%= file_field_tag(:"upload-file-field") %>
+      <%= submit_tag("Upload File", :class => "button-hover-dark-black submit-btn upload-file-btn") %>
+    <% end %>
+  </div>
+</div>
