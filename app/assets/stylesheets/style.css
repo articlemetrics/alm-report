@@ -1341,6 +1341,17 @@ span.next {
   border: none;
 }
 
+.visualizations-list .metrics-no-data-para {
+  width: 612px;
+  display: inline-block;
+  line-height: 19px;
+  color: #e53350;
+  font-size: 14px;
+  font-weight: bold;
+  padding: 14px 0 14px 0;
+  margin: 0 0 0 43px;
+}
+
 .visualizations-list a {
   width: 160px;
   margin: 21px 0 0 43px;

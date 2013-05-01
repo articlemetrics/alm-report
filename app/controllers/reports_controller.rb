@@ -60,17 +60,24 @@ class ReportsController < ApplicationController
     @dois.each do |doi|
       solr = solr_data[doi.doi]
       
-      # Fail fast if ALM or solr data is absent.  Otherwise we'll get an error
-      # from the presentation layer that's harder to debug.
       if solr.nil?
-        raise "No solr data for #{doi.doi}!"
+        # raise "No solr data for #{doi.doi}!"
+        # TODO remove it from the report
+      else
+        doi.solr = solr
+
+        # only try to retrieve the alm data if the article exists in solr
+        alm = alm_data[doi.doi]
+
+        if alm.nil?
+          # if there isn't alm data for an article that exists in solr
+          # alm had an error for that article or 
+          # the article is too new to have any alm data
+          # either way, display an error message
+        else
+          doi.alm = alm
+        end
       end
-      alm = alm_data[doi.doi]
-      if alm.nil?
-        raise "No ALM data for #{doi.doi}!"
-      end
-      doi.solr = solr
-      doi.alm = alm
       
       # Set the display index as a property for rendering.
       doi.display_index = i

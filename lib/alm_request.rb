@@ -64,11 +64,19 @@ module AlmRequest
       params[:ids] = subset_dois.join(",")
       params[:info] = 'event'
 
+      # ALM will return all the data it can in the list of articles.
+      # the only ones missing will be omitted from the response.
+      # if it only has one article and it fails to retrieve data for that one article, 
+      # that's when it will return 404
+
       url = "#{@@URL}/?#{params.to_param}"
       resp = Net::HTTP.get_response(URI.parse(url))
 
       if !resp.kind_of?(Net::HTTPSuccess)
-        raise "Server returned #{resp.code}: " + resp.body
+        Rails.logger.error "ALM Server for #{url} returned #{resp.code}: " + resp.body
+
+        # move to the next set of articles
+        next
       end
 
       json = JSON.parse(resp.body)
