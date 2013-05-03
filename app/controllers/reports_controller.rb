@@ -47,17 +47,37 @@ class ReportsController < ApplicationController
     @report_sub_tab = :metrics
     @title = "Sample Metrics"
     @total_found = @report.report_dois.length
-    set_paging_vars(params[:current_page], 5)
+
+    results_per_page = 5
+    set_paging_vars(params[:current_page], results_per_page)
     
     # Create a new array for display that is only the articles on the current page,
     # to limit what we have to load from solr and ALM.
-    @dois = @report.report_dois[(@start_result) - 1..(@end_result - 1)]
+
+    # get the double the # of articles just in case there are dois that we need to delete
+    # (will happen rarely)
+    @dois = @report.report_dois[(@start_result) - 1..((@end_result - 1)*2)]
     i = @start_result
 
     alm_data = AlmRequest.get_data_for_articles(@dois)
     solr_data = SolrRequest.get_data_for_articles(@dois)
 
-    manage_report_data(@dois, solr_data, alm_data, i)
+    dois_to_delete = manage_report_data(@dois, solr_data, alm_data, i)
+
+    if (!dois_to_delete.empty?)
+
+      # delete the bad dois from the report
+      ReportDoi.destroy_all(:id => dois_to_delete)
+
+      @report.reload
+
+      @total_found = @report.report_dois.length
+
+      # TODO not counting on @dois size to be smaller than the number of articles we need to display
+      @dois = @report.report_dois[(@start_result) - 1..((@end_result - 1))]
+      i = @start_result
+      manage_report_data(@dois, solr_data, alm_data, i)
+    end
 
   end
 
@@ -70,7 +90,15 @@ class ReportsController < ApplicationController
     alm_data = AlmRequest.get_data_for_viz(@report.report_dois)
     solr_data = SolrRequest.get_data_for_articles(@report.report_dois)
 
-    manage_report_data(@report.report_dois, solr_data, alm_data)
+    dois_to_delete = manage_report_data(@report.report_dois, solr_data, alm_data)
+
+    if (!dois_to_delete.empty?)
+
+      # delete the bad dois from the report
+      ReportDoi.destroy_all(:id => dois_to_delete)
+      @report.reload
+      manage_report_data(@report.report_dois, solr_data, alm_data)
+    end
 
     generate_data_for_bubble_charts
     generate_data_for_subject_area_chart
@@ -81,13 +109,16 @@ class ReportsController < ApplicationController
   def manage_report_data(report_dois, solr_data, alm_data, display_start_index = 1)
 
     i = display_start_index
+    dois_to_delete = []
 
     report_dois.each do |doi|
       solr = solr_data[doi.doi]
+
       
       if solr.nil?
         # raise "No solr data for #{doi.doi}!"
         # TODO remove it from the report
+        dois_to_delete << doi.id
       else
         doi.solr = solr
 
@@ -108,7 +139,11 @@ class ReportsController < ApplicationController
       doi.display_index = i
       i += 1
     end
+
+    return dois_to_delete
+
   end
+
 
   # Populates @article_usage_citations_age_data and @article_usage_mendeley_age_data, used from
   # javascript to generate the bubble charts.
