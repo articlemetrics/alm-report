@@ -34,21 +34,30 @@ function getBubbleChartOptions() {
 }
 
 function drawArticleUsageCitationsAge() {
-  var chart = new google.visualization.BubbleChart(document.getElementById('article_usage_and_citations_age_div'));
-  var data = google.visualization.arrayToDataTable(getArticleUsageCitationsAgeData());
-  chart.draw(data, getBubbleChartOptions());
+  var data = getArticleUsageCitationsAgeData();
+  if (data.length > 1) {
+    var chart = new google.visualization.BubbleChart(document.getElementById('article_usage_and_citations_age_div'));
+    data = google.visualization.arrayToDataTable(data);
+    chart.draw(data, getBubbleChartOptions());
+  } else {
+    $("#article_usage_and_citations_age_div")
+      .append("<div class=\"metrics-no-data-para\">The data for the graph isn't available.  Please check back later.</div>");
+  }
 }
 
 function drawArticleUsageMendeleyAge() {
-  var chart = new google.visualization.BubbleChart(document.getElementById('article_usage_and_mendeley_age_div'));
-  var data = google.visualization.arrayToDataTable(getArticleUsageMendeleyAgeData());
-  chart.draw(data, getBubbleChartOptions());
+  var data = getArticleUsageMendeleyAgeData();
+  if (data.length > 1) {
+    var chart = new google.visualization.BubbleChart(document.getElementById('article_usage_and_mendeley_age_div'));
+    data = google.visualization.arrayToDataTable(data);
+    chart.draw(data, getBubbleChartOptions());
+  } else {
+    $("#article_usage_and_mendeley_age_div")
+      .append("<div class=\"metrics-no-data-para\">The data for the graph isn't available.  Please check back later.</div>");
+  }
 }
 
 function drawArticleUsageCitationSubjectArea() {
-  var chart = new google.visualization.TreeMap(document.getElementById('article_subject_div'));
-  var data = google.visualization.arrayToDataTable(getArticleUsageCitationSubjectAreaData());
-
   var options = {
     minColor: '#000000',
     midColor: '#088A08',
@@ -58,15 +67,23 @@ function drawArticleUsageCitationSubjectArea() {
     showScale: true
   };
 
+  var chart = new google.visualization.TreeMap(document.getElementById('article_subject_div'));
+
   google.visualization.events.addListener(chart, 'onmouseover', function(e) {
     $(event.target).parent().children("text").attr("fill", "#FFFFFF");
   });
 
-  chart.draw(data, options);
+  var data = getArticleUsageCitationSubjectAreaData();
+  if (data.length > 2) {
+    data = google.visualization.arrayToDataTable(data);
+    chart.draw(data, options);
+  } else {
+    $("#article_subject_div")
+      .append("<div class=\"metrics-no-data-para\">The data for the graph isn't available.  Please check back later.</div>");
+  }
 }
 
 function drawArticleLocation() {
-  var data = google.visualization.arrayToDataTable(getArticleLocationData());
 
   // sizeAxis is a hack to make the marker smaller
   var options = {
@@ -81,8 +98,16 @@ function drawArticleLocation() {
     legend: 'none'
   };
 
-  var chart = new google.visualization.GeoChart(document.getElementById('article_location_div'));
-  chart.draw(data, options);
+  var data = getArticleLocationData();
+
+  if (data.length > 1) {
+    var chart = new google.visualization.GeoChart(document.getElementById('article_location_div'));
+    data = google.visualization.arrayToDataTable(data);
+    chart.draw(data, options);
+  } else {
+    $("#article_location_div")
+      .append("<div class=\"metrics-no-data-para\">The data for the graph isn't available.  Please check back later.</div>");
+  }
 }
 
 

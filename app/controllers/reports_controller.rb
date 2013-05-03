@@ -57,7 +57,32 @@ class ReportsController < ApplicationController
     alm_data = AlmRequest.get_data_for_articles(@dois)
     solr_data = SolrRequest.get_data_for_articles(@dois)
 
-    @dois.each do |doi|
+    manage_report_data(@dois, solr_data, alm_data, i)
+
+  end
+
+
+  def visualizations
+    load_report(params[:id])
+    @report_sub_tab = :visualizations
+    @title = "Report Visualizations"
+
+    alm_data = AlmRequest.get_data_for_viz(@report.report_dois)
+    solr_data = SolrRequest.get_data_for_articles(@report.report_dois)
+
+    manage_report_data(@report.report_dois, solr_data, alm_data)
+
+    generate_data_for_bubble_charts
+    generate_data_for_subject_area_chart
+    generate_data_for_articles_by_location_chart
+  end
+
+
+  def manage_report_data(report_dois, solr_data, alm_data, display_start_index = 1)
+
+    i = display_start_index
+
+    report_dois.each do |doi|
       solr = solr_data[doi.doi]
       
       if solr.nil?
@@ -84,23 +109,6 @@ class ReportsController < ApplicationController
       i += 1
     end
   end
-  
-  
-  def visualizations
-    load_report(params[:id])
-    @report_sub_tab = :visualizations
-    @title = "Report Visualizations"
-
-    alm_data = AlmRequest.get_data_for_viz(@report.report_dois)
-    solr_data = SolrRequest.get_data_for_articles(@report.report_dois)
-    @report.report_dois.each {|report_doi| report_doi.alm = alm_data[report_doi.doi]}
-    @report.report_dois.each {|report_doi| report_doi.solr = solr_data[report_doi.doi]}
-
-    generate_data_for_bubble_charts
-    generate_data_for_subject_area_chart
-    generate_data_for_articles_by_location_chart
-  end
-
 
   # Populates @article_usage_citations_age_data and @article_usage_mendeley_age_data, used from
   # javascript to generate the bubble charts.
@@ -110,14 +118,16 @@ class ReportsController < ApplicationController
     @article_usage_citations_age_data << ["Title", "Months", "Total Usage", "Journal", "Scopus"]
     @article_usage_mendeley_age_data << ["Title", "Months", "Total Usage", "Journal", "Mendeley"]
     @report.report_dois.each do |report_doi|
-      days = (Date.today - report_doi.solr["publication_date"]).to_i
-      months = days / 30
+      if (!report_doi.alm.nil?)
+        days = (Date.today - report_doi.solr["publication_date"]).to_i
+        months = days / 30
 
-      usage = report_doi.alm[:total_usage]
-      @article_usage_citations_age_data << [report_doi.solr["title"], months, usage,
-          report_doi.solr["cross_published_journal_name"][0], report_doi.alm[:scopus_citations]]
-      @article_usage_mendeley_age_data << [report_doi.solr["title"], months, usage,
-          report_doi.solr["cross_published_journal_name"][0], report_doi.alm[:mendeley]]
+        usage = report_doi.alm[:total_usage]
+        @article_usage_citations_age_data << [report_doi.solr["title"], months, usage,
+            report_doi.solr["cross_published_journal_name"][0], report_doi.alm[:scopus_citations]]
+        @article_usage_mendeley_age_data << [report_doi.solr["title"], months, usage,
+            report_doi.solr["cross_published_journal_name"][0], report_doi.alm[:mendeley]]
+      end
     end
   end
 
@@ -154,8 +164,10 @@ class ReportsController < ApplicationController
 
     # loop through subjects
     subject_area_data.each do | subject_area, report_dois |
-      total_usage = report_dois.inject(0) { | sum, report_doi | sum + report_doi.alm[:total_usage] }
-      @article_usage_citation_subject_area_data << [subject_area, placeholder_subject, report_dois.size, total_usage]
+      total_usage = report_dois.inject(0) { | sum, report_doi | sum + report_doi.alm[:total_usage] if (!report_doi.alm.nil?) }
+      if (!total_usage.nil?)
+        @article_usage_citation_subject_area_data << [subject_area, placeholder_subject, report_dois.size, total_usage]
+      end
     end
   end
 
