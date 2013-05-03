@@ -7,36 +7,7 @@ module AlmRequest
   
   # TODO add this to the config file, not hardcoded
   @@URL = "http://alm.plos.org/api/v3/articles"
-  
-  
-  # Processes the "Counter" data source and returns a tuple of (HTML views, PDF views, XML views)
-  # for a given article.
-  def self.aggregate_plos_views(events_data)
-    views = 0
-    pdfs = 0
-    xmls = 0
-    events_data.each do |event|
-      views += event["html_views"].to_i
-      pdfs += event["pdf_views"].to_i
-      xmls += event["xml_views"].to_i
-    end
-    return {:html => views, :pdf => pdfs, :xml => xmls}
-  end
-  
-  
-  # Processes the "PubMed Central Usage Stats" data source and returns a tuple of
-  # (HTML views, PDF views) for a given article.
-  def self.aggregate_pmc_views(pmc_source)
-    views = 0
-    pdf = 0
-    if pmc_source["events"]
-      pmc_source["events"].each do |event|
-        views += event["full-text"].to_i
-        pdf += event["pdf"].to_i
-      end
-    end
-    return views, pdf
-  end
+
 
   # Returns a dict containing ALM usage data for a given list of articles.
   def self.get_data_for_articles(report_dois)
@@ -62,7 +33,6 @@ module AlmRequest
       subset_dois = dois.slice!(0, num_articles)
       params = {}
       params[:ids] = subset_dois.join(",")
-      params[:info] = 'event'
 
       # ALM will return all the data it can in the list of articles.
       # the only ones missing will be omitted from the response.
@@ -70,7 +40,13 @@ module AlmRequest
       # that's when it will return 404
 
       url = "#{@@URL}/?#{params.to_param}"
+
+      start_time = Time.now
+
       resp = Net::HTTP.get_response(URI.parse(url))
+
+      end_time = Time.now
+      Rails.logger.debug "ALM Request for #{subset_dois.size} articles took #{end_time - start_time} seconds"
 
       if !resp.kind_of?(Net::HTTPSuccess)
         Rails.logger.error "ALM Server for #{url} returned #{resp.code}: " + resp.body
@@ -82,15 +58,14 @@ module AlmRequest
       json = JSON.parse(resp.body)
 
       json.each do | article |
-        sources = article["sources"].map { | source | (source["name"].casecmp("counter") != 0) ? [source["name"], source["metrics"]] : [source["name"], source["events"]] }
+        sources = article["sources"].map { | source | ([source["name"], source["metrics"]]) }
         sources_dict = Hash[*sources.flatten(1)]
 
         results = {}
 
-        views = aggregate_plos_views(sources_dict["counter"])
-        results[:plos_html] = views[:html]
-        results[:plos_pdf] = views[:pdf]
-        results[:plos_xml] = views[:xml]
+        results[:plos_html] = sources_dict["counter"]["html"].to_i
+        results[:plos_pdf] = sources_dict["counter"]["pdf"].to_i
+        results[:plos_xml] = sources_dict["counter"]["total"].to_i - (results[:plos_html] + results[:plos_pdf])
 
         results[:pmc_views] = sources_dict["pmc"]["html"].to_i
         results[:pmc_pdf] = sources_dict["pmc"]["pdf"].to_i
@@ -125,4 +100,51 @@ module AlmRequest
     return all_results
   end
   
+  # Gathers ALM data for visualization for a given list of dois
+  # If the list of dois exceed certain size, the data will be retrieved from solr
+  # (for performance reasons)
+  #
+  # the alm data that's retrieved from solr will not be cached.  Alm data in solr
+  # is at most 1 day behind the data in alm application and the app should not cache data that's
+  # already 1 day behind
+  def self.get_data_for_viz(report_dois)
+
+    # TODO configure size
+    max_size_for_realtime = 20
+
+    # TODO future: only count the articles that are not cached when comparing the # of articles to retrieve alm data for
+
+    if report_dois.size > max_size_for_realtime
+
+      # get alm data from solr
+
+      start_time = Time.now
+
+      metric_data = SolrRequest.get_data_for_viz(report_dois)
+
+      end_time = Time.now
+      Rails.logger.debug "Solr metric data request took #{end_time - start_time} seconds"
+
+      all_results = {}
+
+      metric_data.each_pair do | doi, data |
+        # make the data look like what it would have looked like if the data was retrieved from alm
+
+        results = {}
+
+        results[:total_usage] = data["counter_total_all"].to_i + data["alm_pmc_usage_total_all"].to_i
+        results[:scopus_citations] = data["alm_scopusCiteCount"].to_i
+        results[:mendeley] = data["alm_mendeleyCount"].to_i
+
+        all_results[doi] = results
+      end
+
+      return all_results
+
+    else
+      # get alm data from alm
+      return self.get_data_for_articles(report_dois)
+    end
+  end
+
 end

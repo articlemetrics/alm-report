@@ -23,7 +23,8 @@ class SolrRequest
   
   # The fields we want solr to return for each article by default.
   @@FL = "id,publication_date,title,cross_published_journal_name,author_display,article_type,affiliate,subject"
-  
+  @@FL_METRIC_DATA = "id,alm_scopusCiteCount,alm_mendeleyCount,counter_total_all,alm_pmc_usage_total_all"
+
   @@ALL_JOURNALS = "All Journals"
   
   @@DEBUG = true
@@ -235,9 +236,8 @@ class SolrRequest
     end
   end
 
-
-  # Looks up many articles in solr, given the list of DOIs.
-  def self.get_data_for_articles(report_dois)
+  # helper function for retrieving data from solr
+  def self.get_data_helper(report_dois, cache_postfix, fields_to_retrieve)
     # TODO should we return emtpy array or nil if report_dois is nil / empty?
     
     all_results = {}
@@ -248,11 +248,13 @@ class SolrRequest
     end
 
     # get solr data from cache
-    dois.delete_if  do | doi |
-      results = Rails.cache.read("#{doi}.solr")
-      if !results.nil?
-        all_results[doi] = results
-        true
+    if (!cache_postfix.nil?)
+      dois.delete_if  do | doi |
+        results = Rails.cache.read("#{doi}.#{cache_postfix}")
+        if !results.nil?
+          all_results[doi] = results
+          true
+        end
       end
     end
 
@@ -260,21 +262,37 @@ class SolrRequest
       request_dois = dois.slice!(0, @@MAX_DOIS_PER_REQUEST)
       q = request_dois.map { | doi | "id:\"#{doi}\"" }.join(" OR ")
   
-      url = "#{@@URL}?q=#{CGI::escape(q)}&#{@@FILTER}&fl=#{@@FL}&wt=json&rows=#{request_dois.length}"
+      url = "#{@@URL}?q=#{CGI::escape(q)}&#{@@FILTER}&fl=#{fields_to_retrieve}&wt=json&rows=#{request_dois.length}"
 
       json = SolrRequest.send_query(url)
   
       docs = json["response"]["docs"]
       docs.each do |doc|
-        doc["publication_date"] = Date.strptime(doc["publication_date"], @@SOLR_TIMESTAMP_FORMAT)
+        if doc["publication_date"]
+          doc["publication_date"] = Date.strptime(doc["publication_date"], @@SOLR_TIMESTAMP_FORMAT)
+        end
+
         all_results[doc["id"]] = doc
   
         # store solr data in cache
-        Rails.cache.write("#{doc["id"]}.solr", doc, :expires_in => 1.day)
+        if (!cache_postfix.nil?)
+          Rails.cache.write("#{doc["id"]}.#{cache_postfix}", doc, :expires_in => 1.day)
+        end
       end
     end
 
     return all_results
-
   end
+
+
+  # Retrieves article related information from solr for a given list of DOIs.
+  def self.get_data_for_articles(report_dois)
+    return SolrRequest.get_data_helper(report_dois, "solr", @@FL)
+  end
+
+  # Retrieves alm data from solr for a given list of DOIs
+  def self.get_data_for_viz(report_dois)
+    return SolrRequest.get_data_helper(report_dois, nil, @@FL_METRIC_DATA)
+  end
+
 end

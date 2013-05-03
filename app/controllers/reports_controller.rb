@@ -91,7 +91,7 @@ class ReportsController < ApplicationController
     @report_sub_tab = :visualizations
     @title = "Report Visualizations"
 
-    alm_data = AlmRequest.get_data_for_articles(@report.report_dois)
+    alm_data = AlmRequest.get_data_for_viz(@report.report_dois)
     solr_data = SolrRequest.get_data_for_articles(@report.report_dois)
     @report.report_dois.each {|report_doi| report_doi.alm = alm_data[report_doi.doi]}
     @report.report_dois.each {|report_doi| report_doi.solr = solr_data[report_doi.doi]}
