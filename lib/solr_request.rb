@@ -24,6 +24,7 @@ class SolrRequest
   # The fields we want solr to return for each article by default.
   @@FL = "id,publication_date,title,cross_published_journal_name,author_display,article_type,affiliate,subject"
   @@FL_METRIC_DATA = "id,alm_scopusCiteCount,alm_mendeleyCount,counter_total_all,alm_pmc_usage_total_all"
+  @@FL_VALIDATE_ID = "id"
 
   @@ALL_JOURNALS = "All Journals"
   
@@ -259,13 +260,13 @@ class SolrRequest
     end
 
     while dois.length > 0 do
-      request_dois = dois.slice!(0, @@MAX_DOIS_PER_REQUEST)
-      q = request_dois.map { | doi | "id:\"#{doi}\"" }.join(" OR ")
+      subset_dois = dois.slice!(0, @@MAX_DOIS_PER_REQUEST)
+      q = subset_dois.map { | doi | "id:\"#{doi}\"" }.join(" OR ")
   
-      url = "#{@@URL}?q=#{CGI::escape(q)}&#{@@FILTER}&fl=#{fields_to_retrieve}&wt=json&rows=#{request_dois.length}"
+      url = "#{@@URL}?q=#{CGI::escape(q)}&#{@@FILTER}&fl=#{fields_to_retrieve}&wt=json&rows=#{subset_dois.length}"
 
       json = SolrRequest.send_query(url)
-  
+
       docs = json["response"]["docs"]
       docs.each do |doc|
         if doc["publication_date"]
@@ -293,6 +294,18 @@ class SolrRequest
   # Retrieves alm data from solr for a given list of DOIs
   def self.get_data_for_viz(report_dois)
     return SolrRequest.get_data_helper(report_dois, nil, @@FL_METRIC_DATA)
+  end
+
+  def self.validate_dois(report_dois)
+    start_time = Time.now
+    
+    data = SolrRequest.get_data_helper(report_dois, nil, @@FL_VALIDATE_ID)
+
+    end_time = Time.now
+    Rails.logger.debug "SOLR Validate Dois Request for #{report_dois.size} articles took #{end_time - start_time} seconds."
+
+    return data
+
   end
 
 end

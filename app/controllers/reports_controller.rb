@@ -46,6 +46,26 @@ class ReportsController < ApplicationController
     load_report(params[:id])
     @report_sub_tab = :metrics
     @title = "Sample Metrics"
+    
+    # validate dois.  remove dois that are pulled / deleted (this happens rarely)
+    valid_dois = SolrRequest.validate_dois(@report.report_dois)
+
+    current_report_dois = @report.report_dois.inject([]) { | result, report_doi | result << report_doi.doi }
+
+    dois_to_delete = current_report_dois - valid_dois.keys
+    
+    logger.info "Dois to delete from report #{@report.id}: #{dois_to_delete.inspect}"
+
+    if (!dois_to_delete.empty?)
+
+      # delete the bad dois from the report
+      ReportDoi.destroy_all(:report_id => @report.id, :doi => dois_to_delete)
+
+      @report.reload
+
+      # TODO fix sort order
+    end
+
     @total_found = @report.report_dois.length
 
     results_per_page = 5
@@ -53,32 +73,13 @@ class ReportsController < ApplicationController
     
     # Create a new array for display that is only the articles on the current page,
     # to limit what we have to load from solr and ALM.
-
-    # get the double the # of articles just in case there are dois that we need to delete
-    # (will happen rarely)
-    @dois = @report.report_dois[(@start_result) - 1..((@end_result - 1)*2)]
+    @dois = @report.report_dois[(@start_result) - 1..(@end_result - 1)]
     i = @start_result
 
     alm_data = AlmRequest.get_data_for_articles(@dois)
     solr_data = SolrRequest.get_data_for_articles(@dois)
 
-    dois_to_delete = manage_report_data(@dois, solr_data, alm_data, i)
-
-    if (!dois_to_delete.empty?)
-
-      # delete the bad dois from the report
-      ReportDoi.destroy_all(:id => dois_to_delete)
-
-      @report.reload
-
-      @total_found = @report.report_dois.length
-
-      # TODO not counting on @dois size to be smaller than the number of articles we need to display
-      @dois = @report.report_dois[(@start_result) - 1..((@end_result - 1))]
-      i = @start_result
-      manage_report_data(@dois, solr_data, alm_data, i)
-    end
-
+    manage_report_data(@dois, solr_data, alm_data, i)
   end
 
 
@@ -114,10 +115,7 @@ class ReportsController < ApplicationController
     report_dois.each do |doi|
       solr = solr_data[doi.doi]
 
-      
       if solr.nil?
-        # raise "No solr data for #{doi.doi}!"
-        # TODO remove it from the report
         dois_to_delete << doi.id
       else
         doi.solr = solr
