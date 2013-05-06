@@ -3,65 +3,68 @@
   <%= render "reports_nav" %>
 
   <div class="visualizations-container">
-    <div class="visualizations-list">
-      <div class="reports-header-div">
-        <span class="list-numbers">1</span>
-        <h2 class="albert-light-normal">Article Usage and Citations as a function of Age</h2>
+    <% if @draw_viz %>
+      <div class="visualizations-list">
+        <div class="reports-header-div">
+          <span class="list-numbers">1</span>
+          <h2 class="albert-light-normal">Article Usage and Citations as a function of Age</h2>
+        </div>
+        <div id="article_usage_and_citations_age_div" class="report-graph" style="width: 670px; height: 392px;"></div>
+        <p class="info">Total usage includes page views and downloads from PLOS and PMC.
+          Bubble size correlates with Scopus citations and bubble color with the PLOS journal.
+        </p>
+        <p>
+          SOURCE: <%= @report.report_dois.length %> published articles from
+          <%= @report.get_earliest_report_date.strftime("%B %d, %Y") %>
+          to <%= @report.get_latest_report_date.strftime("%B %d, %Y") %>
+        </p>
       </div>
-      <div id="article_usage_and_citations_age_div" class="report-graph" style="width: 670px; height: 392px;"></div>
-      <p class="info">Total usage includes page views and downloads from PLOS and PMC.  
-        Bubble size correlates with Scopus citations and bubble color with the PLOS journal.
-      </p>
-      <p>
-        SOURCE: <%= @report.report_dois.length %> published articles from
-        <%= @report.get_earliest_report_date.strftime("%B %d, %Y") %>
-        to <%= @report.get_latest_report_date.strftime("%B %d, %Y") %>
-      </p>
-    </div>
 
-    <div class="visualizations-list">
-      <div class="reports-header-div">
-        <span class="list-numbers">2</span>
-        <h2 class="albert-light-normal">Article Usage and Mendeley Bookmarks as a Function of Time</h2>
+      <div class="visualizations-list">
+        <div class="reports-header-div">
+          <span class="list-numbers">2</span>
+          <h2 class="albert-light-normal">Article Usage and Mendeley Bookmarks as a Function of Time</h2>
+        </div>
+        <div id="article_usage_and_mendeley_age_div" class="report-graph" style="width: 670px; height: 392px;"></div>
+        <p class="info">Total usage includes page views and downloads from PLOS and PMC.
+          Bubble size correlates with Mendeley bookmarks and bubble color with the PLOS journal.
+        </p>
+        <p>
+          SOURCE: <%= @report.report_dois.length %> published articles from
+          <%= @report.get_earliest_report_date.strftime("%B %d, %Y") %>
+          to <%= @report.get_latest_report_date.strftime("%B %d, %Y") %>
+        </p>
       </div>
-      <div id="article_usage_and_mendeley_age_div" class="report-graph" style="width: 670px; height: 392px;"></div>
-      <p class="info">Total usage includes page views and downloads from PLOS and PMC.  
-        Bubble size correlates with Mendeley bookmarks and bubble color with the PLOS journal.
-      </p>
-      <p>
-        SOURCE: <%= @report.report_dois.length %> published articles from
-        <%= @report.get_earliest_report_date.strftime("%B %d, %Y") %>
-        to <%= @report.get_latest_report_date.strftime("%B %d, %Y") %>
-      </p>
-    </div>
 
-    <div class="visualizations-list">
-      <span class="list-numbers">3</span>
-      <h2 class="albert-light-normal">Article Usage by Subject Area</h2>
-      <div id="article_subject_div" class="report-graph" style="width: 670px; height: 392px;"></div>
-      <p class="info">
-        Rectangle size correlates with the number of articles associated with the subject area and the color intensity with total usage.
-      </p>
-      <p>
-        SOURCE: <%= @report.report_dois.length %> published articles from
-        <%= @report.get_earliest_report_date.strftime("%B %d, %Y") %>
-        to <%= @report.get_latest_report_date.strftime("%B %d, %Y") %>
-      </p>
-    </div>
-    <div class="visualizations-list last-visualizations-list">
-      <div class="reports-header-div">
-        <span class="list-numbers">4</span>
-        <h2 class="albert-light-normal">Research Articles by Location</h2>
+      <div class="visualizations-list">
+        <span class="list-numbers">3</span>
+        <h2 class="albert-light-normal">Article Usage by Subject Area</h2>
+        <div id="article_subject_div" class="report-graph" style="width: 670px; height: 392px;"></div>
+        <p class="info">
+          Rectangle size correlates with the number of articles associated with the subject area and the color intensity with total usage.
+        </p>
+        <p>
+          SOURCE: <%= @report.report_dois.length %> published articles from
+          <%= @report.get_earliest_report_date.strftime("%B %d, %Y") %>
+          to <%= @report.get_latest_report_date.strftime("%B %d, %Y") %>
+        </p>
       </div>
-      <div id="article_location_div" class="report-graph" style="width: 670px; height: 392px;"></div>
-      <p class="info">Geolocation of <%= @total_authors_data %> authors for <%= @report.report_dois.length %> articles</p>
-      <p>
-        SOURCE: <%= @report.report_dois.length %> published articles from
-        <%= @report.get_earliest_report_date.strftime("%B %d, %Y") %>
-        to <%= @report.get_latest_report_date.strftime("%B %d, %Y") %>
-      </p>
-    </div>
+      <div class="visualizations-list last-visualizations-list">
+        <div class="reports-header-div">
+          <span class="list-numbers">4</span>
+          <h2 class="albert-light-normal">Research Articles by Location</h2>
+        </div>
+        <div id="article_location_div" class="report-graph" style="width: 670px; height: 392px;"></div>
+        <p class="info">Geolocation of <%= @total_authors_data %> authors for <%= @report.report_dois.length %> articles</p>
+        <p>
+          SOURCE: <%= @report.report_dois.length %> published articles from
+          <%= @report.get_earliest_report_date.strftime("%B %d, %Y") %>
+          to <%= @report.get_latest_report_date.strftime("%B %d, %Y") %>
+        </p>
+      </div>
+    <% end %>
   </div>
+
   <div class="report-downloads">
     <h2 class="albert-light-normal">Downloads</h2>
     <ul>
@@ -82,6 +85,9 @@
 </div>
 
 <script type="text/javascript">
+    function haveDataToDrawViz() {
+      return <%= @draw_viz %>;
+    }
 
     function getArticleUsageCitationsAgeData() {
         return <%= raw @article_usage_citations_age_data %>;

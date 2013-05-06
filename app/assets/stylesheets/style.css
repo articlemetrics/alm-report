@@ -1278,6 +1278,7 @@ span.next {
   display: inline-block;
   position: relative;
   color: #333;
+  min-height: 560px;
 }
 
 .metrics-left-content .metrics-article {
@@ -1535,6 +1536,7 @@ caption {
 .visualizations-container {
   width: 650px;
   display: inline-block;
+  min-height: 560px;
 }
 
 .last-visualizations-list {

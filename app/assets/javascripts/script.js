@@ -612,3 +612,11 @@ jQuery(function(d, $){
 
   });
 }(document, jQuery));
+
+$(document).ready(function() {
+  if ($(".metrics-left-content .visualizations-list").length == 0) {
+    $("#error-message-div")
+      .append("<div>The metrics for one or more of the articles requested are not available at this time. Please check back later.</div>")
+      .show();
+  }
+});

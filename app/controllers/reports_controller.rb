@@ -53,10 +53,9 @@ class ReportsController < ApplicationController
     current_report_dois = @report.report_dois.inject([]) { | result, report_doi | result << report_doi.doi }
 
     dois_to_delete = current_report_dois - valid_dois.keys
-    
-    logger.info "Dois to delete from report #{@report.id}: #{dois_to_delete.inspect}"
 
     if (!dois_to_delete.empty?)
+      logger.info "Dois to delete from report #{@report.id}: #{dois_to_delete.inspect}"
 
       # delete the bad dois from the report
       ReportDoi.destroy_all(:report_id => @report.id, :doi => dois_to_delete)
@@ -66,20 +65,26 @@ class ReportsController < ApplicationController
       # TODO fix sort order
     end
 
-    @total_found = @report.report_dois.length
+    # edge case where somehow the report does not have any dois after validating dois
+    @show_metrics_data = true
+    if @report.report_dois.length > 0
+      @total_found = @report.report_dois.length
 
-    results_per_page = 5
-    set_paging_vars(params[:current_page], results_per_page)
-    
-    # Create a new array for display that is only the articles on the current page,
-    # to limit what we have to load from solr and ALM.
-    @dois = @report.report_dois[(@start_result) - 1..(@end_result - 1)]
-    i = @start_result
+      results_per_page = 5
+      set_paging_vars(params[:current_page], results_per_page)
+      
+      # Create a new array for display that is only the articles on the current page,
+      # to limit what we have to load from solr and ALM.
+      @dois = @report.report_dois[(@start_result) - 1..(@end_result - 1)]
+      i = @start_result
 
-    alm_data = AlmRequest.get_data_for_articles(@dois)
-    solr_data = SolrRequest.get_data_for_articles(@dois)
+      alm_data = AlmRequest.get_data_for_articles(@dois)
+      solr_data = SolrRequest.get_data_for_articles(@dois)
 
-    manage_report_data(@dois, solr_data, alm_data, i)
+      manage_report_data(@dois, solr_data, alm_data, i)
+    else
+      @show_metrics_data = false
+    end
   end
 
 
@@ -88,22 +93,35 @@ class ReportsController < ApplicationController
     @report_sub_tab = :visualizations
     @title = "Report Visualizations"
 
+    min_num_of_alm_data_points = 2
+
     alm_data = AlmRequest.get_data_for_viz(@report.report_dois)
     solr_data = SolrRequest.get_data_for_articles(@report.report_dois)
 
     dois_to_delete = manage_report_data(@report.report_dois, solr_data, alm_data)
 
     if (!dois_to_delete.empty?)
+      logger.info "Dois to delete from report #{@report.id}: #{dois_to_delete.inspect}"
 
       # delete the bad dois from the report
       ReportDoi.destroy_all(:id => dois_to_delete)
       @report.reload
+
+      # TODO fix sort order
+
       manage_report_data(@report.report_dois, solr_data, alm_data)
     end
 
-    generate_data_for_bubble_charts
-    generate_data_for_subject_area_chart
-    generate_data_for_articles_by_location_chart
+    # this covers situations where a report contains many articles but very small
+    # portion of the articles have alm data  (without alm data, viz page will look very weird)
+    @draw_viz = true
+    if solr_data.length >= min_num_of_alm_data_points
+      generate_data_for_bubble_charts
+      generate_data_for_subject_area_chart
+      generate_data_for_articles_by_location_chart
+    else
+      @draw_viz = false
+    end
   end
 
 
