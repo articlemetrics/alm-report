@@ -613,10 +613,13 @@ jQuery(function(d, $){
   });
 }(document, jQuery));
 
+// Display an error when report metrics page does not have any data to show
 $(document).ready(function() {
-  if ($(".metrics-left-content .visualizations-list").length == 0) {
-    $("#error-message-div")
-      .append("<div>The metrics for one or more of the articles requested are not available at this time. Please check back later.</div>")
-      .show();
+  if ($(".metrics-left-content").length > 0) {
+    if ($(".metrics-left-content .visualizations-list").length == 0) {
+      $("#error-message-div")
+        .append("<div>The metrics for one or more of the articles requested are not available at this time. Please check back later.</div>")
+        .show();
+    }
   }
 });
