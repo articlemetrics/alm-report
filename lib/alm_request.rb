@@ -66,9 +66,11 @@ module AlmRequest
         results[:plos_html] = sources_dict["counter"]["html"].to_i
         results[:plos_pdf] = sources_dict["counter"]["pdf"].to_i
         results[:plos_xml] = sources_dict["counter"]["total"].to_i - (results[:plos_html] + results[:plos_pdf])
+        results[:plos_total] = sources_dict["counter"]["total"].to_i
 
         results[:pmc_views] = sources_dict["pmc"]["html"].to_i
         results[:pmc_pdf] = sources_dict["pmc"]["pdf"].to_i
+        results[:pmc_total] = results[:pmc_views] + results[:pmc_pdf]
 
         results[:total_usage] = results[:plos_html] + results[:plos_pdf] + results[:plos_xml] + results[:pmc_views] + results[:pmc_pdf]
         results[:usage_data_present] = (results[:total_usage] > 0)
@@ -89,6 +91,8 @@ module AlmRequest
         results[:research_blogging] = sources_dict["researchblogging"]["total"].to_i
         results[:wikipedia] = sources_dict["wikipedia"]["total"].to_i
         results[:blogs_data_present] = (results[:nature] + results[:research_blogging] + results[:wikipedia]) > 0
+
+        results[:scienceseeker] = sources_dict["scienceseeker"]["total"].to_i
 
         all_results[article["doi"]] = results
 

@@ -94,23 +94,7 @@
 
   </div>
 
-  <div class="report-downloads">
-    <h2 class="albert-light-normal">Downloads</h2>
-    <ul>
-      <li><a href="fixme"><span class="csv"></span><span class="file-name">Metrics Data<span> 1.2MB - CSV file</span></span><span class="arrow"></span></a></li>
-      <li><a href="fixme"><span class="png"></span><span class="file-name">Visualizations<span> 5.7MB - PNGS in ZIP file</span></span><span class="arrow"></span></a></li>
-      <li><a href="fixme"><span class="csv"></span><span class="file-name">Your List of Article DOIs<span> 157K - CSV file</span></span><span class="arrow"></span></a></li>
-    </ul>
-    <div class="report-share-block">
-      <a class="submit-btn" href="fixme">Share</a>
-      <div class="share-box">
-        <a href="fixme"><span class="google-plus-logo"></span><span class="google-plus-text">Google+</span></a>
-        <a href="fixme"><span class="facebook-logo"></span><span class="facebook-text">Facebook</span></a>
-        <a href="fixme"><span class="twitter-logo"></span><span class="twitter-text">Twitter</span></a>
-        <a href="fixme"><span class="email-logo"></span><span class="email-text">Email</span></a>
-      </div>
-    </div>
-  </div>
+  <%= render "report_download" %>
   
   <% if @show_metrics_data %>
   <%= render "pager", :results_per_page => 5 %>

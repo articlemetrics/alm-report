@@ -45,7 +45,7 @@ class ReportsController < ApplicationController
   def metrics
     load_report(params[:id])
     @report_sub_tab = :metrics
-    @title = "Sample Metrics"
+    @title = "Report Metrics"
     
     # validate dois.  remove dois that are pulled / deleted (this happens rarely)
     valid_dois = SolrRequest.validate_dois(@report.report_dois)
@@ -253,6 +253,22 @@ class ReportsController < ApplicationController
     # https://developers.google.com/maps/documentation/geocoding/
     # the reason why the graph is slow is the graph is translating the location information
     # to lat and long
+  end
+
+  # handles download data links
+  def download_data
+    load_report(params[:id])
+
+    # by the time the user has clicked on a download link, the bad dois should have been removed.
+
+    options = {}
+    if (params[:field])
+      options[:field] = params[:field]
+    end
+
+    respond_to do | format |
+      format.csv { send_data @report.to_csv(options), :filename => "report.csv" }
+    end
   end
   
 end
