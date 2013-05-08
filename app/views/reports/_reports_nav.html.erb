@@ -1,8 +1,17 @@
 <div class="view-report<%= @report_sub_tab == :metrics ? ' metrics-view-report' : '' %>">
-  <a href="/reports/metrics?id=<%= params[:id] %>"
-      class="metrics-icon<%= @report_sub_tab == :metrics ? ' metrics-icon-active' : '' %>">Metrics Data</a>
-  <a href="/reports/visualizations?id=<%= params[:id] %>"
-      class="chart-view<%= @report_sub_tab == :visualizations ? ' chart-view-active' : '' %>">Visualizations</a>
+
+  <% if (@report_sub_tab == :metrics) %>
+    <%= link_to "Metrics Data", {:controller => "reports",  :action => "metrics", :id => @report }, :class => "metrics-icon metrics-icon-active" %>
+  <% else %>
+    <%= link_to "Metrics Data", {:controller => "reports",  :action => "metrics", :id => @report }, :class => "metrics-icon" %>
+  <% end %>
+
+  <% if (@report_sub_tab == :visualizations) %>
+    <%= link_to "Visualizations", {:controller => "reports",  :action => "visualizations", :id => @report }, :class => "chart-view chart-view-active" %>
+  <% else %>
+    <%= link_to "Visualizations", {:controller => "reports",  :action => "visualizations", :id => @report }, :class => "chart-view" %>
+  <% end %>
+
   <span class="download-visuals">
     <a href="/preview-list" class="edit-list">Edit List</a>
     <a href="/start-over" class="start-over">Start Over</a>
