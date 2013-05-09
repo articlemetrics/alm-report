@@ -5,7 +5,7 @@
       <li>
         <%= link_to :controller => "reports", :action => "download_data", :id => @report, :format => :csv  do %>
           <span class="csv"></span>
-          <span class="file-name">Metrics Data<span> FIXME SIZE 1.2MB - CSV file</span></span>
+          <span class="file-name">Metrics Data</span>
           <span class="arrow"></span>
         <% end %>
       </li>
@@ -13,7 +13,7 @@
       <li>
         <a href="fixme">
           <span class="png"></span>
-          <span class="file-name">Visualizations<span> 5.7MB - PNGS in ZIP file</span></span>
+          <span class="file-name">Visualizations</span>
           <span class="arrow"></span>
         </a>
       </li>
@@ -21,7 +21,7 @@
       <li>
         <%= link_to :controller => "reports", :action => "download_data", :id => @report, :format => :csv, :field => "doi" do %>
           <span class="csv"></span>
-          <span class="file-name">Your List of Article DOIs<span> FIXME SIZE 157K - CSV file</span></span>
+          <span class="file-name">Your List of Article DOIs</span>
           <span class="arrow"></span>
         <% end %>
       </li>

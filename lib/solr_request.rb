@@ -22,7 +22,7 @@ class SolrRequest
   @@FILTER = "fq=doc_type:full&fq=!article_type_facet:#{URI::encode("\"Issue Image\"")}"
   
   # The fields we want solr to return for each article by default.
-  @@FL = "id,publication_date,title,cross_published_journal_name,author_display,article_type,affiliate,subject"
+  @@FL = "id,publication_date,title,cross_published_journal_name,author_display,article_type,affiliate,subject,pmid"
   @@FL_METRIC_DATA = "id,alm_scopusCiteCount,alm_mendeleyCount,counter_total_all,alm_pmc_usage_total_all"
   @@FL_VALIDATE_ID = "id"
 
@@ -293,7 +293,15 @@ class SolrRequest
 
   # Retrieves alm data from solr for a given list of DOIs
   def self.get_data_for_viz(report_dois)
-    return SolrRequest.get_data_helper(report_dois, nil, @@FL_METRIC_DATA)
+    start_time = Time.now
+
+    data = SolrRequest.get_data_helper(report_dois, nil, @@FL_METRIC_DATA)
+
+    end_time = Time.now
+    Rails.logger.debug "SOLR Data for Viz Request for #{report_dois.size} articles took #{end_time - start_time} seconds."
+
+    return data
+
   end
 
   def self.validate_dois(report_dois)
