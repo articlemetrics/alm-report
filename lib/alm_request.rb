@@ -121,13 +121,7 @@ module AlmRequest
     if report_dois.size > max_size_for_realtime
 
       # get alm data from solr
-
-      start_time = Time.now
-
       metric_data = SolrRequest.get_data_for_viz(report_dois)
-
-      end_time = Time.now
-      Rails.logger.debug "Solr metric data request took #{end_time - start_time} seconds"
 
       all_results = {}
 
