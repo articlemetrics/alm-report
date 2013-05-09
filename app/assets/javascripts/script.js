@@ -492,7 +492,7 @@ var doiPmidInputOnChange = function() {
     $.ajax('http://api.plos.org/search', {
         type: 'GET',
         dataType: 'jsonp',
-        data: {wt: 'json', q: query, fl: 'id'},
+        data: {wt: 'json', q: query, fl: 'id', facet: 'false'},
         jsonp: 'json.wrf',
         success: function(resp) {
           if (resp.response.numFound == 1) {

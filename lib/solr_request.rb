@@ -177,7 +177,7 @@ class SolrRequest
   def query
     sort = @params.delete(:sort)
     page_block = build_page_block  # This needs to get called before build_query
-    url = "#{@@URL}?#{URI::encode(build_query)}&#{@@FILTER}&#{@fl}&wt=json&#{page_block}"
+    url = "#{@@URL}?#{URI::encode(build_query)}&#{@@FILTER}&#{@fl}&wt=json&facet=false&#{page_block}"
     if !sort.nil?
       url << "&sort=#{URI::encode(sort)}"
     end
@@ -263,7 +263,7 @@ class SolrRequest
       subset_dois = dois.slice!(0, @@MAX_DOIS_PER_REQUEST)
       q = subset_dois.map { | doi | "id:\"#{doi}\"" }.join(" OR ")
   
-      url = "#{@@URL}?q=#{CGI::escape(q)}&#{@@FILTER}&fl=#{fields_to_retrieve}&wt=json&rows=#{subset_dois.length}"
+      url = "#{@@URL}?q=#{CGI::escape(q)}&#{@@FILTER}&fl=#{fields_to_retrieve}&wt=json&facet=false&rows=#{subset_dois.length}"
 
       json = SolrRequest.send_query(url)
 
