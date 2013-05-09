@@ -4,7 +4,7 @@
     <% if @errors.length > 0 %>
       <p class="error-title error-color">Please correct the errors below.</p>
     <% end %>
-    <% (1..8).each do |i| %>
+    <% (1..@max_doi_field).each do |i| %>
       <%= render "doi_field", :input_id => "doi-pmid-#{i}".intern, :example => i == 1 %>
     <% end %>
 

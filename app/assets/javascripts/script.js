@@ -408,11 +408,12 @@ jQuery(function(d, $){
 
     // generate the markup for the new fields
     for (var i = last_field_id; i <= last_field_id + num_fields_to_add; i++) {
+      var field_name = "doi-pmid-" + i;
       fields_html += [
         '<div class="input-holder">',
-          '<label for="doi-pmid-' + i + '">DOI/PMID</label>',
+          '<label for="' + field_name + '">DOI/PMID</label>',
           '<div>',
-            '<input type="text" name="" id="doi-pmid-' + i + '" />',
+            '<input type="text" name="' + field_name + '" id="' + field_name + '" />',
           '</div>',
         '</div>'
       ].join("\n");
@@ -422,6 +423,7 @@ jQuery(function(d, $){
     // "-2" because the last .input-holder is for the submit buttons and 
     // we want the new fields before it.
     $(".doi-pmid-form .input-holder").eq(-2).after(fields_html);
+    $('[id^=doi-pmid-]').on("change", doiPmidInputOnChange);
   });
 }(document, jQuery));
 
@@ -477,35 +479,37 @@ var highlightDoiPmidError = function($element, error_message) {
 
 // Onchange handler for text fields on the "Find Articles by DOI/PMID" page.
 // Performs validation to ensure the values are valid PLOS DOIs.
-jQuery(function(d, $){
-
-  $('[id^=doi-pmid-]').on("change", function() {
-    var input_element = $(this)[0];
-    var match = /(info:)?(doi\/)?(10\.1371\/journal\.p[a-z]{3}\.\d{7})/.exec(input_element.value);
-    if (match == null || match[3] == null) {
-      highlightDoiPmidError(input_element, 'This DOI is not a PLOS article');
-    } else {
-    
-      // Validate DOI against solr.  We need to make a jsonp request to get around the
-      // same-origin policy.
-      var query = 'id:"' + match[3] + '"';
-      $.ajax('http://api.plos.org/search', {
-          type: 'GET',
-          dataType: 'jsonp',
-          data: {wt: 'json', q: query, fl: 'id'},
-          jsonp: 'json.wrf',
-          success: function(resp) {
-            if (resp.response.numFound == 1) {
-              
-              // Remove any previous error message.
-              dismissDoiPmidFieldError($(input_element).parent('.error-holder'));
-            } else {
-              highlightDoiPmidError(input_element, 'This paper could not be found');
-            }
+var doiPmidInputOnChange = function() {
+  var input_element = $(this)[0];
+  var match = /(info:)?(doi\/)?(10\.1371\/journal\.p[a-z]{3}\.\d{7})/.exec(input_element.value);
+  if (match == null || match[3] == null) {
+    highlightDoiPmidError(input_element, 'This DOI is not a PLOS article');
+  } else {
+  
+    // Validate DOI against solr.  We need to make a jsonp request to get around the
+    // same-origin policy.
+    var query = 'id:"' + match[3] + '"';
+    $.ajax('http://api.plos.org/search', {
+        type: 'GET',
+        dataType: 'jsonp',
+        data: {wt: 'json', q: query, fl: 'id'},
+        jsonp: 'json.wrf',
+        success: function(resp) {
+          if (resp.response.numFound == 1) {
+            
+            // Remove any previous error message.
+            dismissDoiPmidFieldError($(input_element).parent('.error-holder'));
+          } else {
+            highlightDoiPmidError(input_element, 'This paper could not be found');
           }
-      });
-    }
-  });
+        }
+    });
+  }
+};
+
+
+jQuery(function(d, $){
+  $('[id^=doi-pmid-]').on("change", doiPmidInputOnChange);
 }(document, jQuery));
 
 

@@ -12,6 +12,7 @@ class IdController < ApplicationController
     @tab = :select_articles
     @title = "Find Articles by DOI/PMID"
     @errors = {}
+    @max_doi_field = 8
   end
   
   
@@ -57,6 +58,12 @@ class IdController < ApplicationController
         else
           field_to_parsed_doi[k] = validated
         end
+        
+        # This is to handle an edge case where the user has clicked on the
+        # "Add More Fields" button on the form, and those new fields have
+        # errors.  When we re-render the form we need to show all the fields.
+        field_num = k[("doi-pmid-".length)..(k.length)].to_i
+        @max_doi_field = field_num > @max_doi_field ? field_num : @max_doi_field
       end
     end
     
