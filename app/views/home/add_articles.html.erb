@@ -7,16 +7,16 @@
    <% else %>
      <p>No results found for
    <% end %>
-     <% if params[:everything].length > 0 %>
+     <% if !params[:everything].nil? && params[:everything].length > 0 %>
        keyword:
        <span class="keyword"><%= params[:everything] %>;</span>
      <% end %>
-     <% if params[:author].length > 0 %>
+     <% if !params[:author].nil? && params[:author].length > 0 %>
        <span>author:
        <span class="author-name"><%= params[:author] %>;</span>
        </span>
      <% end %>
-     <% if params[:author_country].length > 0 %>
+     <% if !params[:author_country].nil? &&params[:author_country].length > 0 %>
        <span>author country:
        <span class="author-country"><%= params[:author_country] %>;</span>
        </span>
@@ -43,6 +43,7 @@
              ["Most cited, all time", "alm_scopusCiteCount desc"],
              ["Most bookmarked", "sum(alm_citeulikeCount, alm_mendeleyCount) desc"],
              ["Most shared in social media", "sum(alm_twitterCount, alm_facebookCount) desc"],
+             ["Most tweeted", "alm_twitterCount desc"]
              ], params[:sort]), :class => "styled", :id => "search_results_sort_order_select") %>
 
    </div>

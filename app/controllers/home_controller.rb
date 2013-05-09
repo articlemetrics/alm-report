@@ -26,6 +26,12 @@ class HomeController < ApplicationController
         solr_params[key.to_sym] = params[key]
       end
     end
+
+    if (solr_params[:publication_days_ago].nil?)
+      # default value
+      solr_params[:publication_days_ago] = -1
+    end
+
     @start_date, @end_date = SolrRequest.parse_date_range(solr_params.delete(:publication_days_ago),
         solr_params.delete(:datepicker1), solr_params.delete(:datepicker2))
     date_range = SolrRequest.build_date_range(@start_date, @end_date)

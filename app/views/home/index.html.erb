@@ -57,11 +57,25 @@
       <div class="articles-list cf">
         <h2 class="albert-light-normal">Browse the 'Best in Class' articles from PLOS</h2>
         	<div>
-            <a href="fixme"><span class="top-views"></span><span>Top Views</span></a>
-            <a href="fixme"><span class="top-bookmarked"></span><span>Top Bookmarked</span></a>
-            <a href="fixme"><span class="top-tweets"></span><span>Top Tweets</span></a>
-            <a href="fixme"><span class="top-cited"></span><span>Top Cited</span></a>
-            <a href="fixme"><span class="top-shares"></span><span>Top Shares</span></a>
+            <%= link_to '/add-articles?sort=counter_total_all desc' do %>
+              <span class="top-views"></span><span>Top Views</span>
+            <% end %>
+
+            <%= link_to '/add-articles?sort=sum(alm_citeulikeCount, alm_mendeleyCount) desc' do %>
+              <span class="top-bookmarked"></span><span>Top Bookmarked</span>
+            <% end %>
+
+            <%= link_to '/add-articles?sort=alm_twitterCount desc' do %>
+              <span class="top-tweets"></span><span>Top Tweets</span>
+            <% end %>
+
+            <%= link_to '/add-articles?sort=alm_scopusCiteCount desc' do %>
+              <span class="top-cited"></span><span>Top Cited</span>
+            <% end %>
+
+            <%= link_to '/add-articles?sort=sum(alm_twitterCount, alm_facebookCount) desc' do %>
+              <span class="top-shares"></span><span>Top Shares</span>
+            <% end %>
           </div>
       </div>
       <section class="sample-reports cf">
