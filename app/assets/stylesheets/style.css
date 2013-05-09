@@ -798,6 +798,7 @@ select {
   margin: 45px 0 0 38px;
   position: relative;
   display: inline-block;
+  min-height: 290px;
 }
 
 .article-lists h2 {
