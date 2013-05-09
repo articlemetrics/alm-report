@@ -5,57 +5,13 @@
     <h2 class="albert-light-normal">Upload File</h2>
     <p class="upload-message"><%= @num_valid_dois %> DOI/PMID valid records added to your list.</p>
     <p class="error-title error-color">Please review and correct the <%= @errors.length %> invalid records below.</p>
-    
-  <% end %>
-
-  <form class="doi-pmid-form"> 
-  <h2 class="albert-light-normal">Upload File</h2>
-  <p class="upload-message">190 DOI/PMID valid records added to your list.</p>
-  <p class="error-title error-color">Please review and correct the 5 invalid records below.</p>
-  <div class="input-holder">  
-    <label for="doi-pmid-1" class="error-color">DOI/PMID</label>       
-    <div class="error-holder">
-      <input type="text" name="" value="234254256246246" id="doi-pmid-1" />
-      <p class="error-message error-color">This paper could not be found</p>
-      <span class="doi-pmid-remove">Remove</span>
-    </div>
-  </div>
-  <div class="input-holder">
-    <label for="doi-pmid-2" class="error-color">DOI/PMID</label>
-    <div class="error-holder">
-      <input type="text" name="" value="354256246246" id="doi-pmid-2" />
-      <p class="error-message error-color">This DOI is not a PLOS article</p>
-      <span class="doi-pmid-remove">Remove</span>
-    </div>
-  </div>
-  <div class="input-holder">
-    <label for="doi-pmid-3" class="error-color">DOI/PMID</label>
-    <div class="error-holder">
-      <input type="text" name="" value="doi:10.1111/j.1744-6155.2006.00043.x" id="doi-pmid-3" />
-      <p class="error-message error-color">This paper could not be found</p>
-      <span class="doi-pmid-remove">Remove</span>
-    </div>
-  </div>
-  <div class="input-holder">
-    <label for="doi-pmid-4" class="error-color">DOI/PMID</label>
-    <div class="error-holder">
-      <input type="text" name="" value="354256246246" id="doi-pmid-4" />
-      <p class="error-message error-color">This DOI is not a PLOS article</p>
-      <span class="doi-pmid-remove">Remove</span>
-    </div>
-  </div>
-  <div class="input-holder">
-    <label for="doi-pmid-5" class="error-color">DOI/PMID</label>
-    <div class="error-holder">
-      <input type="text" name="" value="354256246246" id="doi-pmid-5" />
-      <p class="error-message error-color">This DOI is a duplicate</p>
-      <span class="doi-pmid-remove">Remove</span>
-    </div>
-  </div>
+    <% @errors.keys.each do |field| %>
+      <%= render "doi_field", :input_id => field, :example => false %>
+    <% end %>
     <div class="upload-file-error-input-holder">
-      <input class="button-hover-dark-black submit-btn add-to-list-btn upload-add-to-my-list" type="submit" value="Add to My List" />
-      <input class="ignore-errors button-hover-dark-blue submit-btn add-more-fields-btn" type="submit" value="Ignore Errors" />
+      <%= submit_tag "Add to My List", :class => "button-hover-dark-black submit-btn add-to-list-btn upload-add-to-my-list" %>
+      <%= submit_tag "Ignore Errors", :class => "ignore-errors button-hover-dark-blue submit-btn add-more-fields-btn" %>
       <p>If you ignore these errors, they will be automatically deleted from your list.</p>
     </div>
-  </form>
+  <% end %>
 </div>

@@ -69,7 +69,6 @@ class ApplicationController < ActionController::Base
   # session after an action is run.
   def save_session_dois
     @saved_dois = SavedDois.new(session[:dois])
-    @preview_list_count = @saved_dois.length
     
     yield  # Run the action
     

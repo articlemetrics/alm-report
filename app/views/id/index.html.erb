@@ -5,25 +5,7 @@
       <p class="error-title error-color">Please correct the errors below.</p>
     <% end %>
     <% (1..8).each do |i| %>
-      <div class="input-holder">
-        <% input_id = "doi-pmid-#{i}".intern %>
-        <% if @errors.member?(input_id) %>
-          <%= label_tag(input_id, "DOI/PMID", :class => "error-color") %>
-          <div class="error-holder">
-            <%= text_field_tag(input_id, params[input_id]) %>
-            <p class="error-message error-color">This DOI is not a PLOS article</p>
-            <span class="doi-pmid-remove">Remove</span>
-          </div>
-        <% else %>
-          <%= label_tag(input_id, "DOI/PMID") %>
-          <div>
-            <%= text_field_tag(input_id, params[input_id].nil? ? "" : params[input_id]) %>
-            <% if i == 1 %>
-              <p class="input-example">ex. 10.1371/journal.pone.0061406</p>
-            <% end %>
-          </div>
-        <% end %>
-      </div>
+      <%= render "doi_field", :input_id => "doi-pmid-#{i}".intern, :example => i == 1 %>
     <% end %>
 
     <div class="input-holder">

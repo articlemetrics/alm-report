@@ -432,10 +432,24 @@ var dismissDoiPmidErrors = function(event) {
   var $current_error_holder = $current_element.parent('.error-holder');
 
   $current_error_holder.find('.error-message').remove();
-  $current_error_holder.parent('.input-holder').find('label').removeClass('error-color');
-  $current_error_holder.parent('.input-holder').find('div').removeClass('error-holder');
+  var $input_holder = $current_error_holder.parent('.input-holder');
+  $input_holder.find('label').removeClass('error-color');
+  $input_holder.find('div').removeClass('error-holder');
   $current_element.siblings('input').val('');
   $current_element.remove();
+};
+
+
+// Subtly different from dismissDoiPmidErrors above: this function is called
+// from the ajax response handler upon successful validation of a DOI.
+// It should remove any error messages, if present, and keep the value of
+// the text field intact.
+var dismissDoiPmidFieldError = function($error_div) {
+  $error_div.find('.error-message').remove();
+  var $input_holder = $error_div.parent('.input-holder');
+  $input_holder.find('label').removeClass('error-color');
+  $input_holder.find('div').removeClass('error-holder');
+  $error_div.find('.doi-pmid-remove').remove();
 };
 
 
@@ -445,17 +459,19 @@ jQuery(function(d, $){
 }(document, jQuery));
 
 
-// Indicates that a single field on the DOI/PMID form is invalid.  The argument
-// is the jQuery text field.
-var highlightDoiPmidError = function($element) {
+// Indicates that a single field on the DOI/PMID form is invalid.  The first
+// argument is the jQuery text field.
+var highlightDoiPmidError = function($element, error_message) {
   var $parent_div = $($element.parentNode);
   $parent_div.attr('class', 'error-holder');
   $parent_div.children('.input-example').remove();
-  $parent_div.append('<p class="error-message error-color">This DOI is not a PLOS article</p>');
-  $parent_div.append('<span class="doi-pmid-remove">Remove</span>');
+  if ($parent_div.children('.error-message').length == 0) {
+    $parent_div.append('<p class="error-message error-color">' + error_message + '</p>');
+    $parent_div.append('<span class="doi-pmid-remove">Remove</span>');
 
-  // Need to re-add this listener since we recreated the element above.
-  $('.doi-pmid-remove').on("click", dismissDoiPmidErrors);
+    // Need to re-add this listener since we recreated the element above.
+    $('.doi-pmid-remove').on("click", dismissDoiPmidErrors);
+  }
 };
 
 
@@ -464,10 +480,10 @@ var highlightDoiPmidError = function($element) {
 jQuery(function(d, $){
 
   $('[id^=doi-pmid-]').on("change", function() {
-    var $element = $(this)[0];
-    var match = /(info:)?(doi\/)?(10\.1371\/journal\.p[a-z]{3}\.\d{7})/.exec($element.value);
+    var input_element = $(this)[0];
+    var match = /(info:)?(doi\/)?(10\.1371\/journal\.p[a-z]{3}\.\d{7})/.exec(input_element.value);
     if (match == null || match[3] == null) {
-      highlightDoiPmidError($element);
+      highlightDoiPmidError(input_element, 'This DOI is not a PLOS article');
     } else {
     
       // Validate DOI against solr.  We need to make a jsonp request to get around the
@@ -479,8 +495,12 @@ jQuery(function(d, $){
           data: {wt: 'json', q: query, fl: 'id'},
           jsonp: 'json.wrf',
           success: function(resp) {
-            if (resp.response.numFound != 1) {
-              highlightDoiPmidError($element);
+            if (resp.response.numFound == 1) {
+              
+              // Remove any previous error message.
+              dismissDoiPmidFieldError($(input_element).parent('.error-holder'));
+            } else {
+              highlightDoiPmidError(input_element, 'This paper could not be found');
             }
           }
       });
