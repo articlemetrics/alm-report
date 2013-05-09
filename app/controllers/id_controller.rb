@@ -11,7 +11,8 @@ class IdController < ApplicationController
   def set_tabs
     @tab = :select_articles
     @title = "Find Articles by DOI/PMID"
-    @errors = Set.new
+    @errors = {}
+    @max_doi_field = 8
   end
   
   
@@ -28,6 +29,13 @@ class IdController < ApplicationController
   
   
   def save
+    
+    # Ignore Errors is an option in the case when the user uploads a file
+    # and it contains errors (that is, we get here via process_upload).
+    if params[:commit] == "Ignore Errors"
+      redirect_to "/preview-list"
+      return
+    end
 
     # This is totally not the rails way to do validation.  The rails way would
     # do it in the model.  Since we don't have a model for the DOIs that we
@@ -46,10 +54,16 @@ class IdController < ApplicationController
       if k.start_with?("doi-pmid-") && !v.empty?
         validated = IdController.validate_doi(v)
         if validated.nil?
-          @errors.add(k.to_sym)
+          @errors[k.to_sym] = "This DOI is not a PLOS article"
         else
           field_to_parsed_doi[k] = validated
         end
+        
+        # This is to handle an edge case where the user has clicked on the
+        # "Add More Fields" button on the form, and those new fields have
+        # errors.  When we re-render the form we need to show all the fields.
+        field_num = k[("doi-pmid-".length)..(k.length)].to_i
+        @max_doi_field = field_num > @max_doi_field ? field_num : @max_doi_field
       end
     end
     
@@ -57,7 +71,7 @@ class IdController < ApplicationController
     solr_docs = SolrRequest.get_data_for_articles(field_to_parsed_doi.values)
     field_to_parsed_doi.each do |field, doi|
       if solr_docs[doi].nil?
-        @errors.add(field.to_sym)
+       @errors[field.to_sym] = "This paper could not be found"
       end
     end
 
@@ -84,12 +98,22 @@ class IdController < ApplicationController
   
   def process_upload
     dois = parse_file(params[:"upload-file-field"].read)
-    @errors = []
     valid_dois = []
+    
+    # In order to re-use parts of the DOI input form for upload errors, we create
+    # form field names for each error.
+    error_index = 1
+    add_error = lambda { |doi, error_message|
+      error_field = "doi-pmid-#{error_index}".intern
+      error_index += 1
+      @errors[error_field] = error_message
+      params[error_field] = doi
+    }
+    
     dois.each do |doi|
       validated = IdController.validate_doi(doi)
       if validated.nil?
-        @errors << doi
+        add_error.call(doi, "This DOI is not a PLOS article")
       else
         valid_dois << validated
       end
@@ -99,7 +123,7 @@ class IdController < ApplicationController
     valid_dois.each do |doi|
       doc = solr_docs[doi]
       if doc.nil?
-        @errors << doi
+        add_error.call(doi, "This paper could not be found")
       else
         @saved_dois[doc["id"]] = doc["publication_date"].strftime("%s").to_i
       end

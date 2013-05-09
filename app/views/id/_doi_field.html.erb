@@ -1,0 +1,18 @@
+<div class="input-holder">
+  <% if @errors.member?(input_id) %>
+    <%= label_tag(input_id, "DOI/PMID", :class => "error-color") %>
+    <div class="error-holder">
+      <%= text_field_tag(input_id, params[input_id]) %>
+      <p class="error-message error-color"><%= @errors[input_id] %></p>
+      <span class="doi-pmid-remove">Remove</span>
+    </div>
+  <% else %>
+    <%= label_tag(input_id, "DOI/PMID") %>
+    <div>
+      <%= text_field_tag(input_id, params[input_id].nil? ? "" : params[input_id]) %>
+      <% if !example.nil? && example %>
+        <p class="input-example">ex. 10.1371/journal.pone.0061406</p>
+      <% end %>
+    </div>
+  <% end %>
+</div>
