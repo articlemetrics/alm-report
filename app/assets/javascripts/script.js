@@ -673,28 +673,28 @@ $(document).ready(function() {
   function filter(array, term) {
     var matcher = new RegExp($.ui.autocomplete.escapeRegex(term), "i");
     return $.grep(array, function(value) {
-      return matcher.test($( "<div>").html(value.label || value.value || value ).text());
+      return matcher.test($("<div>").html(value.label || value.value || value).text());
     });
   }
 
   $.extend(proto, {
     _initSource: function() {
-      if ($.isArray(this.options.source) ) {
-        this.source = function( request, response ) {
-          response( filter( this.options.source, request.term ) );
+      if ($.isArray(this.options.source)) {
+        this.source = function(request, response) {
+          response(filter( this.options.source, request.term));
         };
       } else {
-        initSource.call( this );
+        initSource.call(this);
       }
     },
 
-    _renderItem: function( ul, item) {
+    _renderItem: function(ul, item) {
       return $("<li></li>")
         .data("item.autocomplete", item)
-        .append($( "<a style=\"line-height: "
+        .append($("<a style=\"line-height: "
           + (item.value ? 0.9 : 2)
           + "; font-size: 12px;\"></a>")
-          [item.type == "html" ? "html" : "text"]( item.label ))
+          [item.type == "html" ? "html" : "text"](item.label))
         .appendTo(ul);
     }
   });
@@ -711,7 +711,7 @@ $(".subject-autocomplete[type='text']").autocomplete({
           "terms": "true",
           "terms.fl" : "subject_facet",
           "terms.regex" : ".*" + entry.term + ".*",
-          "terms.limit" : 25,
+          "terms.limit" : 10,
           "terms.sort" : "index",
           "terms.regex.flag" : "case_insensitive",
           "wt": "json"
@@ -723,7 +723,7 @@ $(".subject-autocomplete[type='text']").autocomplete({
           // Every other element is what we want
           for(var i = 0; i < data.terms.subject_facet.length; i = i + 2) {
             options.push({
-              label: data.terms.subject_facet[i].replace(new RegExp("(" + entry.term + ")", "gi"), "<b>$1</b>"),
+                label: data.terms.subject_facet[i].replace(new RegExp("(" + entry.term + ")", "gi"), "<strong>$1</strong>"),
               type: "html",
               value: data.terms.subject_facet[i]
             });
