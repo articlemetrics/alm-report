@@ -34,7 +34,7 @@
         </div>
         <div class="input-holder">
           <%= label_tag(:subject, "Subject Area") %>
-          <%= text_field_tag(:subject) %>
+          <%= text_field_tag(:subject, nil, :class => "subject-autocomplete") %>
         </div>
         <div class="input-holder">
           <%= label_tag(:cross_published_journal_name, "Journal") %>

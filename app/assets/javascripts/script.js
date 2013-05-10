@@ -647,3 +647,94 @@ $(document).ready(function() {
     }
   }
 });
+
+
+// Handles subject category autocomplete functionality on the search page.  This code
+// is largely borrowed from ambra, where we do something similar.  See
+// webapp/src/main/webapp/javascript/user.js.
+
+/*
+ * jQuery UI Autocomplete HTML Extension
+ *
+ * Copyright 2010, Scott González (http://scottgonzalez.com)
+ * Dual licensed under the MIT or GPL Version 2 licenses.
+ *
+ * http://github.com/scottgonzalez/jquery-ui-extensions
+ */
+
+// HTML extension to autocomplete borrowed from
+// https://github.com/scottgonzalez/jquery-ui-extensions/blob/master/autocomplete/jquery.ui.autocomplete.html.js
+
+(function($) {
+
+  var proto = $.ui.autocomplete.prototype,
+    initSource = proto._initSource;
+
+  function filter(array, term) {
+    var matcher = new RegExp($.ui.autocomplete.escapeRegex(term), "i");
+    return $.grep(array, function(value) {
+      return matcher.test($( "<div>").html(value.label || value.value || value ).text());
+    });
+  }
+
+  $.extend(proto, {
+    _initSource: function() {
+      if ($.isArray(this.options.source) ) {
+        this.source = function( request, response ) {
+          response( filter( this.options.source, request.term ) );
+        };
+      } else {
+        initSource.call( this );
+      }
+    },
+
+    _renderItem: function( ul, item) {
+      return $("<li></li>")
+        .data("item.autocomplete", item)
+        .append($( "<a style=\"line-height: "
+          + (item.value ? 0.9 : 2)
+          + "; font-size: 12px;\"></a>")
+          [item.type == "html" ? "html" : "text"]( item.label ))
+        .appendTo(ul);
+    }
+  });
+
+})(jQuery);
+
+
+$(".subject-autocomplete[type='text']").autocomplete({
+  source: function(entry, response) {
+    $.ajax("http://api.plos.org/terms", {
+        type: 'GET',
+        dataType: 'jsonp',
+        data:{
+          "terms": "true",
+          "terms.fl" : "subject_facet",
+          "terms.regex" : ".*" + entry.term + ".*",
+          "terms.limit" : 25,
+          "terms.sort" : "index",
+          "terms.regex.flag" : "case_insensitive",
+          "wt": "json"
+        },
+        jsonp: 'json.wrf',
+        success: function (data) {
+          var options = [];
+
+          // Every other element is what we want
+          for(var i = 0; i < data.terms.subject_facet.length; i = i + 2) {
+            options.push({
+              label: data.terms.subject_facet[i].replace(new RegExp("(" + entry.term + ")", "gi"), "<b>$1</b>"),
+              type: "html",
+              value: data.terms.subject_facet[i]
+            });
+          }
+          response(options);
+        },
+        error: function (xOptions, textStatus) {
+          console.log(textStatus);
+        }
+    });
+  }
+});
+
+// End subject category autocomplete.
