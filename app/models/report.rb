@@ -46,12 +46,6 @@ class Report < ActiveRecord::Base
     field = options[:field]
 
     if (field.nil?)
-      # doi, pmid, title, journal, publication_date, authors, 
-      # counter, counter_html, counter_pdf, counter_xml, 
-      # pmc, pmc_html, pmc_pdf, 
-      # crossref, scopus, pubmed, 
-      # citeulike, mendeley, twitter, facebook, Wikipedia, 
-      # researchblogging, nature, scienceseeker
 
       alm_data = AlmRequest.get_data_for_articles(report_dois)
       solr_data = SolrRequest.get_data_for_articles(report_dois)
