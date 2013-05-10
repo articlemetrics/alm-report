@@ -145,4 +145,40 @@ module AlmRequest
     end
   end
 
+  def self.get_data_for_one_article(report_dois)
+    dois = report_dois.map { |report_doi| report_doi.doi }
+
+    params = {}
+    params[:ids] = dois.join(",")
+    params[:info] = "event"
+    params[:source] = "counter"
+
+    url = "#{@@URL}/?#{params.to_param}"
+    
+    resp = Net::HTTP.get_response(URI.parse(url))
+
+    all_results = {}
+
+    if !resp.kind_of?(Net::HTTPSuccess)
+      Rails.logger.error "ALM Server for #{url} returned #{resp.code}: " + resp.body
+
+      return all_results
+    end
+
+    data = JSON.parse(resp.body)
+
+    data.each do | article |
+      results = {}
+
+      sources = article["sources"].map { | source | ([source["name"], source["events"]]) }
+      sources_dict = Hash[*sources.flatten(1)]
+
+      results[:counter] = sources_dict["counter"]
+
+      all_results[article["doi"]] = results
+    end
+
+    return all_results
+  end
+
 end

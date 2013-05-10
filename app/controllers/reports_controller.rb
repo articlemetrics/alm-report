@@ -93,9 +93,17 @@ class ReportsController < ApplicationController
     @report_sub_tab = :visualizations
     @title = "Report Visualizations"
 
+    # deteremine if the report contains only one article
+    one_article_report = false
+    if (@report.report_dois.length == 1) 
+      one_article_report = true
+      alm_data = AlmRequest.get_data_for_one_article(@report.report_dois)
+    else
+      alm_data = AlmRequest.get_data_for_viz(@report.report_dois)
+    end
+
     min_num_of_alm_data_points = 2
 
-    alm_data = AlmRequest.get_data_for_viz(@report.report_dois)
     solr_data = SolrRequest.get_data_for_articles(@report.report_dois)
 
     dois_to_delete = manage_report_data(@report.report_dois, solr_data, alm_data)
@@ -112,15 +120,21 @@ class ReportsController < ApplicationController
       manage_report_data(@report.report_dois, solr_data, alm_data)
     end
 
-    # this covers situations where a report contains many articles but very small
-    # portion of the articles have alm data  (without alm data, viz page will look very weird)
     @draw_viz = true
-    if solr_data.length >= min_num_of_alm_data_points
-      generate_data_for_bubble_charts
-      generate_data_for_subject_area_chart
-      generate_data_for_articles_by_location_chart
+    if (one_article_report && @report.report_dois.length == 1)
+      generate_data_for_usage_chart
+      render 'visualization.html.erb'
     else
-      @draw_viz = false
+      # this covers situations where a report contains many articles but very small
+      # portion of the articles have alm data  (without alm data, viz page will look very weird)
+      if solr_data.length >= min_num_of_alm_data_points
+        generate_data_for_bubble_charts
+        generate_data_for_subject_area_chart
+        generate_data_for_articles_by_location_chart
+      else
+        @draw_viz = false
+      end
+      render 'visualizations.html.erb'
     end
   end
 
@@ -271,4 +285,23 @@ class ReportsController < ApplicationController
     end
   end
   
+  def generate_data_for_usage_chart
+    # sort the counter data
+    # ignore the gaps
+    # make sure it starts on the publication date?
+
+    counter = @report.report_dois[0].alm[:counter]
+
+    @article_usage_data = []
+    @article_usage_data << ["month", "Html Views", "PDF Views", "XML Views"]
+    month_index = 0
+
+    counter.each do | month_data |
+      @article_usage_data << [month_index, month_data["html_views"].to_i, month_data["pdf_views"].to_i, month_data["xml_views"].to_i]
+      month_index = month_index + 1
+    end
+
+  end
+
+
 end

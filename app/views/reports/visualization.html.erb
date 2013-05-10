@@ -1,0 +1,36 @@
+
+<div class="content wrapper">
+  <%= render "reports_nav" %>
+
+  <div class="visualizations-container">
+    <div class="visualizations-list">
+      <div class="reports-header-div">
+        <span class="list-numbers">1</span>
+        <h2 class="albert-light-normal">Article Usage as a function of Age</h2>
+      </div>
+      <div id="article_usage_div" class="report-graph" style="width: 670px; height: 392px;"></div>
+      <p class="info">Description</p>
+    </div>
+  </div>
+
+  <%= render "report_download" %>
+
+</div>
+
+
+<script type="text/javascript">
+function haveDataToDrawViz() {
+  return <%= @draw_viz %>;
+}
+
+function drawVizForOne() {
+  return true;
+}
+
+function getArticleUsageData() {
+  return <%= raw @article_usage_data %>;
+}
+
+</script>
+
+<%= javascript_include_tag "charts" %>

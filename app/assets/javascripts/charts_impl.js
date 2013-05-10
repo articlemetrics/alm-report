@@ -85,14 +85,37 @@ function drawArticleLocation() {
   chart.draw(data, options);
 }
 
+function drawArticleUsageAge() {
+  var data = google.visualization.arrayToDataTable(getArticleUsageData());
+
+  var options = {
+    backgroundColor: '#efefef',
+    vAxis: {
+      title: 'Total Views'
+    },
+    hAxis: {
+      title: 'Months'
+    }
+
+  };
+
+  var chart = new google.visualization.LineChart(document.getElementById('article_usage_div'));
+  chart.draw(data, options);
+}
+
 
 // Renders all charts on the page.
 function drawReportGraphs() {
   if (haveDataToDrawViz()) {
-    drawArticleUsageCitationsAge();
-    drawArticleUsageMendeleyAge();
-    drawArticleUsageCitationSubjectArea();
-    drawArticleLocation();
+    if (drawVizForOne()) {
+      drawArticleUsageAge();
+    } else {
+      drawArticleUsageCitationsAge();
+      drawArticleUsageMendeleyAge();
+      drawArticleUsageCitationSubjectArea();
+      drawArticleLocation();      
+    }
+
   } else {
     $("#error-message-div").append("<div>The metrics for one or more of the articles requested are not available at this time. Please check back later.</div>")
       .show();

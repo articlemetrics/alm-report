@@ -73,6 +73,10 @@
     function haveDataToDrawViz() {
       return <%= @draw_viz %>;
     }
+    
+    function drawVizForOne() {
+      return false;
+    }
 
     function getArticleUsageCitationsAgeData() {
         return <%= raw @article_usage_citations_age_data %>;
