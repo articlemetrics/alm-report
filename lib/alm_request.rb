@@ -150,8 +150,8 @@ module AlmRequest
 
     params = {}
     params[:ids] = dois.join(",")
-    params[:info] = "event"
-    params[:source] = "counter"
+    params[:info] = "history"
+    params[:source] = "crossref,pubmed,scopus"
 
     url = "#{@@URL}/?#{params.to_param}"
     
@@ -170,13 +170,53 @@ module AlmRequest
     data.each do | article |
       results = {}
 
-      sources = article["sources"].map { | source | ([source["name"], source["events"]]) }
+      sources = article["sources"].map { | source | [source["name"], source["histories"]] }
       sources_dict = Hash[*sources.flatten(1)]
 
       results[:counter] = sources_dict["counter"]
+      results[:crossref] = sources_dict["crossref"]
+      results[:scopus] = sources_dict["scopus"]
+      results[:pubmed] = sources_dict["pubmed"]
+
+
+      results[:publication_date] = article["publication_date"]
 
       all_results[article["doi"]] = results
     end
+
+    params = {}
+    params[:ids] = dois.join(",")
+    params[:info] = "event"
+    params[:source] = "counter,citeulike,tiwtter,researchblogging,nature,scienceseeker,mendeley"
+
+    url = "#{@@URL}/?#{params.to_param}"
+    
+    resp = Net::HTTP.get_response(URI.parse(url))
+
+    if !resp.kind_of?(Net::HTTPSuccess)
+      Rails.logger.error "ALM Server for #{url} returned #{resp.code}: " + resp.body
+
+      return all_results
+    end
+
+    data = JSON.parse(resp.body)
+
+    data.each do | article |
+      results = all_results[article["doi"]]
+
+      sources = article["sources"].map { | source | [source["name"], source["events"]] }
+      sources_dict = Hash[*sources.flatten(1)]
+
+      results[:counter] = sources_dict["counter"]
+      results[:citeulike] = sources_dict["citeulike"]
+      results[:twitter] = sources_dict["twitter"]
+      results[:researchblogging] = sources_dict["researchblogging"]
+      results[:nature] = sources_dict["nature"]
+      results[:scienceseeker] = sources_dict["scienceseeker"]
+      results[:mendeley] = sources_dict["mendeley"]
+
+      all_results[article["doi"]] = results
+    end    
 
     return all_results
   end

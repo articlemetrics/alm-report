@@ -6,11 +6,20 @@
     <div class="visualizations-list">
       <div class="reports-header-div">
         <span class="list-numbers">1</span>
-        <h2 class="albert-light-normal">Article Usage as a function of Age</h2>
+        <h2 class="albert-light-normal">Article Usage over time</h2>
       </div>
       <div id="article_usage_div" class="report-graph" style="width: 670px; height: 392px;"></div>
       <p class="info">Description</p>
     </div>
+
+    <div class="visualizations-list">
+      <div class="reports-header-div">
+        <span class="list-numbers">2</span>
+        <h2 class="albert-light-normal">Citation over time</h2>
+      </div>
+      <div id="article_citation_div" class="report-graph" style="width: 670px; height: 392px;"></div>
+      <p class="info">Description</p>
+    </div>    
   </div>
 
   <%= render "report_download" %>
@@ -29,6 +38,10 @@ function drawVizForOne() {
 
 function getArticleUsageData() {
   return <%= raw @article_usage_data %>;
+}
+
+function getArticleCitationData() {
+  return <%= raw @article_citation_data %>;
 }
 
 </script>

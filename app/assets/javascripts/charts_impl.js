@@ -103,12 +103,31 @@ function drawArticleUsageAge() {
   chart.draw(data, options);
 }
 
+function drawArticleCitationAge() {
+  var data = google.visualization.arrayToDataTable(getArticleCitationData());
+
+  var options = {
+    backgroundColor: '#efefef',
+    vAxis: {
+      title: 'Citations'
+    },
+    hAxis: {
+      title: 'Months'
+    }
+
+  };
+
+  var chart = new google.visualization.LineChart(document.getElementById('article_citation_div'));
+  chart.draw(data, options);
+}
+
 
 // Renders all charts on the page.
 function drawReportGraphs() {
   if (haveDataToDrawViz()) {
     if (drawVizForOne()) {
       drawArticleUsageAge();
+      drawArticleCitationAge();
     } else {
       drawArticleUsageCitationsAge();
       drawArticleUsageMendeleyAge();

@@ -123,6 +123,9 @@ class ReportsController < ApplicationController
     @draw_viz = true
     if (one_article_report && @report.report_dois.length == 1)
       generate_data_for_usage_chart
+      generate_data_for_citation_chart
+      generate_data_for_social_data_chart
+
       render 'visualization.html.erb'
     else
       # this covers situations where a report contains many articles but very small
@@ -285,6 +288,7 @@ class ReportsController < ApplicationController
     end
   end
   
+
   def generate_data_for_usage_chart
     # sort the counter data
     # ignore the gaps
@@ -300,8 +304,82 @@ class ReportsController < ApplicationController
       @article_usage_data << [month_index, month_data["html_views"].to_i, month_data["pdf_views"].to_i, month_data["xml_views"].to_i]
       month_index = month_index + 1
     end
+  end
+
+
+  def generate_data_for_citation_chart
+
+    crossref_history_data = process_history_data(@report.report_dois[0].alm[:crossref])
+    pubmed_history_data = process_history_data(@report.report_dois[0].alm[:pubmed])
+    scopus_history_data = process_history_data(@report.report_dois[0].alm[:scopus])
+
+    publication_date = Date.parse(@report.report_dois[0].alm[:publication_date])
+
+    current_date = DateTime.now.to_date
+    data_date = publication_date
+
+    @article_citation_data = []
+    @article_citation_data << ["Date", "CrossRef", "PubMed", "Scopus"]
+
+    prev_crossref_data = 0 
+    prev_pubmed_data = 0
+    prev_scopus_data = 0
+
+    while (current_date > data_date) do
+      key = "#{data_date.year}-#{data_date.month}"
+
+      # it pains me to do this but smooth out the data (make sure there aren't any dips in the data)
+      crossref_data = crossref_history_data[key].to_i
+      pubmed_data = pubmed_history_data[key].to_i
+      scopus_data = scopus_history_data[key].to_i
+
+      crossref_data = prev_crossref_data if (crossref_data < prev_crossref_data)
+      pubmed_data = prev_pubmed_data if (pubmed_data < prev_pubmed_data)
+      scopus_data = prev_scopus_data if (scopus_data < prev_scopus_data)
+
+      @article_citation_data << [key, crossref_data, pubmed_data, scopus_data]
+      data_date = data_date >> 1
+
+      prev_crossref_data = crossref_data
+      prev_pubmed_data = pubmed_data
+      prev_scopus_data = scopus_data
+    end
+  end
+
+  def generate_data_for_social_data_chart
 
   end
 
+  def process_history_data(history_data)
+
+    monthly_historical_data = {}
+
+    # sort
+    history_data.sort! { | data1, data2 | Date.parse(data1["update_date"]) <=> Date.parse(data2["update_date"]) }
+
+    data = history_data[0]
+    data_date = Date.parse(data["update_date"])
+    monthly_historical_data["#{data_date.year}-#{data_date.month}"] = data["total"]
+
+    current_date = data_date
+
+    history_data.each do | data |
+      data_date = Date.parse(data["update_date"])
+
+      if (current_date.year == data_date.year)
+        if (current_date.month == data_date.month)
+
+        elsif (current_date.month < data_date.month)
+          current_date = data_date
+          monthly_historical_data["#{data_date.year}-#{data_date.month}"] = data["total"]
+        end
+      elsif (current_date.year < data_date.year)
+        current_date = data_date
+        monthly_historical_data["#{data_date.year}-#{data_date.month}"] = data["total"]
+      end
+    end    
+    
+    return monthly_historical_data;
+  end
 
 end
