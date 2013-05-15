@@ -295,15 +295,38 @@ class ReportsController < ApplicationController
     # make sure it starts on the publication date?
 
     counter = @report.report_dois[0].alm[:counter]
+    pmc = @report.report_dois[0].alm[:pmc]
+
+    counter_data = counter.inject({}) do | result, month_data |
+      month_date = Date.new(month_data["year"].to_i, month_data["month"].to_i, 1)
+      result[month_date] = month_data
+      result
+    end
+
+    pmc_data = pmc.inject({}) do | result, month_data |
+      month_date = Date.new(month_data["year"].to_i, month_data["month"].to_i, 1)
+      result[month_date] = month_data
+      result
+    end
+
+    sorted_keys = counter_data.keys.sort { | data1, data2 | data1 <=> data2 }
 
     @article_usage_data = []
     @article_usage_data << ["month", "Html Views", "PDF Views", "XML Views"]
     month_index = 0
 
-    counter.each do | month_data |
-      @article_usage_data << [month_index, month_data["html_views"].to_i, month_data["pdf_views"].to_i, month_data["xml_views"].to_i]
+    sorted_keys.each do | key |
+      counter_month_data = counter_data[key]
+      pmc_month_data = pmc_data[key]
+
+      html_views = pmc_month_data.nil? ? counter_month_data["html_views"].to_i : counter_month_data["html_views"].to_i + pmc_month_data["full-text"].to_i
+      pdf_views = pmc_month_data.nil? ? counter_month_data["pdf_views"].to_i : counter_month_data["pdf_views"].to_i + pmc_month_data["pdf"].to_i
+      xml_views = counter_month_data["xml_views"].to_i
+      
+      @article_usage_data << [month_index, html_views, pdf_views, xml_views]
       month_index = month_index + 1
     end
+
   end
 
 
@@ -347,6 +370,139 @@ class ReportsController < ApplicationController
   end
 
   def generate_data_for_social_data_chart
+     citeulike = @report.report_dois[0].alm[:citeulike]
+
+     citeulike_data = {}
+     citeulike.each do | data |
+puts "!!!!! #{data.inspect}"
+      post_date = Date.parse(data["event"]["post_time"])
+      key = "#{post_date.year}-#{post_date.month}"
+      citeulike_data[key] = citeulike_data[key].to_i + 1
+     end
+
+     research_blogging = @report.report_dois[0].alm[:researchblogging]
+     research_blogging_data = {}
+     research_blogging.each do | data |
+      post_date = Date.parse(data["event"]["published_date"])
+      research_blogging_data["#{post_date.year}-#{post_date.month}"] = research_blogging_data["#{post_date.year}-#{post_date.month}"].to_i + 1
+     end
+
+     nature = @report.report_dois[0].alm[:nature]
+     nature_data = {}
+     nature.each do | data |
+      post_date = Date.parse(data["event"]["published_at"])
+      nature_data["#{post_date.year}-#{post_date.month}"] = nature_data["#{post_date.year}-#{post_date.month}"].to_i + 1
+     end     
+
+     science_seeker = @report.report_dois[0].alm[:scienceseeker]
+     science_seeker_data = {}
+     science_seeker.each do | data |
+      post_date = Date.parse(data["event"]["updated"])
+      science_seeker_data["#{post_date.year}-#{post_date.month}"] = science_seeker_data["#{post_date.year}-#{post_date.month}"].to_i + 1
+     end     
+
+     twitter = @report.report_dois[0].alm[:twitter]
+     twitter_data = {}
+     twitter.each do | data |
+      post_date = Date.parse(data["event"]["created_at"])
+      twitter_data["#{post_date.year}-#{post_date.month}"] = twitter_data["#{post_date.year}-#{post_date.month}"].to_i + 1
+     end    
+
+
+    publication_date = Date.parse(@report.report_dois[0].alm[:publication_date])
+
+    current_date = DateTime.now.to_date
+    data_date = publication_date
+    month_index = 0
+
+     @social_heatmap = []
+
+     column_header = []
+     column_header << "Date"
+     index = 1
+     column = {}
+
+     if (!citeulike_data.empty?)
+      column_header << "Citeulike" 
+      column[:citeulike] = index
+      index = index + 1
+     end
+
+     if (!research_blogging_data.empty?)
+      column_header << "Research Blogging" 
+      column[:research_blogging] = index 
+      index = index + 1
+     end
+
+     if (!nature_data.empty?)
+      column_header << "Nature" 
+      column[:nature] = index 
+      index = index + 1
+     end
+
+     if (!science_seeker_data.empty?)
+      column_header << "Science Seeker" 
+      column[:science_seeker] = index 
+      index = index + 1
+     end
+
+     if (!twitter_data.empty?)
+      column_header << "Twitter" 
+      column[:twitter] = index 
+      index = index + 1
+     end
+         
+     @social_heatmap << column_header
+
+    while (current_date > data_date) do
+      key = "#{data_date.year}-#{data_date.month}"
+
+      if (!citeulike_data[key].nil?)
+        row = Array.new(column_header.size)
+        row[0] = month_index
+        row[column[:citeulike]] = citeulike_data[key].to_i
+        @social_heatmap << row
+      end
+
+      if (!research_blogging_data[key].nil?)
+        row = Array.new(column_header.size)
+        row[0] = month_index
+        row[column[:research_blogging]] = research_blogging_data[key].to_i
+        @social_heatmap << row
+      end
+
+      if (!nature_data[key].nil?)
+        row = Array.new(column_header.size)
+        row[0] = month_index
+        row[column[:nature]] = nature_data[key].to_i
+        @social_heatmap << row
+      end
+
+      if (!science_seeker_data[key].nil?)
+        row = Array.new(column_header.size)
+        row[0] = month_index
+        row[column[:science_seeker]] = science_seeker_data[key].to_i
+        @social_heatmap << row
+      end
+
+      if (!twitter_data[key].nil?)
+        row = Array.new(column_header.size)
+        row[0] = month_index
+        row[column[:twitter]] = twitter_data[key].to_i
+        @social_heatmap << row
+      end
+      
+      month_index = month_index + 1
+
+      data_date = data_date >> 1
+
+    end
+  end
+
+  def generate_data_for_mendeley_reader_chart
+    mendeley = @report.report_dois[0].alm[:mendeley]
+
+    reader_country = mendeley["stats"]["country"]
 
   end
 

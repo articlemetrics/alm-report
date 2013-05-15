@@ -173,11 +173,9 @@ module AlmRequest
       sources = article["sources"].map { | source | [source["name"], source["histories"]] }
       sources_dict = Hash[*sources.flatten(1)]
 
-      results[:counter] = sources_dict["counter"]
       results[:crossref] = sources_dict["crossref"]
       results[:scopus] = sources_dict["scopus"]
       results[:pubmed] = sources_dict["pubmed"]
-
 
       results[:publication_date] = article["publication_date"]
 
@@ -187,7 +185,7 @@ module AlmRequest
     params = {}
     params[:ids] = dois.join(",")
     params[:info] = "event"
-    params[:source] = "counter,citeulike,tiwtter,researchblogging,nature,scienceseeker,mendeley"
+    params[:source] = "counter,pmc,citeulike,twitter,researchblogging,nature,scienceseeker,mendeley"
 
     url = "#{@@URL}/?#{params.to_param}"
     
@@ -208,11 +206,14 @@ module AlmRequest
       sources_dict = Hash[*sources.flatten(1)]
 
       results[:counter] = sources_dict["counter"]
+      results[:pmc] = sources_dict["pmc"]
+
       results[:citeulike] = sources_dict["citeulike"]
       results[:twitter] = sources_dict["twitter"]
       results[:researchblogging] = sources_dict["researchblogging"]
       results[:nature] = sources_dict["nature"]
       results[:scienceseeker] = sources_dict["scienceseeker"]
+      
       results[:mendeley] = sources_dict["mendeley"]
 
       all_results[article["doi"]] = results

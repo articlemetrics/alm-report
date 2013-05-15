@@ -121,6 +121,20 @@ function drawArticleCitationAge() {
   chart.draw(data, options);
 }
 
+function drawArticleSocialHeatMap() {
+        var data = google.visualization.arrayToDataTable(getSocialHeatMapData());
+
+
+        var options = {
+          title: 'Social Activity vs. Publication Months',
+          hAxis: {title: 'Months'},
+          vAxis: {title: 'Activity'},
+          legend: ''
+        };
+
+        var chart = new google.visualization.ScatterChart(document.getElementById('social_heatmap_div'));
+        chart.draw(data, options);
+}
 
 // Renders all charts on the page.
 function drawReportGraphs() {
@@ -128,6 +142,8 @@ function drawReportGraphs() {
     if (drawVizForOne()) {
       drawArticleUsageAge();
       drawArticleCitationAge();
+      drawArticleSocialHeatMap();
+
     } else {
       drawArticleUsageCitationsAge();
       drawArticleUsageMendeleyAge();
