@@ -11,7 +11,17 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130409204540) do
+ActiveRecord::Schema.define(:version => 20130513204939) do
+
+  create_table "geocodes", :force => true do |t|
+    t.string   "address"
+    t.float    "latitude"
+    t.float    "longitude"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
+
+  add_index "geocodes", ["address"], :name => "index_geocodes_on_address", :unique => true
 
   create_table "report_dois", :force => true do |t|
     t.string   "doi",        :limit => 64, :null => false
