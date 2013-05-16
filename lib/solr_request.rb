@@ -263,7 +263,7 @@ class SolrRequest
       subset_dois = dois.slice!(0, @@MAX_DOIS_PER_REQUEST)
       q = subset_dois.map { | doi | "id:\"#{doi}\"" }.join(" OR ")
   
-      url = "#{@@URL}?q=#{CGI::escape(q)}&#{@@FILTER}&fl=#{fields_to_retrieve}&wt=json&facet=false&rows=#{subset_dois.length}"
+      url = "#{@@URL}?q=#{URI::encode(q)}&#{@@FILTER}&fl=#{fields_to_retrieve}&wt=json&facet=false&rows=#{subset_dois.length}"
 
       json = SolrRequest.send_query(url)
 
