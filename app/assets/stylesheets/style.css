@@ -2215,3 +2215,7 @@ div.selector select {
 #error-message-div a {
   color: #000;
 }
+
+.doi-pmid-error-div {
+  margin: 0 0 18px 0;
+}
