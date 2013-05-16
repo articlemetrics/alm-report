@@ -316,4 +316,23 @@ class SolrRequest
 
   end
 
+  
+  # Performs a batch query for articles based on the list of PubMed IDs passed in.
+  # Returns a hash of PMID => solr doc, with only id, pmid, and publication_date defined
+  # in the solr docs.
+  def self.query_by_pmids(pmids)
+    q = pmids.map {|pmid| "pmid:\"#{pmid}\""}.join(" OR ")
+    url = "#{@@URL}?q=#{URI::encode(q)}&#{@@FILTER}&fl=id,publication_date,pmid&wt=json&facet=false&rows=#{pmids.length}"
+    json = SolrRequest.send_query(url)
+    docs = json["response"]["docs"]
+    results = {}
+    docs.each do |doc|
+      if doc["publication_date"]
+        doc["publication_date"] = Date.strptime(doc["publication_date"], @@SOLR_TIMESTAMP_FORMAT)
+      end
+      results[doc["pmid"].to_i] = doc
+    end
+    results
+  end
+
 end

@@ -28,6 +28,31 @@ class IdController < ApplicationController
   end
   
   
+  # Performs validation of fields from the DOI/PMID form against SOLR.
+  # Returns a list of matching solr docs, and populates the @errors field
+  # if necessary as a side effect.
+  def query_solr_for_ids(field_to_parsed_doi, field_to_parsed_pmid)
+    dois = field_to_parsed_doi.values
+    solr_docs = dois.length == 0 ? {} : SolrRequest.get_data_for_articles(dois)
+    field_to_parsed_doi.each do |field, doi|
+      if solr_docs[doi].nil?
+        @errors[field.to_sym] = "This paper could not be found"
+      end
+    end
+
+    pmid_docs = SolrRequest.query_by_pmids(field_to_parsed_pmid.values)
+    field_to_parsed_pmid.each do |field, pmid|
+      doc = pmid_docs[pmid]
+      if doc.nil?
+        @errors[field.to_sym] = "This paper could not be found"
+      else
+        solr_docs[doc["id"]] = doc
+      end
+    end
+    solr_docs
+  end
+  
+  
   def save
     
     # Ignore Errors is an option in the case when the user uploads a file
@@ -50,13 +75,22 @@ class IdController < ApplicationController
     # DOI fields to the form with javascript, which I don't think rails can
     # deal with at all.
     field_to_parsed_doi = {}
+    field_to_parsed_pmid = {}
     params.each do |k, v|
       if k.start_with?("doi-pmid-") && !v.empty?
-        validated = IdController.validate_doi(v)
-        if validated.nil?
-          @errors[k.to_sym] = "This DOI is not a PLOS article"
-        else
-          field_to_parsed_doi[k] = validated
+        
+        # Assume for now that anything that looks like an int is a PMID.  We can't
+        # use to_i here, since it will accept a value that only *starts* with
+        # an integer.  So "10.1371/journal.pbio.0000001".to_i == 10.
+        begin
+          field_to_parsed_pmid[k] = Integer(v)
+        rescue ArgumentError
+          validated = IdController.validate_doi(v)
+          if validated.nil?
+            @errors[k.to_sym] = "This DOI/PMID is not a PLOS article"
+          else
+            field_to_parsed_doi[k] = validated
+          end
         end
         
         # This is to handle an edge case where the user has clicked on the
@@ -67,14 +101,8 @@ class IdController < ApplicationController
       end
     end
     
-    # Now, for all the DOIs that passed regex validation, query against solr.
-    solr_docs = SolrRequest.get_data_for_articles(field_to_parsed_doi.values)
-    field_to_parsed_doi.each do |field, doi|
-      if solr_docs[doi].nil?
-       @errors[field.to_sym] = "This paper could not be found"
-      end
-    end
-
+    # Now, for all the identifiers that passed regex validation, query against solr.
+    solr_docs = query_solr_for_ids(field_to_parsed_doi, field_to_parsed_pmid)
     if @errors.length == 0
       solr_docs.each {|_, doc| @saved_dois[doc["id"]] = doc["publication_date"].strftime("%s").to_i}
       redirect_to "/preview-list"
@@ -113,7 +141,7 @@ class IdController < ApplicationController
     dois.each do |doi|
       validated = IdController.validate_doi(doi)
       if validated.nil?
-        add_error.call(doi, "This DOI is not a PLOS article")
+        add_error.call(doi, "This DOI/PMID is not a PLOS article")
       else
         valid_dois << validated
       end

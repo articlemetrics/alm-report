@@ -478,24 +478,45 @@ var highlightDoiPmidError = function($element, error_message) {
 
 
 // Onchange handler for text fields on the "Find Articles by DOI/PMID" page.
-// Performs validation to ensure the values are valid PLOS DOIs.
+// Performs validation to ensure the values are valid DOIs or PMIDs identifing
+// PLOS articles.
 var doiPmidInputOnChange = function() {
   var input_element = $(this)[0];
-  var match = /(info:)?(doi\/)?(10\.1371\/journal\.p[a-z]{3}\.\d{7})/.exec(input_element.value);
-  if (match == null || match[3] == null) {
-    highlightDoiPmidError(input_element, 'This DOI is not a PLOS article');
-  } else {
+  var value = $.trim(input_element.value);
   
-    // Validate DOI against solr.  We need to make a jsonp request to get around the
+  // Assume for now that anything that looks like an int is a PMID.  We can't
+  // use parseInt here, since it will accept a value that only *starts* with
+  // an integer.  So "10.1371/journal.pbio.0000001" == 10.
+  var pmid = null;
+  if (/^[0-9]+$/.test(value)) {
+    pmid = Number(value);
+  }
+  var doi = null;
+  if (pmid === null) {
+    var match = /(info:)?(doi\/)?(10\.1371\/journal\.p[a-z]{3}\.\d{7})/.exec(value);
+    if (match == null || match[3] == null) {
+      highlightDoiPmidError(input_element, 'This DOI/PMID is not a PLOS article');
+    } else {
+      doi = match[3];
+    }
+  }
+
+  if (pmid !== null || doi !== null) {
+  
+    // Validate ID against solr.  We need to make a jsonp request to get around the
     // same-origin policy.
-    var query = 'id:"' + match[3] + '"';
+    if (pmid !== null) {
+      var query = 'pmid:"' + pmid + '"';
+    } else {
+      var query = 'id:"' + doi + '"';
+    }
     $.ajax('http://api.plos.org/search', {
         type: 'GET',
         dataType: 'jsonp',
         data: {wt: 'json', q: query, fl: 'id', facet: 'false'},
         jsonp: 'json.wrf',
         success: function(resp) {
-          if (resp.response.numFound == 1) {
+          if (resp.response.numFound >= 1) {
             
             // Remove any previous error message.
             dismissDoiPmidFieldError($(input_element).parent('.error-holder'));
