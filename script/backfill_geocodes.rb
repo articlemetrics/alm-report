@@ -1,8 +1,9 @@
-# Script that backfills the geocodes table based on the most popular
-# locations for all articles in the PLOS corpus.  DOIs for the corpus
-# are retrieved from an ambra DB.
+# Script that backfills the geocodes table based on the most popular locations
+# for a set of PLOS articles.  Article can either be supplied as a text file
+# (one DOI per line), or they will be retrieved from an ambra database.
 #
-# Usage: rails runner script/backfill_geocodes.rb
+# Usage: rails runner script/backfill_geocodes.rb <doi_file>
+#   if <doi_file> is absent, DOIs will instead be retrieved from the ambra DB.
 
 require "mysql2"
 
@@ -24,9 +25,32 @@ DB_PASSWD = ""
 DB_NAME = "ambra"
 
 
-# Returns the SOLR_ARTICLES_TO_QUERY most recent, published articles in the
-# corpus.
-def get_dois
+# Yields batches of DOIs, from the given file if it is defined, or else from the database.
+def get_dois(doi_file, &block)
+  if doi_file.nil?
+    puts "Retrieving DOIs from ambra DB..."
+    get_dois_from_db(&block)
+  else
+    puts "Using #{doi_file}..."
+    get_dois_from_file(doi_file, &block)
+  end
+end
+
+
+# Yields batchs of DOIs from a file.
+def get_dois_from_file(doi_file, &block)
+  dois = File.read(doi_file).split("\n").map{|doi| doi[9..doi.length]}  # Remove "info:doi/"
+  start = 0
+  while start < dois.length && start < SOLR_ARTICLES_TO_QUERY
+    block.call(dois[start, BATCH_SIZE])
+    start += BATCH_SIZE
+  end
+end
+
+
+# Yields batches of DOIs from the ambra database.  They are returned in descending
+# order of publication date.
+def get_dois_from_db(&block)
   client = Mysql2::Client.new(:host => DB_HOST, :port => DB_PORT, :username => DB_USER,
       :password => DB_PASSWD, :database => DB_NAME)
   last_article_id = 1000000000
@@ -43,7 +67,7 @@ def get_dois
       total_articles += 1
     end
     if batch.length > 0
-      yield batch
+      block.call(batch)
     end
   end until last_article_id == 0 || batch.length == 0 || total_articles >= SOLR_ARTICLES_TO_QUERY
 end
@@ -75,8 +99,7 @@ end
 
 
 locations_to_count = Hash.new{|h, k| h[k] = 0}
-puts "Fetching DOIs from ambra DB and location data from solr..."
-get_dois do |dois|
+get_dois(ARGV[0]) do |dois|
   solr = SolrRequest.get_data_for_articles(dois)
   dois.each do |doi|
     if !solr[doi].nil? && !solr[doi]["affiliate"].nil? && solr[doi]["affiliate"].length > 0
