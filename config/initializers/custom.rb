@@ -1,6 +1,7 @@
 # Application-wide settings and constants
 
 require "#{Rails.root}/lib/alm_request.rb"
+require "#{Rails.root}/lib/geocode_request.rb"
 require "#{Rails.root}/lib/solr_request.rb"
 
 # Number of articles to display per page on the add-articles and preview-list
