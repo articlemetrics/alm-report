@@ -125,25 +125,33 @@ class IdController < ApplicationController
   
   
   def process_upload
-    dois = parse_file(params[:"upload-file-field"].read)
+    ids = params[:"upload-file-field"].read.split("\n")
     valid_dois = []
+    valid_pmids = []
     
     # In order to re-use parts of the DOI input form for upload errors, we create
     # form field names for each error.
     error_index = 1
-    add_error = lambda { |doi, error_message|
+    add_error = lambda { |id, error_message|
       error_field = "doi-pmid-#{error_index}".intern
       error_index += 1
       @errors[error_field] = error_message
-      params[error_field] = doi
+      params[error_field] = id
     }
     
-    dois.each do |doi|
-      validated = IdController.validate_doi(doi)
-      if validated.nil?
-        add_error.call(doi, "This DOI/PMID is not a PLOS article")
-      else
-        valid_dois << validated
+    ids.each do |id|
+      id = id.strip
+      if id.length > 0
+        begin
+          valid_pmids << Integer(id)
+        rescue ArgumentError
+          validated = IdController.validate_doi(id)
+          if validated.nil?
+            add_error.call(id, "This DOI/PMID is not a PLOS article")
+          else
+            valid_dois << validated
+          end
+        end
       end
     end
 
@@ -156,11 +164,19 @@ class IdController < ApplicationController
         @saved_dois[doc["id"]] = doc["publication_date"].strftime("%s").to_i
       end
     end
+    
+    pmid_docs = SolrRequest.query_by_pmids(valid_pmids)
+    valid_pmids.each do |pmid|
+      doc = pmid_docs[pmid]
+      if doc.nil?
+        add_error.call(pmid, "This paper could not be found")
+      else
+        @saved_dois[doc["id"]] = doc["publication_date"].strftime("%s").to_i
+      end
+    end
 
     if @errors.length > 0
       @num_valid_dois = @saved_dois.length
-      
-      # TODO: this only renders a mockup right now; not yet functional.
       render "fix_errors"
     else
       redirect_to "/preview-list"
