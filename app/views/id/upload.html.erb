@@ -1,8 +1,9 @@
 <div class="content wrapper">
   <div class="upload-file">
     <h2 class="albert-light-normal">Upload File</h2>
-    <p>Text copy with instructions on what types of ﬁles are acceptable and/or how ﬁles 
-      should be formatted for the ﬁle uploader. <a href="fixme">Sample File</a></p>
+    <p>Bulk upload of articles with a file that contains any combination of
+       DOIs and PMIDs for PLOS articles, one per line.  The application will retrieve
+       the top entries until the maximum of 500 is reached.  <a href="/sample_upload_file.csv">Sample File</a></p>
     <%= form_tag("/upload", :method => "post", :class => "upload-file-form", :multipart => true) do %>
       <%= label_tag(:"upload-file-field", "File path", :class => "hidden") %>
       <%= file_field_tag(:"upload-file-field") %>
