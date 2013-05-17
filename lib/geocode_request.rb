@@ -55,19 +55,30 @@ class GeocodeRequest
   end
   
   
-  # Attempts to geocode the addresses passed in.  Returns a map from input address
-  # to a two-element array, the first element of which is latitude and the second
-  # of which is longitude.
+  # Contains countries where we have affiliate data of the form "City, Province, Country".
+  # For all other countries the affiliate is in the form "Province, Country".
+  @@COUNTRIES_WITH_CITIES = Set.new([
+      "Australia",
+      "Canada",
+      "United States of America",
+      ])
+  
+  # Parses the author affiliates field in the article XML to retrieve the location
+  # of the author.  Returns the location or nil if it cannot be determined.
   #
-  # TODO: unfortunately, there don't seem to be any good APIs that allow you
-  # to send multiple addresses in a single request (bulk or batch queries).
-  # I did find some, but I had never heard of the companies providing them, which
-  # gives me pause since I don't want us to have to change this if our provider
-  # goes belly-up.  Therefore, the current implementation of this method sends one
-  # request per address in the input and could take a very long time!
-  def self.bulk_geocode(addresses)
-    results = {}
-    addresses.each {|address| results[address] = GeocodeRequest.geocode(address)}
+  # TODO: maybe put this somewhere else.  It doesn't really belong here.
+  def self.parse_location_from_affiliate(affiliate)
+    fields = affiliate.split(",")
+    fields.map { |location| location.strip! }
+    if fields.length >= 3
+      if @@COUNTRIES_WITH_CITIES.include?(fields[-1])
+        fields[-3, 3].join(", ")
+      else
+        fields[-2, 2].join(", ")
+      end
+    else
+      nil
+    end
   end
   
 end

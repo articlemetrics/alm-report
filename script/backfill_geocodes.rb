@@ -73,38 +73,13 @@ def get_dois_from_db(&block)
 end
 
 
-# TODO: move somewhere else and also call from ReportsController
-
-# Contains countries where we have affiliate data of the form "City, Province, Country".
-# For all other countries the affiliate is in the form "Province, Country".
-COUNTRIES_WITH_CITIES = Set.new([
-    "Australia",
-    "Canada",
-    "United States of America",
-    ])
-
-def parse_location_from_affiliate(affiliate)
-  fields = affiliate.split(",")
-  fields.map { |location| location.strip! }
-  if fields.length >= 3
-    if COUNTRIES_WITH_CITIES.include?(fields[-1])
-      fields[-3, 3].join(", ")
-    else
-      fields[-2, 2].join(", ")
-    end
-  else
-    nil
-  end
-end
-
-
 locations_to_count = Hash.new{|h, k| h[k] = 0}
 get_dois(ARGV[0]) do |dois|
   solr = SolrRequest.get_data_for_articles(dois)
   dois.each do |doi|
     if !solr[doi].nil? && !solr[doi]["affiliate"].nil? && solr[doi]["affiliate"].length > 0
       solr[doi]["affiliate"].each do |affiliate|
-        location = parse_location_from_affiliate(affiliate)
+        location = GeocodeRequest.parse_location_from_affiliate(affiliate)
         if !location.nil?
           locations_to_count[location] += 1
         end

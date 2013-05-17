@@ -238,10 +238,11 @@ class ReportsController < ApplicationController
       end
     end
   end
+  
 
   def generate_data_for_articles_by_location_chart
     @total_authors_data = 0
-    @article_locations_data = []
+    locations = Hash.new{|h, k| h[k] = 0}
 
     @report.report_dois.each do | report_doi |
       solr_data = report_doi.solr
@@ -252,24 +253,53 @@ class ReportsController < ApplicationController
 
       if (!solr_data["affiliate"].nil?)
         solr_data["affiliate"].each do | affiliate |
-          aff_data = affiliate.split(",")
-          aff_data.map { |location| location.strip! }
-          if aff_data.length >= 3
-            @article_locations_data << [aff_data[-2, 2].join(", "), 1]
+          location = GeocodeRequest.parse_location_from_affiliate(affiliate)
+          if !location.nil?
+            locations[location] += 1
           end
         end
       end
     end
-    # get a unique list of locations
-    @article_locations_data.uniq!
+    
+    found_in_db = {}
+    locations.each do |address, _|
+      geocodes = Geocode.where("address = ?", address)
+      if geocodes.length == 1
+        found_in_db[address] = geocodes[0]
+      end
+    end
+    logger.info("Found #{found_in_db.length} locations in geocodes table, out of #{locations.length} total")
+    
+    # Rendering the map with pre-geocoded info is by far the fastest option.
+    # Otherwise, we send the map data consisting of addresses, which the chart
+    # javascript will sequentially geocode, *slowly*.  However, it's not
+    # feasible to geocode locations here at request time--see comments in
+    # geocode_request.rb.  So, if we happen to have all the info we need in
+    # the geocodes table, we use that, otherwise we do it the slow way.
+    # (Unfortunately, the map chart won't accept data that's a mix of address
+    # and lat/lng.)
+    # TODO: if we have "most" of the data in the DB, use that instead of the
+    # slow way?  (For some definition of most.)
+    if found_in_db.length == locations.length
+      @article_locations_data = [["latitude", "longitude", "color", "size"]]
+      locations.each do |address, count|
 
-    # sizeAxis is a hack to make the marker smaller
-    @article_locations_data.unshift(["locations", "size"])
-
-    # TODO translate the location information to lat and lng
-    # https://developers.google.com/maps/documentation/geocoding/
-    # the reason why the graph is slow is the graph is translating the location information
-    # to lat and long
+        # Relative size of the marker on the map.  It's nice to have this be a function
+        # of the number of authors in that location, but I've found that if we use
+        # a linear scale, the large markers tend to take over the map.  So after
+        # playing around a while I settled on the following concave function.
+        size = Math.atan(Math.log2(count + 1))
+        geo = found_in_db[address]
+        @article_locations_data << [geo.latitude, geo.longitude, size, size]
+      end
+    else
+      logger.warn("Not using geocoded lat/long because we couldn't find all locations in the DB")
+      @article_locations_data = [["location", "color", "size"]]
+      locations.each do |address, count|
+        size = Math.atan(Math.log2(count + 1))
+        @article_locations_data << [address, size, size]
+      end
+    end
   end
 
   # handles download data links

@@ -78,7 +78,8 @@ function drawArticleLocation() {
     tooltip: {
       trigger: 'none'
     },
-    legend: 'none'
+    legend: 'none',
+    colorAxis: {colors: ['#033703', '#00ff40']}
   };
 
   var chart = new google.visualization.GeoChart(document.getElementById('article_location_div'));
