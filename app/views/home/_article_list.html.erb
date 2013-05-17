@@ -12,7 +12,7 @@
     <div class="article-info cf">
       <input class="check-save-article" type="checkbox"
           <%= @articles_checked ? 'checked="yes"' : '' %> name="" id="" value="<%= doc_key %>">
-      <a href="http://dx.doi.org/info:doi/<%= doc['id'] %>"><%= doc["title"] %></a>
+      <a href="http://dx.doi.org/info:doi/<%= doc['id'] %>" target="_blank"><%= doc["title"] %></a>
 
       <% if !doc["author_display"].nil? %>
       <p>
