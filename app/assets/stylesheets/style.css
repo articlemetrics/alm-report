@@ -992,16 +992,17 @@ span.previous {
 
 .pagination-number {
   margin: 0 0 0 1px;
-  background: url(/assets/sprite.png) no-repeat -173px -142px;
+  background: #c2c2c2;
+  border-radius: 4px;
   color: #333 !important; /* i'm sorry about the !important */
 }
 
 .pagination-number:hover {
-  background: url(/assets/sprite.png) no-repeat -148px -142px;
+  background: #fb8903;
 }
 
 .pagination-selected {
-  background: url(/assets/sprite.png) no-repeat -148px -142px;
+  background: #fb8903;
   cursor: default;
 }
 
