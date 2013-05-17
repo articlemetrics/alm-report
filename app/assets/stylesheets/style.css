@@ -967,14 +967,15 @@ input[type="checkbox"] {
 
 .pagination a,
 .pagination span {
-  width: 24px;
-  height: 24px;
-  padding: 4px 0 0;
+  min-width: 24px;
+  height: 22px;
+  padding: 4px 0 0 0;
   display: inline-block;
   vertical-align: top;
   text-align: center;
   font-size: 14px;
   font-weight: bold;
+  text-align: center;
 }
 
 .pagination .ellipses {
