@@ -1,18 +1,20 @@
 
 <div class="content wrapper">
-  <div class="article-lists">
-  <form class="preview-form" action="/preview-list" method="get">
-    <h2 class="albert-light-normal">Review your list of articles</h2>
-    <p><%= @start_result %>-<%= @end_result %> of <%= @total_found %> articles</p>
-    <% @articles_checked = true %>
-    <%= render "article_list" %>
-    <div class="input-list">
-      <input class="button-hover-dark-black submit-btn update-list-btn" type="submit"
-          value="Update List" onClick="window.location.href='/preview-list'; return false;" />
-      <input class="reset-btn" type="reset" value="Clear All" />
-    </div>
-  </form>
+
+  <div class="preview-list">
+    <form class="preview-form" action="/preview-list" method="get">
+      <h2 class="albert-light-normal">Review your list of articles</h2>
+      <p><%= @start_result %>-<%= @end_result %> of <%= @total_found %> articles</p>
+      <% @articles_checked = true %>
+      <%= render "article_list" %>
+      <div class="input-list">
+        <input class="button-hover-dark-black submit-btn update-list-btn" type="submit"
+            value="Update List" onClick="window.location.href='/preview-list'; return false;" />
+        <input class="reset-btn" type="reset" value="Clear All" />
+      </div>
+    </form>
   </div>
+
   <div class="preview-list-aside aside-container rollover-fixed">
     <form class="preview-list-aside-form" action="/reports/generate" method="get">
       <input class="button-hover-dark-black submit-btn right-list-btn" type="submit" value="Create Report" />
@@ -25,4 +27,5 @@
       <li><a href="/upload" class="article-links">Upload File</a></li>
     </ul>
   </div>
+
 </div>
