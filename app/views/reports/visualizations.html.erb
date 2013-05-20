@@ -9,7 +9,7 @@
           <span class="list-numbers">1</span>
           <h2 class="albert-light-normal">Article Usage and Citations as a function of Age</h2>
         </div>
-        <div id="article_usage_and_citations_age_div" class="report-graph" style="width: 670px; height: 392px;"></div>
+        <div id="article_usage_and_citations_age_div" style="width: 670px; height: 392px;"></div>
         <p class="info">Total usage includes page views and downloads from PLOS and PMC.
           Bubble size correlates with Scopus citations and bubble color with the PLOS journal.
         </p>
@@ -25,7 +25,7 @@
           <span class="list-numbers">2</span>
           <h2 class="albert-light-normal">Article Usage and Mendeley Bookmarks as a Function of Time</h2>
         </div>
-        <div id="article_usage_and_mendeley_age_div" class="report-graph" style="width: 670px; height: 392px;"></div>
+        <div id="article_usage_and_mendeley_age_div" style="width: 670px; height: 392px; margin-top: 15px;"></div>
         <p class="info">Total usage includes page views and downloads from PLOS and PMC.
           Bubble size correlates with Mendeley bookmarks and bubble color with the PLOS journal.
         </p>
@@ -37,9 +37,11 @@
       </div>
 
       <div class="visualizations-list">
-        <span class="list-numbers">3</span>
-        <h2 class="albert-light-normal">Article Usage by Subject Area</h2>
-        <div id="article_subject_div" class="report-graph" style="width: 670px; height: 392px;"></div>
+        <div class="reports-header-div">
+          <span class="list-numbers">3</span>
+          <h2 class="albert-light-normal">Article Usage by Subject Area</h2>
+        </div>
+        <div id="article_subject_div" style="width: 670px; height: 392px;"></div>
         <p class="info">
           Rectangle size correlates with the number of articles associated with the subject area and the color intensity with total usage.
         </p>
@@ -54,7 +56,7 @@
           <span class="list-numbers">4</span>
           <h2 class="albert-light-normal">Research Articles by Location</h2>
         </div>
-        <div id="article_location_div" class="report-graph" style="width: 670px; height: 392px;"></div>
+        <div id="article_location_div" style="width: 670px; height: 392px;"></div>
         <p class="info">Geolocation of <%= @total_authors_data %> authors for <%= @report.report_dois.length %> articles</p>
         <p>
           SOURCE: <%= @report.report_dois.length %> published articles from
