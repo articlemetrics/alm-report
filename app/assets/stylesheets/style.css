@@ -2215,3 +2215,26 @@ div.selector select {
 #error-message-div a {
   color: #000;
 }
+
+
+
+
+
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+/*.dot {
+  stroke: #000;
+}*/
+
+/*.axis .tick {
+    stroke: lightgrey;
+    opacity: 0.7;
+}
+.grid path {
+      stroke-width: 0;
+}*/

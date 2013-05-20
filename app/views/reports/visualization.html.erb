@@ -8,7 +8,7 @@
         <span class="list-numbers">1</span>
         <h2 class="albert-light-normal">Article Usage over time</h2>
       </div>
-      <div id="article_usage_div" class="report-graph" style="width: 670px; height: 392px;"></div>
+      <div id="article_usage_div" style="width: 670px; height: 392px;"></div>
       <p class="info">Description</p>
     </div>
 
@@ -17,7 +17,7 @@
         <span class="list-numbers">2</span>
         <h2 class="albert-light-normal">Citation over time</h2>
       </div>
-      <div id="article_citation_div" class="report-graph" style="width: 670px; height: 392px;"></div>
+      <div id="article_citation_div" style="width: 670px; height: 392px;"></div>
       <p class="info">Description</p>
     </div>    
   
@@ -26,10 +26,19 @@
         <span class="list-numbers">3</span>
         <h2 class="albert-light-normal">Social Activity</h2>
       </div>
-      <div id="social_heatmap_div" class="report-graph" style="width: 670px; height: 392px;"></div>
+      <div id="social_scatter_div" style="width: 670px; height: 392px;"></div>
+      <div id="social_scatter_d3_div" class="report-graph" style="width: 670px; height: 392px;"></div>
       <p class="info">Description</p>
     </div>
 
+    <div class="visualizations-list">
+      <div class="reports-header-div">
+        <span class="list-numbers">4</span>
+        <h2 class="albert-light-normal">Mendeley Readers</h2>
+      </div>
+      <div id="article_mendeley_readers_div" style="width: 670px; height: 392px;"></div>
+      <p class="info">Description</p>
+    </div>
   </div>
 
   
@@ -55,32 +64,17 @@ function getArticleCitationData() {
   return <%= raw @article_citation_data %>;
 }
 
-function getSocialHeatMapData() {
- //return <%= raw @social_heatmap %>;
- var blah =  <%= raw @social_heatmap.to_json %>;
+function getSocialScatterData() {
+  return <%= raw @social_scatter.to_json %>;
+}
 
- // var data = new Array();
- // var i = 0;
+function getSocialScatterDataD3() {
+  return <%= raw @social_scatter_d3.to_json %>;
+}
 
- // for (i = 0; i < blah.length; i++) {
- //  data.push(blah[i]); 
- // }
 
- // return data;
-
-//  var blah = [
-//  ["Date","Citeulike","Research Blogging","nature","science seeker","twitter"],
-//  [0,3,15,null,null,null]
-// // [4,null,1,null,null,null],
-// // [9,1,null,null,null,null],
-// // [10,1,1,null,null,null],
-// // [24,1,null,null,null,null],
-// // [35,1,1,null,null,null],
-// // [38,null,null,null,null,1],
-// // [46,null,null,null,null,1]
-//  ];
-
- return blah;
+function getMendeleyReaderData() {
+ return  <%= raw @reader_data %>;
 }
 
 </script>
