@@ -2127,7 +2127,7 @@ div.selector select {
 }
 
 .add-select-box-holder div.selector {
-  width: 170px !important;
+  width: 260px !important;
   height: 36px;
   padding: 0 0 0 16px;
   font-size: 18px;
@@ -2150,7 +2150,7 @@ div.selector select {
 }
 
 .add-select-box-holder div.selector select {
-  width: 185px;
+  width: 275px;
 }
 
 .add-select-box-holder div.selector.focus:active,
