@@ -2221,3 +2221,34 @@ div.selector select {
 .doi-pmid-error-div {
   margin: 0 0 18px 0;
 }
+
+
+/* static page */
+.static_page div {
+ font-size: 14px;
+ margin-top: 18px;
+ margin-bottom: 18px;
+}
+
+.static_page a {
+  color: #369;
+}
+
+.static_page a:hover {
+  text-decoration: underline;
+}
+
+.static_page ul {
+  display: block;
+  padding-left: 30px;
+}
+
+.static_page li {
+  list-style-type: disc;
+  font-size: 14px;
+  margin-top: 8px;
+}
+
+.static_page h3 {
+  font-weight: bold;
+}

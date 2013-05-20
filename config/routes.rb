@@ -20,5 +20,6 @@ AlmReport::Application.routes.draw do
   match "/about" => "static_pages#about"
   match "/privacy_policy" => "static_pages#privacy_policy"
   match "/terms_of_use" => "static_pages#terms_of_use"
+  match "/samples" => "static_pages#samples"
 
 end
