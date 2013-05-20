@@ -5,3 +5,15 @@
 #
 #   cities = City.create([{ name: 'Chicago' }, { name: 'Copenhagen' }])
 #   Mayor.create(name: 'Emanuel', city: cities.first)
+
+require "csv"
+
+CSV.foreach("db/more_geocodes.csv") do |row|
+  begin
+    Geocode.create!(:address => row[0], :latitude => row[1].to_f, :longitude => row[2].to_f)
+  rescue ActiveRecord::RecordNotUnique
+    
+    # Fine to ignore duplicate key errors, since these might have already
+    # been added.
+  end
+end
