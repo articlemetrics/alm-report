@@ -90,6 +90,14 @@ class HomeController < ApplicationController
   end
   
   
+  # Simple AJAX action that returns the count of articles stored in the session.
+  def get_article_count
+    respond_to do |format|
+      format.json {render :json => @saved_dois.length}
+    end
+  end
+  
+  
   # Queries solr for the results used by select_all_search_results.
   def get_all_results
     page = params.delete(:current_page)

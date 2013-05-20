@@ -24,6 +24,17 @@ jQuery(function(d, $){
         $('.unselect-all-articles-link').on("click", { 'mode' : "REMOVE" }, jQuery.proxy(this.toggleAllArticles, this));
         $('.reset-btn').on("click", { 'mode' : "REMOVE" }, jQuery.proxy(this.toggleAllArticles, this));
         $('#select_all_searchresults').on("click", jQuery.proxy(this.selectAllSearchResults, this));
+        
+        // We want the preview list count to be accurate even if the user navigates
+        // with the back button.  So we always load the current preview list count
+        // via ajax.
+        $.ajax("/get-article-count", {
+          type: "GET",
+          cache: false,
+          success: jQuery.proxy(function(resp) {
+            this.updateListCount(resp);
+          }, this)
+        });
       },
 
       // Replaces the preview list counts in the UI with the new value.
