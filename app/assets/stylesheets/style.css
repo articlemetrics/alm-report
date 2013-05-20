@@ -754,7 +754,7 @@ select {
 
 .preview-form {
   width: 628px;
-  margin: 45px 0 0 38px;
+  margin: 45px 0 0 0;
   display: inline-block;
 }
 
