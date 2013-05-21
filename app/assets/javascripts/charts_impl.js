@@ -134,110 +134,9 @@ function drawArticleSocialScatter() {
     pointSize: 15
   };
 
-// var options = {
-//   chartArea: {height: '85%'},
-// backgroundColor: '#efefef',
-// hAxis: {title: 'Months', minValue: 0},
-// vAxis: {title: 'Activity', minValue: 0},
-// };
   var chart = new google.visualization.ScatterChart(document.getElementById('social_scatter_div'));
   chart.draw(data, options);
 }
-
-function drawArticleSocialScatterD3() {
-var data = getSocialScatterDataD3();
-
-  // var margin = {top: 20, right: 20, bottom: 50, left: 60},
-  //   width = 510 - margin.left - margin.right,
-  //   height = 300 - margin.top - margin.bottom;
-
-  var margin = {top: 20, right: 150, bottom: 50, left: 60},
-    width = 670 - margin.left - margin.right,
-    height = 300 - margin.top - margin.bottom;
-
-
-var x = d3.scale.linear().range([0, width]).domain([0, 100]);
-var y = d3.scale.linear().range([height, 0]).domain([0, 800]);
-
-var color = d3.scale.category10();
-
-var xAxis = d3.svg.axis()
-    .scale(x)
-    .orient("bottom")
-    .ticks(5)
-    .tickSize(-height, 0, 0);
-
-var yAxis = d3.svg.axis()
-    .scale(y)
-    .orient("left")
-    .ticks(5)
-    .tickSize(-width, 0, 0);
-
-var svg = d3.select("#social_scatter_d3_div").append("svg")
-    .attr("width", width + margin.left + margin.right)
-    .attr("height", height + margin.top + margin.bottom)
-  .append("g")
-    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-  svg.append("g")
-      .attr("class", "x axis")
-      .attr("transform", "translate(0," + height + ")")
-      .call(xAxis)
-    .append("text")
-      .attr("class", "label")
-      .attr("x", ((width / 2)+ 40))
-      .attr("y", 45)
-      .style("text-anchor", "end")
-      .text("Months");
-
-  svg.append("g")
-      .attr("class", "y axis")
-      .call(yAxis)
-    .append("text")
-      .attr("class", "label")
-      .attr("transform", "rotate(-90)")
-      .attr("y", -60)
-      .attr("x", ((height / 2 * -1) + 40))
-      .attr("dy", ".71em")
-      .style("text-anchor", "end")
-      .text("Activity")
-
-  svg.selectAll(".dot")
-      .data(data)
-    .enter().append("circle")
-      .attr("class", "dot")
-      .attr("r", function(d) { 
-        if (d[1] > 0) {
-          return 9;
-        } else {
-          return 0;
-        }
-      })
-      .attr("cx", function(d, i) { return x(d[0]); })
-      .attr("cy", function(d, i) { return y(d[1]); })
-      .style("fill", function(d) { return color(d[2]); });      
-
-  var legend = svg.selectAll(".legend")
-      .data(color.domain())
-    .enter().append("g")
-      .attr("class", "legend")
-      .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
-  legend.append("rect")
-      .attr("x", width + 15)
-      .attr("width", 18)
-      .attr("height", 18)
-      .style("fill", color);
-
-  legend.append("text")
-      .attr("x", width + 40)
-      .attr("y", 9)
-      .attr("dy", ".35em")
-      .style("text-anchor", "start")
-      .text(function(d) { return d; });
-
-
-}
-
 
 
 function drawArticleMendeleyData() {
@@ -254,10 +153,8 @@ function drawReportGraphs() {
     if (drawVizForOne()) {
       drawArticleUsageAge();
       drawArticleCitationAge();
-      drawArticleMendeleyData();
-
       drawArticleSocialScatter();
-      drawArticleSocialScatterD3();
+      drawArticleMendeleyData();
 
     } else {
       drawArticleUsageCitationsAge();

@@ -122,6 +122,7 @@ class ReportsController < ApplicationController
 
     @draw_viz = true
     if (one_article_report && @report.report_dois.length == 1)
+      #render single article report
       generate_data_for_usage_chart
       generate_data_for_citation_chart
       generate_data_for_social_data_chart
@@ -289,12 +290,10 @@ class ReportsController < ApplicationController
     end
   end
 
-
+  # Generate data for single article usage chart 
   def generate_data_for_usage_chart
-    # sort the counter data
-    # ignore the gaps
-    # make sure it starts on the publication date?
 
+    # get counter and pmc usage stat data
     counter = @report.report_dois[0].alm[:counter]
     pmc = @report.report_dois[0].alm[:pmc]
 
@@ -310,12 +309,15 @@ class ReportsController < ApplicationController
       result
     end
 
+    # sort the keys by date (using counter data)
     sorted_keys = counter_data.keys.sort { | data1, data2 | data1 <=> data2 }
 
     @article_usage_data = []
-    @article_usage_data << ["month", "Html Views", "PDF Views", "XML Views"]
+    @article_usage_data << ["Months", "Html Views", "PDF Views", "XML Views"]
     month_index = 0
 
+    # process the usage data in order 
+    # ignore gaps 
     sorted_keys.each do | key |
       counter_month_data = counter_data[key]
       pmc_month_data = pmc_data[key]
@@ -330,24 +332,25 @@ class ReportsController < ApplicationController
 
   end
 
-
+  # generate data for single article citation chart
   def generate_data_for_citation_chart
 
     crossref_history_data = process_history_data(@report.report_dois[0].alm[:crossref])
     pubmed_history_data = process_history_data(@report.report_dois[0].alm[:pubmed])
     scopus_history_data = process_history_data(@report.report_dois[0].alm[:scopus])
 
-    publication_date = Date.parse(@report.report_dois[0].alm[:publication_date])
-
+    # starting date is the publication date
+    data_date = Date.parse(@report.report_dois[0].alm[:publication_date])
     current_date = DateTime.now.to_date
-    data_date = publication_date
 
     @article_citation_data = []
-    @article_citation_data << ["Date", "CrossRef", "PubMed", "Scopus"]
+    @article_citation_data << ["Months", "CrossRef", "PubMed", "Scopus"]
 
     prev_crossref_data = 0
     prev_pubmed_data = 0
     prev_scopus_data = 0
+
+    month_index = 0
 
     while (current_date > data_date) do
       key = "#{data_date.year}-#{data_date.month}"
@@ -361,8 +364,9 @@ class ReportsController < ApplicationController
       pubmed_data = prev_pubmed_data if (pubmed_data < prev_pubmed_data)
       scopus_data = prev_scopus_data if (scopus_data < prev_scopus_data)
 
-      @article_citation_data << [key, crossref_data, pubmed_data, scopus_data]
+      @article_citation_data << [month_index, crossref_data, pubmed_data, scopus_data]
       data_date = data_date >> 1
+      month_index = month_index + 1
 
       prev_crossref_data = crossref_data
       prev_pubmed_data = pubmed_data
@@ -370,190 +374,91 @@ class ReportsController < ApplicationController
     end
   end
 
+  # Generate data for single article social media chart
   def generate_data_for_social_data_chart
+
+    social_data = []
+
     citeulike = @report.report_dois[0].alm[:citeulike]
-
-    citeulike_data = {}
-
-    citeulike.each do | data |
-      post_date = Date.parse(data["event"]["post_time"])
-      key = "#{post_date.year}-#{post_date.month}"
-      citeulike_data[key] = citeulike_data[key].to_i + 1
-    end
+    citeulike_data = process_social_data(citeulike, "post_time")
+    social_data << {:data => citeulike_data, :column_name => "CiteULike", :column_key => "citeulike"}
 
     research_blogging = @report.report_dois[0].alm[:researchblogging]
-    research_blogging_data = {}
-    research_blogging.each do | data |
-      post_date = Date.parse(data["event"]["published_date"])
-      research_blogging_data["#{post_date.year}-#{post_date.month}"] = research_blogging_data["#{post_date.year}-#{post_date.month}"].to_i + 1
-    end
+    research_blogging_data = process_social_data(research_blogging, "published_date")
+    social_data << {:data => research_blogging_data, :column_name => "Research Blogging", :column_key => "research_blogging"}
 
     nature = @report.report_dois[0].alm[:nature]
-    nature_data = {}
-    nature.each do | data |
-      post_date = Date.parse(data["event"]["published_at"])
-      nature_data["#{post_date.year}-#{post_date.month}"] = nature_data["#{post_date.year}-#{post_date.month}"].to_i + 1
-    end
+    nature_data = process_social_data(nature, "published_at")
+    social_data << {:data => nature_data, :column_name => "Nature", :column_key => "nature"}
 
     science_seeker = @report.report_dois[0].alm[:scienceseeker]
-    science_seeker_data = {}
-    science_seeker.each do | data |
-      post_date = Date.parse(data["event"]["updated"])
-      science_seeker_data["#{post_date.year}-#{post_date.month}"] = science_seeker_data["#{post_date.year}-#{post_date.month}"].to_i + 1
-    end
+    science_seeker_data = process_social_data(science_seeker, "updated")
+    social_data << {:data => science_seeker_data, :column_name => "Science Seeker", :column_key => "science_seeker"}
 
     twitter = @report.report_dois[0].alm[:twitter]
-    twitter_data = {}
-    twitter.each do | data |
-      post_date = Date.parse(data["event"]["created_at"])
-      twitter_data["#{post_date.year}-#{post_date.month}"] = twitter_data["#{post_date.year}-#{post_date.month}"].to_i + 1
+    twitter_data = process_social_data(twitter, "created_at")
+    social_data << {:data => twitter_data, :column_name => "Twitter", :column_key => "twitter"}
+
+    # start at article publication date
+    data_date = Date.parse(@report.report_dois[0].alm[:publication_date])
+    current_date = DateTime.now.to_date
+
+    @social_scatter = []
+
+    column_header = []
+    column_header << "Date"
+    index = 1
+    column = {}
+
+    social_data.each do | data | 
+      if (!data[:data].empty?)
+        column_header << data[:column_name]
+        column[data[:column_key]] = index
+        index = index + 1
+      end
     end
 
-    publication_date = Date.parse(@report.report_dois[0].alm[:publication_date])
+    @social_scatter << column_header
 
-    # SCATTER GRAPH!!
-    current_date = DateTime.now.to_date
-    data_date = publication_date
     month_index = 0
-
-     @social_scatter = []
-
-     column_header = []
-     column_header << "Date"
-     index = 1
-     column = {}
-
-     if (!citeulike_data.empty?)
-      column_header << "Citeulike" 
-      column[:citeulike] = index
-      index = index + 1
-     end
-
-     if (!research_blogging_data.empty?)
-      column_header << "Research Blogging" 
-      column[:research_blogging] = index 
-      index = index + 1
-     end
-
-     if (!nature_data.empty?)
-      column_header << "Nature" 
-      column[:nature] = index 
-      index = index + 1
-     end
-
-     if (!science_seeker_data.empty?)
-      column_header << "Science Seeker" 
-      column[:science_seeker] = index 
-      index = index + 1
-     end
-
-     if (!twitter_data.empty?)
-      column_header << "Twitter" 
-      column[:twitter] = index 
-      index = index + 1
-     end
-         
-     @social_scatter << column_header
-
     while (current_date > data_date) do
       key = "#{data_date.year}-#{data_date.month}"
 
-      if (!citeulike_data[key].nil?)
-        row = Array.new(column_header.size)
-        row[0] = month_index
-        row[column[:citeulike]] = citeulike_data[key].to_i
-        @social_scatter << row
-      else
-        row = Array.new(column_header.size)
-        row[0] = month_index
-        row[column[:citeulike]] = -5
-        @social_scatter << row        
-      end
-
-      if (!research_blogging_data[key].nil?)
-        row = Array.new(column_header.size)
-        row[0] = month_index
-        row[column[:research_blogging]] = research_blogging_data[key].to_i
-        @social_scatter << row
-      else
-        row = Array.new(column_header.size)
-        row[0] = month_index
-        row[column[:research_blogging]] = -5
-        @social_scatter << row        
-      end
-
-      if (!nature_data[key].nil?)
-        row = Array.new(column_header.size)
-        row[0] = month_index
-        row[column[:nature]] = nature_data[key].to_i
-        @social_scatter << row
-           
-      end
-
-      if (!science_seeker_data[key].nil?)
-        row = Array.new(column_header.size)
-        row[0] = month_index
-        row[column[:science_seeker]] = science_seeker_data[key].to_i
-        @social_scatter << row
-      end
-
-      if (!twitter_data[key].nil?)
-        row = Array.new(column_header.size)
-        row[0] = month_index
-        row[column[:twitter]] = twitter_data[key].to_i
-        @social_scatter << row
+      social_data.each do | data |
+        month_data = data[:data][key]
+        if (!month_data.nil?)
+          row = Array.new(column_header.size)
+          row[0] = month_index
+          col_index = column[data[:column_key]]
+          row[col_index] = month_data.to_i
+          @social_scatter << row
+        end
       end
       
       month_index = month_index + 1
       data_date = data_date >> 1
     end
-
-@social_scatter_d3 = []
-    current_date = DateTime.now.to_date
-    data_date = publication_date
-    month_index = 0
-
-    while (current_date > data_date) do
-      key = "#{data_date.year}-#{data_date.month}"
-
-      @social_scatter_d3 << [month_index, citeulike_data[key].to_i, "CiteULike"]
-@social_scatter_d3 << [month_index, research_blogging_data[key].to_i, "Research Blogging"]
-        @social_scatter_d3 << [month_index, nature_data[key].to_i, "Nature"]
-        @social_scatter_d3 << [month_index, science_seeker_data[key].to_i, "Science Seeker"]
-@social_scatter_d3 << [month_index, twitter_data[key].to_i, "Twitter"]
-
-      # if (!citeulike_data[key].nil?)
-      #   @social_scatter_d3 << [month_index, citeulike_data[key].to_i, "citeulike"]
-      # end
-
-      # if (!research_blogging_data[key].nil?)
-      #   @social_scatter_d3 << [month_index, research_blogging_data[key].to_i, "research_blogging"]
-      # end
-
-      # if (!nature_data[key].nil?)
-      #   @social_scatter_d3 << [month_index, nature_data[key].to_i, "nature_data"]
-      # end
-
-      # if (!science_seeker_data[key].nil?)
-      #   @social_scatter_d3 << [month_index, science_seeker_data[key].to_i, "science_seeker_data"]
-      # end
-
-      # if (!twitter_data[key].nil?)
-      #   @social_scatter_d3 << [month_index, twitter_data[key].to_i, "twitter_data"]
-      # end
-      
-      month_index = month_index + 1
-      data_date = data_date >> 1
-    end
-
   end
 
+
+  def process_social_data(raw_social_data, date_key)
+    social_data = {}
+
+    raw_social_data.each do | data |
+      post_date = Date.parse(data["event"][date_key])
+      key = "#{post_date.year}-#{post_date.month}"
+      social_data[key] = social_data[key].to_i + 1
+    end
+
+    return social_data
+  end
+
+
+  # Gather Mendeley reader information for geo chart
   def generate_data_for_mendeley_reader_chart
     mendeley = @report.report_dois[0].alm[:mendeley]
 
-puts "!!!!!!!!!MENDELEY #{mendeley.inspect}"
     reader_country = mendeley["stats"]["country"]
-
 
     @reader_data = []
     @reader_data << ["Country", "Readers"]
@@ -561,8 +466,8 @@ puts "!!!!!!!!!MENDELEY #{mendeley.inspect}"
     reader_country.each do | data |
       @reader_data << [data["name"], data["value"]]
     end
-
   end
+
 
   def process_history_data(history_data)
 
