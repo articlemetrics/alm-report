@@ -693,6 +693,7 @@ select {
 
 .error-holder {
   background: #f0d5d8;
+  white-space: nowrap;
 }
 
 .doi-pmid-form .input-holder div p {
@@ -708,11 +709,12 @@ select {
 }
 
 .doi-pmid-form .input-holder div span {
-  margin: 15px 0 0 106px;
+  margin: 15px 10px 0 60px;
   padding: 0 22px 0 0;
   display: inline-block;
   vertical-align: top;
-  background: url(/assets/remove-background.png) right center no-repeat;
+  float: right;
+  background: url(/assets/remove-background.png) 55px center no-repeat;
   font-size: 12px;
   cursor: pointer;
   color: #c27e86;
@@ -1800,10 +1802,6 @@ input[type="file"] {
   font-size: 14px;
 }
 
-.error-holder p {
-  width: 23%;
-  margin: 0 15px 0 20px;
-}
 .upload-file .doi-pmid-form .error-holder p{
   color: #e53350;
 }
