@@ -5,6 +5,7 @@ class ReportsController < ApplicationController
   def generate
     dois = session[:dois]
     if dois.nil?
+
       
       # TODO: user-friendly error handling
       raise "No DOIs saved in session!"
@@ -14,6 +15,7 @@ class ReportsController < ApplicationController
     if !@report.save
       raise "Error saving report"
     end
+
     
     # Convert to array, sorted in descending order by timestamp, then throw away the timestamps.
     dois = dois.sort_by{|doi, timestamp| -timestamp}.collect{|x| x[0]}
@@ -21,6 +23,7 @@ class ReportsController < ApplicationController
     if @report.save
       redirect_to :action => "metrics", :id => @report.id
     else
+
       
       # TODO
     end
@@ -40,12 +43,15 @@ class ReportsController < ApplicationController
     end
     session[:dois] = saved_dois
   end
+
+
   
   
   def metrics
     load_report(params[:id])
     @report_sub_tab = :metrics
     @title = "Report Metrics"
+
     
     # validate dois.  remove dois that are pulled / deleted (this happens rarely)
     valid_dois = SolrRequest.validate_dois(@report.report_dois)
@@ -72,6 +78,7 @@ class ReportsController < ApplicationController
 
       results_per_page = 5
       set_paging_vars(params[:current_page], results_per_page)
+
       
       # Create a new array for display that is only the articles on the current page,
       # to limit what we have to load from solr and ALM.
@@ -122,9 +129,11 @@ class ReportsController < ApplicationController
 
     @draw_viz = true
     if (one_article_report && @report.report_dois.length == 1)
+      #render single article report
       generate_data_for_usage_chart
       generate_data_for_citation_chart
       generate_data_for_social_data_chart
+      generate_data_for_mendeley_reader_chart
 
       render 'visualization.html.erb'
     else
@@ -167,6 +176,7 @@ class ReportsController < ApplicationController
           doi.alm = alm
         end
       end
+
       
       # Set the display index as a property for rendering.
       doi.display_index = i
@@ -201,6 +211,7 @@ class ReportsController < ApplicationController
 
   def generate_data_for_subject_area_chart
     @article_usage_citation_subject_area_data = []
+
     
     placeholder_subject = 'subject'
 
@@ -319,41 +330,67 @@ class ReportsController < ApplicationController
   end
   
 
+  # Generate data for single article usage chart 
   def generate_data_for_usage_chart
-    # sort the counter data
-    # ignore the gaps
-    # make sure it starts on the publication date?
 
+    # get counter and pmc usage stat data
     counter = @report.report_dois[0].alm[:counter]
+    pmc = @report.report_dois[0].alm[:pmc]
+
+    counter_data = counter.inject({}) do | result, month_data |
+      month_date = Date.new(month_data["year"].to_i, month_data["month"].to_i, 1)
+      result[month_date] = month_data
+      result
+    end
+
+    pmc_data = pmc.inject({}) do | result, month_data |
+      month_date = Date.new(month_data["year"].to_i, month_data["month"].to_i, 1)
+      result[month_date] = month_data
+      result
+    end
+
+    # sort the keys by date (using counter data)
+    sorted_keys = counter_data.keys.sort { | data1, data2 | data1 <=> data2 }
 
     @article_usage_data = []
-    @article_usage_data << ["month", "Html Views", "PDF Views", "XML Views"]
+    @article_usage_data << ["Months", "Html Views", "PDF Views", "XML Views"]
     month_index = 0
 
-    counter.each do | month_data |
-      @article_usage_data << [month_index, month_data["html_views"].to_i, month_data["pdf_views"].to_i, month_data["xml_views"].to_i]
+    # process the usage data in order 
+    # ignore gaps 
+    sorted_keys.each do | key |
+      counter_month_data = counter_data[key]
+      pmc_month_data = pmc_data[key]
+
+      html_views = pmc_month_data.nil? ? counter_month_data["html_views"].to_i : counter_month_data["html_views"].to_i + pmc_month_data["full-text"].to_i
+      pdf_views = pmc_month_data.nil? ? counter_month_data["pdf_views"].to_i : counter_month_data["pdf_views"].to_i + pmc_month_data["pdf"].to_i
+      xml_views = counter_month_data["xml_views"].to_i
+
+      @article_usage_data << [month_index, html_views, pdf_views, xml_views]
       month_index = month_index + 1
     end
+
   end
 
-
+  # generate data for single article citation chart
   def generate_data_for_citation_chart
 
     crossref_history_data = process_history_data(@report.report_dois[0].alm[:crossref])
     pubmed_history_data = process_history_data(@report.report_dois[0].alm[:pubmed])
     scopus_history_data = process_history_data(@report.report_dois[0].alm[:scopus])
 
-    publication_date = Date.parse(@report.report_dois[0].alm[:publication_date])
-
+    # starting date is the publication date
+    data_date = Date.parse(@report.report_dois[0].alm[:publication_date])
     current_date = DateTime.now.to_date
-    data_date = publication_date
 
     @article_citation_data = []
-    @article_citation_data << ["Date", "CrossRef", "PubMed", "Scopus"]
+    @article_citation_data << ["Months", "CrossRef", "PubMed", "Scopus"]
 
-    prev_crossref_data = 0 
+    prev_crossref_data = 0
     prev_pubmed_data = 0
     prev_scopus_data = 0
+
+    month_index = 0
 
     while (current_date > data_date) do
       key = "#{data_date.year}-#{data_date.month}"
@@ -367,8 +404,9 @@ class ReportsController < ApplicationController
       pubmed_data = prev_pubmed_data if (pubmed_data < prev_pubmed_data)
       scopus_data = prev_scopus_data if (scopus_data < prev_scopus_data)
 
-      @article_citation_data << [key, crossref_data, pubmed_data, scopus_data]
+      @article_citation_data << [month_index, crossref_data, pubmed_data, scopus_data]
       data_date = data_date >> 1
+      month_index = month_index + 1
 
       prev_crossref_data = crossref_data
       prev_pubmed_data = pubmed_data
@@ -376,9 +414,100 @@ class ReportsController < ApplicationController
     end
   end
 
+  # Generate data for single article social media chart
   def generate_data_for_social_data_chart
 
+    social_data = []
+
+    citeulike = @report.report_dois[0].alm[:citeulike]
+    citeulike_data = process_social_data(citeulike, "post_time")
+    social_data << {:data => citeulike_data, :column_name => "CiteULike", :column_key => "citeulike"}
+
+    research_blogging = @report.report_dois[0].alm[:researchblogging]
+    research_blogging_data = process_social_data(research_blogging, "published_date")
+    social_data << {:data => research_blogging_data, :column_name => "Research Blogging", :column_key => "research_blogging"}
+
+    nature = @report.report_dois[0].alm[:nature]
+    nature_data = process_social_data(nature, "published_at")
+    social_data << {:data => nature_data, :column_name => "Nature", :column_key => "nature"}
+
+    science_seeker = @report.report_dois[0].alm[:scienceseeker]
+    science_seeker_data = process_social_data(science_seeker, "updated")
+    social_data << {:data => science_seeker_data, :column_name => "Science Seeker", :column_key => "science_seeker"}
+
+    twitter = @report.report_dois[0].alm[:twitter]
+    twitter_data = process_social_data(twitter, "created_at")
+    social_data << {:data => twitter_data, :column_name => "Twitter", :column_key => "twitter"}
+
+    # start at article publication date
+    data_date = Date.parse(@report.report_dois[0].alm[:publication_date])
+    current_date = DateTime.now.to_date
+
+    @social_scatter = []
+
+    column_header = []
+    column_header << "Date"
+    index = 1
+    column = {}
+
+    social_data.each do | data | 
+      if (!data[:data].empty?)
+        column_header << data[:column_name]
+        column[data[:column_key]] = index
+        index = index + 1
+      end
+    end
+
+    @social_scatter << column_header
+
+    month_index = 0
+    while (current_date > data_date) do
+      key = "#{data_date.year}-#{data_date.month}"
+
+      social_data.each do | data |
+        month_data = data[:data][key]
+        if (!month_data.nil?)
+          row = Array.new(column_header.size)
+          row[0] = month_index
+          col_index = column[data[:column_key]]
+          row[col_index] = month_data.to_i
+          @social_scatter << row
+        end
+      end
+      
+      month_index = month_index + 1
+      data_date = data_date >> 1
+    end
   end
+
+
+  def process_social_data(raw_social_data, date_key)
+    social_data = {}
+
+    raw_social_data.each do | data |
+      post_date = Date.parse(data["event"][date_key])
+      key = "#{post_date.year}-#{post_date.month}"
+      social_data[key] = social_data[key].to_i + 1
+    end
+
+    return social_data
+  end
+
+
+  # Gather Mendeley reader information for geo chart
+  def generate_data_for_mendeley_reader_chart
+    mendeley = @report.report_dois[0].alm[:mendeley]
+
+    reader_country = mendeley["stats"]["country"]
+
+    @reader_data = []
+    @reader_data << ["Country", "Readers"]
+
+    reader_country.each do | data |
+      @reader_data << [data["name"], data["value"]]
+    end
+  end
+
 
   def process_history_data(history_data)
 
@@ -388,27 +517,29 @@ class ReportsController < ApplicationController
     history_data.sort! { | data1, data2 | Date.parse(data1["update_date"]) <=> Date.parse(data2["update_date"]) }
 
     data = history_data[0]
-    data_date = Date.parse(data["update_date"])
-    monthly_historical_data["#{data_date.year}-#{data_date.month}"] = data["total"]
-
-    current_date = data_date
-
-    history_data.each do | data |
+    if (!data.nil?)
       data_date = Date.parse(data["update_date"])
+      monthly_historical_data["#{data_date.year}-#{data_date.month}"] = data["total"]
 
-      if (current_date.year == data_date.year)
-        if (current_date.month == data_date.month)
+      current_date = data_date
 
-        elsif (current_date.month < data_date.month)
+      history_data.each do | data |
+        data_date = Date.parse(data["update_date"])
+
+        if (current_date.year == data_date.year)
+          if (current_date.month == data_date.month)
+
+          elsif (current_date.month < data_date.month)
+            current_date = data_date
+            monthly_historical_data["#{data_date.year}-#{data_date.month}"] = data["total"]
+          end
+        elsif (current_date.year < data_date.year)
           current_date = data_date
           monthly_historical_data["#{data_date.year}-#{data_date.month}"] = data["total"]
         end
-      elsif (current_date.year < data_date.year)
-        current_date = data_date
-        monthly_historical_data["#{data_date.year}-#{data_date.month}"] = data["total"]
       end
-    end    
-    
+    end
+
     return monthly_historical_data;
   end
 

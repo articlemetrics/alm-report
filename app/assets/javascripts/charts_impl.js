@@ -122,6 +122,31 @@ function drawArticleCitationAge() {
   chart.draw(data, options);
 }
 
+function drawArticleSocialScatter() {
+  var data = google.visualization.arrayToDataTable(getSocialScatterData());
+
+  var options = {
+    backgroundColor: '#efefef',
+    hAxis: {
+      title: 'Months'
+    },
+    vAxis: {title: 'Activity'},
+    legend: '',
+    pointSize: 15
+  };
+
+  var chart = new google.visualization.ScatterChart(document.getElementById('social_scatter_div'));
+  chart.draw(data, options);
+}
+
+
+function drawArticleMendeleyData() {
+  var data = google.visualization.arrayToDataTable(getMendeleyReaderData());
+  var options = {};
+  var chart = new google.visualization.GeoChart(document.getElementById('article_mendeley_readers_div'));
+  chart.draw(data, options);
+}
+
 
 // Renders all charts on the page.
 function drawReportGraphs() {
@@ -129,6 +154,9 @@ function drawReportGraphs() {
     if (drawVizForOne()) {
       drawArticleUsageAge();
       drawArticleCitationAge();
+      drawArticleSocialScatter();
+      drawArticleMendeleyData();
+
     } else {
       drawArticleUsageCitationsAge();
       drawArticleUsageMendeleyAge();

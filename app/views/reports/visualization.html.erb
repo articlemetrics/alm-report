@@ -20,8 +20,27 @@
       <div id="article_citation_div" style="width: 670px; height: 392px;"></div>
       <p class="info">Description</p>
     </div>    
+  
+    <div class="visualizations-list">
+      <div class="reports-header-div">
+        <span class="list-numbers">3</span>
+        <h2 class="albert-light-normal">Social Activity</h2>
+      </div>
+      <div id="social_scatter_div" style="width: 670px; height: 392px;"></div>
+      <p class="info">Description</p>
+    </div>
+
+    <div class="visualizations-list">
+      <div class="reports-header-div">
+        <span class="list-numbers">4</span>
+        <h2 class="albert-light-normal">Mendeley Readers</h2>
+      </div>
+      <div id="article_mendeley_readers_div" style="width: 670px; height: 392px;"></div>
+      <p class="info">Description</p>
+    </div>
   </div>
 
+  
   <%= render "report_download" %>
 
 </div>
@@ -42,6 +61,14 @@ function getArticleUsageData() {
 
 function getArticleCitationData() {
   return <%= raw @article_citation_data %>;
+}
+
+function getSocialScatterData() {
+  return <%= raw @social_scatter.to_json %>;
+}
+
+function getMendeleyReaderData() {
+ return  <%= raw @reader_data %>;
 }
 
 </script>
