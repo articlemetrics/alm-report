@@ -8,7 +8,7 @@
 
 require "csv"
 
-CSV.foreach("db/more_geocodes.csv") do |row|
+CSV.foreach("db/geocodes.csv") do |row|
   begin
     Geocode.create!(:address => row[0], :latitude => row[1].to_f, :longitude => row[2].to_f)
   rescue ActiveRecord::RecordNotUnique
