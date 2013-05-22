@@ -96,8 +96,11 @@ function drawArticleUsageAge() {
     },
     hAxis: {
       title: 'Months'
+    },
+    chartArea: {
+      top: 40,
+      height: "70%"
     }
-
   };
 
   var chart = new google.visualization.LineChart(document.getElementById('article_usage_div'));
@@ -114,8 +117,11 @@ function drawArticleCitationAge() {
     },
     hAxis: {
       title: 'Months'
+    },
+    chartArea: {
+      top: 40,
+      height: "70%"
     }
-
   };
 
   var chart = new google.visualization.LineChart(document.getElementById('article_citation_div'));
@@ -132,7 +138,11 @@ function drawArticleSocialScatter() {
     },
     vAxis: {title: 'Activity'},
     legend: '',
-    pointSize: 15
+    pointSize: 15,
+    chartArea: {
+      top: 40,
+      height: "70%"
+    }    
   };
 
   var chart = new google.visualization.ScatterChart(document.getElementById('social_scatter_div'));

@@ -3,6 +3,7 @@
 require "#{Rails.root}/lib/alm_request.rb"
 require "#{Rails.root}/lib/geocode_request.rb"
 require "#{Rails.root}/lib/solr_request.rb"
+require "#{Rails.root}/lib/chart_data.rb"
 
 # Number of articles to display per page on the add-articles and preview-list
 # pages.  (The results metrics page uses a different, smaller value.)
