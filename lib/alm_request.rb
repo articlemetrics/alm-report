@@ -73,26 +73,26 @@ module AlmRequest
         results[:pmc_total] = results[:pmc_views] + results[:pmc_pdf]
 
         results[:total_usage] = results[:plos_html] + results[:plos_pdf] + results[:plos_xml] + results[:pmc_views] + results[:pmc_pdf]
-        results[:usage_data_present] = (results[:total_usage] > 0)
+        results[:viewed_data_present] = (results[:total_usage] > 0)
 
         results[:pmc_citations] = sources_dict["pubmed"]["total"].to_i
         results[:crossref_citations] = sources_dict["crossref"]["total"].to_i
         results[:scopus_citations] = sources_dict["scopus"]["total"].to_i
-        results[:citation_data_present] = (results[:pmc_citations] + results[:crossref_citations] + results[:scopus_citations]) > 0
+        results[:cited_data_present] = (results[:pmc_citations] + results[:crossref_citations] + results[:scopus_citations]) > 0
 
         results[:citeulike] = sources_dict["citeulike"]["total"].to_i
-        results[:connotea] = sources_dict["connotea"]["total"].to_i
+        # removing connotea
+        # results[:connotea] = sources_dict["connotea"]["total"].to_i
         results[:mendeley] = sources_dict["mendeley"]["total"].to_i
-        results[:twitter] = sources_dict["twitter"]["total"].to_i
-        results[:facebook] = sources_dict["facebook"]["total"].to_i
-        results[:social_network_data_present] = (results[:citeulike] + results[:connotea] + results[:mendeley] + results[:twitter] + results[:facebook]) > 0
+        results[:saved_data_present] = (results[:citeulike] + results[:mendeley]) > 0
 
         results[:nature] = sources_dict["nature"]["total"].to_i
         results[:research_blogging] = sources_dict["researchblogging"]["total"].to_i
-        results[:wikipedia] = sources_dict["wikipedia"]["total"].to_i
-        results[:blogs_data_present] = (results[:nature] + results[:research_blogging] + results[:wikipedia]) > 0
-
         results[:scienceseeker] = sources_dict["scienceseeker"]["total"].to_i
+        results[:facebook] = sources_dict["facebook"]["total"].to_i
+        results[:twitter] = sources_dict["twitter"]["total"].to_i
+        results[:wikipedia] = sources_dict["wikipedia"]["total"].to_i
+        results[:discussed_data_present] = (results[:nature] + results[:research_blogging] + results[:wikipedia] + results[:scienceseeker] + results[:facebook] + results[:twitter]) > 0        
 
         all_results[article["doi"]] = results
 

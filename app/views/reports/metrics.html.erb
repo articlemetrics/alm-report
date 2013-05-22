@@ -33,8 +33,8 @@
           <a class="show-all-alms-link">Show all ALMs<span class="show-all-alms-link"></span></a>
           <div class="metrics-table-content">
             <div class="metric-row-content">
-                <table class="metrics-table <%= "metric-without-data" if !doi.alm[:usage_data_present] %>" >
-                  <caption>Usage</caption>
+                <table class="metrics-table <%= "metric-without-data" if !doi.alm[:viewed_data_present] %>" >
+                  <caption>Viewed</caption>
                   <%= render "alm_stat", :stat => doi.alm[:plos_html], :label => "PLOS views" %>
                   <%= render "alm_stat", :stat => doi.alm[:plos_pdf], :label => "PLOS PDF downloads" %>
                   <%= render "alm_stat", :stat => doi.alm[:plos_xml], :label => "PLOS XML downloads" %>
@@ -43,47 +43,32 @@
                   <%= render "alm_stat", :stat => doi.alm[:total_usage], :label => "Total usage" %>
                 </table>
 
-                <table class="metrics-table <%= "metric-without-data" if !doi.alm[:social_network_data_present] %>">
-                  <caption>Social Network</caption>
+                <table class="metrics-table <%= "metric-without-data" if !doi.alm[:saved_data_present] %>">
+                  <caption>Saved</caption>
                   <%= render "alm_stat", :stat => doi.alm[:citeulike], :label => "CiteULike" %>
-                  <%= render "alm_stat", :stat => doi.alm[:connotea], :label => "Connotea" %>
                   <%= render "alm_stat", :stat => doi.alm[:mendeley], :label => "Mendeley" %>
-                  <%= render "alm_stat", :stat => doi.alm[:twitter], :label => "Twitter" %>
-                  <%= render "alm_stat", :stat => doi.alm[:facebook], :label => "Facebook" %>
                 </table>
             </div>
             <div class="metric-row-content">
-                <table class="metrics-table <%= "metric-without-data" if !doi.alm[:citation_data_present] %>">
-                  <caption>Citation</caption>
+                <table class="metrics-table <%= "metric-without-data" if !doi.alm[:discussed_data_present] %>">
+                  <caption>Discussed</caption>
+                  <%= render "alm_stat", :stat => doi.alm[:nature], :label => "Nature Blogs" %>
+                  <%= render "alm_stat", :stat => doi.alm[:research_blogging], :label => "Research Blogging" %>
+                  <%= render "alm_stat", :stat => doi.alm[:scienceseeker], :label => "Science Seeker" %>
+                  <%= render "alm_stat", :stat => doi.alm[:facebook], :label => "Facebook" %>
+                  <%= render "alm_stat", :stat => doi.alm[:twitter], :label => "Twitter" %>
+                  <%= render "alm_stat", :stat => doi.alm[:wikipedia], :label => "Wikipedia" %>
+                  <%# TODO: comments.  get from ambra %>
+                  <%# TODO: trackbacks.  get from ambra DB %>
+                </table>
+
+                <table class="metrics-table <%= "metric-without-data" if !doi.alm[:cited_data_present] %>">
+                  <caption>Blogs &amp; Media</caption>
                   <%= render "alm_stat", :stat =>doi.alm[:pmc_citations], :label => "PubMed Central" %>
                   <%= render "alm_stat", :stat => doi.alm[:crossref_citations], :label => "CrossRef" %>
                   <%= render "alm_stat", :stat => doi.alm[:scopus_citations], :label => "Scopus" %>
                   <%# TODO: web of science.  It is in the mockups, but not in ALM today.  %>
                 </table>
-
-                <table class="metrics-table <%= "metric-without-data" if !doi.alm[:blogs_data_present] %>">
-                  <caption>Blogs &amp; Media</caption>
-                  <%= render "alm_stat", :stat => doi.alm[:nature], :label => "Nature Blogs" %>
-                  <%= render "alm_stat", :stat => doi.alm[:research_blogging], :label => "Research Blogging" %>
-                  <%# TODO: trackbacks.  Not in ALM--get from ambra DB?  %>
-                  <%= render "alm_stat", :stat => doi.alm[:wikipedia], :label => "Wikipedia" %>
-                </table>
-            </div>
-            <div class="metric-row-content">
-              <%# TODO: get these from ambra DB  %>
-      <!--
-              <table class="metrics-table  plos-table">
-                <caption>PLOS Community</caption>
-                <tr>
-                  <td class="list-names">Comments</td>
-                  <td class="metrics-list-value">2</td>
-                </tr>
-                <tr>
-                  <td class="list-names">Notes</td>
-                  <td class="metrics-list-value">5</td>
-                </tr>
-              </table>
-      -->
             </div>
           </div>
         <% end %>
