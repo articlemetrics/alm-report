@@ -324,29 +324,36 @@ module ChartData
 
     monthly_historical_data = {}
 
-    # sort
+    # sort the history data
     history_data.sort! { | data1, data2 | Date.parse(data1["update_date"]) <=> Date.parse(data2["update_date"]) }
 
+    # grab the first entry in the array of historical data
     data = history_data[0]
+
     if (!data.nil?)
       data_date = Date.parse(data["update_date"])
-      monthly_historical_data["#{data_date.year}-#{data_date.month}"] = data["total"]
+      key = "#{data_date.year}-#{data_date.month}"
+      monthly_historical_data[key] = data["total"]
 
       current_date = data_date
 
+      # loop through the historical data and pick out one data point per month 
+      # want to grab the first data retrieval event
+      # alm usually retrieves data more than once a month
       history_data.each do | data |
         data_date = Date.parse(data["update_date"])
+        key = "#{data_date.year}-#{data_date.month}"
 
         if (current_date.year == data_date.year)
           if (current_date.month == data_date.month)
-
+            # ignore all the other data retrieval events that occured in the given month
           elsif (current_date.month < data_date.month)
             current_date = data_date
-            monthly_historical_data["#{data_date.year}-#{data_date.month}"] = data["total"]
+            monthly_historical_data[key] = data["total"]
           end
         elsif (current_date.year < data_date.year)
           current_date = data_date
-          monthly_historical_data["#{data_date.year}-#{data_date.month}"] = data["total"]
+          monthly_historical_data[key] = data["total"]
         end
       end
     end
