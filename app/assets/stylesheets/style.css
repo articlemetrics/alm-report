@@ -2248,5 +2248,8 @@ div.selector select {
 }
 
 .static_page h3 {
-  font-weight: bold;
+  font-family: "FS Albert Web Regular", Verdana , sans-serif;
+  font-size: 18px;
+  font-weight: normal;
+  font-style: normal;
 }
