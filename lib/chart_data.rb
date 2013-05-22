@@ -307,6 +307,8 @@ module ChartData
   def self.generate_data_for_mendeley_reader_chart(report)
     mendeley = report.report_dois[0].alm[:mendeley]
 
+    reader_total = mendeley["stats"]["readers"].to_i
+
     reader_country = mendeley["stats"]["country"]
 
     reader_data = []
@@ -316,7 +318,7 @@ module ChartData
       reader_data << [data["name"], data["value"]]
     end
 
-    return reader_data
+    return {:reader_total => reader_total, :reader_loc_data => reader_data}
   end
 
 
