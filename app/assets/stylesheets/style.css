@@ -1655,6 +1655,12 @@ caption {
   background: url(/assets/sprite.png) -537px -142px;
 }
 
+/* the visualization download link isn't a real link (doesn't have href attr) 
+   it needs to be styled as a link */
+#download_viz:hover {
+  cursor: pointer;
+}
+
 .report-downloads .report-share-block {
   margin: 40px 0 0 17px;
   width: 186px;

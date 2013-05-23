@@ -770,3 +770,50 @@ $(".subject-autocomplete[type='text']").autocomplete({
 });
 
 // End subject category autocomplete.
+
+
+// Event handler for downloading visualization 
+jQuery(function(d, $){
+  $('#download_viz').click(function() {
+
+    var graph_divs, graph_filenames;
+
+    var zip = new JSZip();
+
+    // not the best but listed out all the divs that are involved in graphs
+    if ($('#article_usage_and_citations_age_div').length > 0) {
+      graph_divs = ['article_usage_and_citations_age_div', 'article_usage_and_mendeley_age_div', 'article_subject_div', 'article_location_div'];
+      graph_filenames = ['article_usage_and_citations_as_a_function_of_age.png',
+      'article_usage_and_mendeley_bookmarks_as_a_function_of_time.png',
+      'article_usage_by_subject_area.png',
+      'research_articles_by_location.png'];      
+    } else {
+      graph_divs = ['article_usage_div', 'article_citation_div', 'social_scatter_div', 'article_mendeley_readers_div'];
+      graph_filenames = ['article_usage_as_a_function_of_age.png', 
+      'article_citation_as_a_function_of_age.png', 
+      'discussion_activity_as_a_function_of_age.png', 
+      'mendeley_bookmarks_by_location.png']      
+    }
+
+    var i = 0;
+    for (i = 0; i < graph_divs.length; i++) {
+      var chartContainer = document.getElementById(graph_divs[i]);
+      var svg = $(chartContainer).find('svg').parent().html();
+      var doc = chartContainer.ownerDocument;
+      var canvas = doc.createElement('canvas');
+      
+      canvas.setAttribute('style', 'position: absolute; ' + '');
+      doc.body.appendChild(canvas);
+      canvg(canvas, svg);
+      var imgData = canvas.toDataURL("image/png");
+      canvas.parentNode.removeChild(canvas);
+    
+      imgData = imgData.replace(/^data:image\/png;base64,/, "")
+      zip.file(graph_filenames[i], imgData, {base64: true});
+    }
+
+    var content = zip.generate();
+    location.href="data:application/zip;base64," + content;
+
+  });
+}(document, jQuery));
