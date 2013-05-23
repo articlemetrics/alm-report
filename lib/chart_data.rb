@@ -1,4 +1,6 @@
 
+require "set"
+
 module ChartData
 
   # Populates @article_usage_citations_age_data and @article_usage_mendeley_age_data, used from
@@ -67,6 +69,62 @@ module ChartData
     return article_usage_citation_subject_area_data
   end
   
+  # Logs locations that were not found in the geocodes table.
+  # TODO: consider saving these to the DB so they can be geocoded later.
+  def self.log_locations(all_locations, found_in_db)
+    locations_set = Set.new(all_locations.keys)
+    found_set = Set.new(found_in_db.keys)
+    diff = locations_set - found_set
+    Rails.logger.warn("Dumping addresses not found...")
+    diff.each {|i| Rails.logger.warn("    #{i}")}
+  end
+  
+  # Map of variations of certain countries' names, to the value that we
+  # have stored in the geocodes table.
+  COUNTRY_SYNONYMS = {
+      :brasil => "brazil",
+      :"people's republic of china" => "china",
+      :"peoples' republic of china" => "china",
+      :"pr china" => "china",
+      :"republic of panama" => "panama",
+      :"the netherlands" => "netherlands",
+      }
+  
+  # Attempts to look up the address in the geocodes table.  Can potentially
+  # make several lookups using variations of the address if necessary.
+  def self.find_geocode_in_db(address)
+    
+    retrieve_geocode = lambda {|addr|
+      Geocode.first(conditions: ["lower(address) = ?", addr.downcase])
+    }
+    
+    geocode = retrieve_geocode.call(address)
+    if !geocode.nil?
+      return geocode
+    end
+    fields = address.split(",")
+    country = fields[-1].strip.downcase
+    if !COUNTRY_SYNONYMS[country.to_sym].nil?
+      country = COUNTRY_SYNONYMS[country.to_sym]
+      geocode = retrieve_geocode.call("#{fields[-2].strip()}, #{country}")
+      if !geocode.nil?
+        return geocode
+      end
+    end
+    
+    # Sometimes, addresses for countries where we normally get "City, Province, Country"
+    # only have "City, Country".
+    if fields.length == 3
+      geocode = retrieve_geocode.call("#{fields[1].strip()}, #{country}")
+      if !geocode.nil?
+        return geocode
+      end
+    end
+    
+    # If all else fails, just attempt to geocode the country.
+    return retrieve_geocode.call(country)
+  end
+  
   # Generate data for author location geo graph 
   def self.generate_data_for_articles_by_location_chart(report)
     total_authors_data = 0
@@ -91,9 +149,9 @@ module ChartData
     
     found_in_db = {}
     locations.each do |address, _|
-      geocodes = Geocode.where("address = ?", address)
-      if geocodes.length == 1
-        found_in_db[address] = geocodes[0]
+      found = find_geocode_in_db(address)
+      if !found.nil?
+        found_in_db[address] = found
       end
     end
     Rails.logger.info("Found #{found_in_db.length} locations in geocodes table, out of #{locations.length} total")
@@ -122,6 +180,7 @@ module ChartData
       end
     else
       Rails.logger.warn("Not using geocoded lat/long because we couldn't find all locations in the DB")
+      log_locations(locations, found_in_db)
       article_locations_data = [["location", "color", "size"]]
       locations.each do |address, count|
         size = Math.atan(Math.log2(count + 1))
