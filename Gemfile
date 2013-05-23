@@ -42,3 +42,4 @@ group :test, :development do
 end
 
 gem "dalli", "~> 2.6.2"
+gem "countries"
