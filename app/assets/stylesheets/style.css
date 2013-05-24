@@ -2259,3 +2259,7 @@ div.selector select {
   font-weight: normal;
   font-style: normal;
 }
+
+.exception-message {
+  font-family: "courier"
+}

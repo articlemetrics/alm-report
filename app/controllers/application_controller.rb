@@ -68,7 +68,7 @@ class ApplicationController < ActionController::Base
   unless Rails.application.config.consider_all_requests_local
     rescue_from Exception do |e|
       logger.error(e.message + "\n " + e.backtrace.join("\n    "))
-      internal_error
+      internal_error(e)
     end
 
     rescue_from ActiveRecord::RecordNotFound,
@@ -93,12 +93,15 @@ class ApplicationController < ActionController::Base
   end
   
   
-  def internal_error
+  def internal_error(exception)
     @display_nav = false
     @title = "Internal Error"
     
-    # TODO: display the stack trace if it's an internal request.
-    
+    # I tested on iad-dev-almreport01 (Apache+Passenger+Rails) and request.remote_ip
+    # returns the user's IP, not the IP incoming to rails (127.0.0.1).
+    if IpRanges.is_internal_ip(request.remote_ip)
+      @exception = exception
+    end
     render :template => "static_pages/internal_error", :status => 500
   end
   

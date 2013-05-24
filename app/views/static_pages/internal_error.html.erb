@@ -5,5 +5,13 @@
       We're sorry, something went wrong.  Our engineers have been notified
       and we hope to fix the problem soon.
     </div>
+    <% if !@exception.nil? %>
+      <h3>Technical Information for Developers</h3>
+      <div>Visible since you're coming from <%= request.ip %>, an internal IP.</div>
+      <h3><%= @exception.message %></h3>
+      <div class="exception-message"><% @exception.backtrace.each do |i| %>
+    <%= i %>
+<% end %></div>
+    <% end %>
   </div>
 </div>
