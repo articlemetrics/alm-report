@@ -79,7 +79,28 @@
 
   </div>
 
-  <%= render "report_download" %>
+  <div class="report-downloads">
+    <h2 class="albert-light-normal">Downloads</h2>
+    <ul>
+      <li>
+        <%= link_to :controller => "reports", :action => "download_data", :id => @report, :format => :csv  do %>
+          <span class="csv"></span>
+          <span class="file-name">Metrics Data</span>
+          <span class="arrow"></span>
+        <% end %>
+      </li>
+
+      <li>
+        <%= link_to :controller => "reports", :action => "download_data", :id => @report, :format => :csv, :field => "doi" do %>
+          <span class="csv"></span>
+          <span class="file-name">Your List of Article DOIs</span>
+          <span class="arrow"></span>
+        <% end %>
+      </li>
+    </ul>
+
+    <%= render "report_share" %>
+  </div>
   
   <% if @show_metrics_data %>
   <%= render "pager", :results_per_page => 5 %>

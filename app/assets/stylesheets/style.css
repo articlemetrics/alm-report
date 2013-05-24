@@ -1542,8 +1542,12 @@ caption {
   padding: 14px 0 0 57px;
 }
 
+/* 
+  the width used to be 650 but changed to 705 so that 
+  download visualization functionality can generate pretty image of the graphs
+*/
 .visualizations-container {
-  width: 650px;
+  width: 705px;
   display: inline-block;
   min-height: 560px;
 }

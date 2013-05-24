@@ -16,6 +16,3 @@
 //= require jquery.placeholder
 //= require jquery.uniform
 //= require script
-//= require jszip
-//= require rgbcolor
-//= require canvg
