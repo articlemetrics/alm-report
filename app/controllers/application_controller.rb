@@ -64,6 +64,44 @@ class ApplicationController < ActionController::Base
   before_filter :display_nav
   around_filter :save_session_dois
   
+  # Render pretty 404 and 500 pages in production only.
+  unless Rails.application.config.consider_all_requests_local
+    rescue_from Exception do |e|
+      logger.error(e.message + "\n " + e.backtrace.join("\n    "))
+      internal_error
+    end
+
+    rescue_from ActiveRecord::RecordNotFound,
+                ActionController::RoutingError,
+                ActionController::UnknownController,
+                ActionController::UnknownAction,
+                ActionController::MethodNotAllowed, :with => :page_not_found
+  end
+  
+  
+  # See comment in routes.rb and https://github.com/rails/rails/issues/671
+  # for why this is necessary.
+  def routing_error
+    raise ActionController::RoutingError.new(params[:path])
+  end
+
+  
+  def page_not_found
+    @display_nav = false
+    @title = "Page Not Found"
+    render :template => "static_pages/page_not_found", :status => 404
+  end
+  
+  
+  def internal_error
+    @display_nav = false
+    @title = "Internal Error"
+    
+    # TODO: display the stack trace if it's an internal request.
+    
+    render :template => "static_pages/internal_error", :status => 500
+  end
+  
   
   # Sets @saved_dois based on the contents of the session, and saves it back to the
   # session after an action is run.
