@@ -19,3 +19,4 @@
 //= require jszip
 //= require rgbcolor
 //= require canvg
+//= require html2canvas
