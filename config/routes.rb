@@ -23,4 +23,10 @@ AlmReport::Application.routes.draw do
   match "/terms_of_use" => "static_pages#terms_of_use"
   match "/samples" => "static_pages#samples"
 
+  # Any other routes are handled here, as ActionDispatch prevents RoutingError
+  # from hitting ApplicationController::rescue_action).  See
+  # https://github.com/rails/rails/issues/671
+  # BE SURE TO KEEP THIS AS THE LAST LINE!
+  match "*path", :to => "application#routing_error"
+  
 end

@@ -1,10 +1,8 @@
 # This file should contain all the record creation needed to seed the database with its default values.
 # The data can then be loaded with the rake db:seed (or created alongside the db with db:setup).
 #
-# Examples:
-#
-#   cities = City.create([{ name: 'Chicago' }, { name: 'Copenhagen' }])
-#   Mayor.create(name: 'Emanuel', city: cities.first)
+# Warning: loading this currently takes between 15 and 50 minutes, depending on the
+# environment (15 for a local box, 50 for an ec2 instance).
 
 require "countries"
 require "csv"
@@ -23,8 +21,8 @@ end
 
 # Loads geocodes based on the locations of the authors in the most recently
 # published PLOS articles.  This is about 4500 geocodes.
-def load_from_articles
-  CSV.foreach("db/geocodes.csv") do |row|
+def load_from_csv(filename)
+  CSV.foreach(filename) do |row|
     create_geocode(row[0], row[1].to_f, row[2].to_f)
   end
 end
@@ -158,7 +156,9 @@ def load_from_geolite
 end
 
 
+puts "Loading countries..."
+load_from_csv("db/countries.csv")
 puts "Loading geocode data from article subset (4k)..."
-load_from_articles
+load_from_csv("db/geocodes.csv")
 puts "Loading geocode data from geolite (300k)..."
 load_from_geolite

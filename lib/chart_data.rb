@@ -1,4 +1,6 @@
 
+require "set"
+
 module ChartData
 
   # Populates @article_usage_citations_age_data and @article_usage_mendeley_age_data, used from
@@ -67,6 +69,62 @@ module ChartData
     return article_usage_citation_subject_area_data
   end
   
+  # Logs locations that were not found in the geocodes table.
+  # TODO: consider saving these to the DB so they can be geocoded later.
+  def self.log_locations(all_locations, found_in_db)
+    locations_set = Set.new(all_locations.keys)
+    found_set = Set.new(found_in_db.keys)
+    diff = locations_set - found_set
+    Rails.logger.warn("Dumping addresses not found...")
+    diff.each {|i| Rails.logger.warn("    #{i}")}
+  end
+  
+  # Map of variations of certain countries' names, to the value that we
+  # have stored in the geocodes table.
+  COUNTRY_SYNONYMS = {
+      :brasil => "brazil",
+      :"people's republic of china" => "china",
+      :"peoples' republic of china" => "china",
+      :"pr china" => "china",
+      :"republic of panama" => "panama",
+      :"the netherlands" => "netherlands",
+      }
+  
+  # Attempts to look up the address in the geocodes table.  Can potentially
+  # make several lookups using variations of the address if necessary.
+  def self.find_geocode_in_db(address)
+    
+    retrieve_geocode = lambda {|addr|
+      Geocode.first(conditions: ["lower(address) = ?", addr.downcase])
+    }
+    
+    geocode = retrieve_geocode.call(address)
+    if !geocode.nil?
+      return geocode
+    end
+    fields = address.split(",")
+    country = fields[-1].strip.downcase
+    if !COUNTRY_SYNONYMS[country.to_sym].nil?
+      country = COUNTRY_SYNONYMS[country.to_sym]
+      geocode = retrieve_geocode.call("#{fields[-2].strip()}, #{country}")
+      if !geocode.nil?
+        return geocode
+      end
+    end
+    
+    # Sometimes, addresses for countries where we normally get "City, Province, Country"
+    # only have "City, Country".
+    if fields.length == 3
+      geocode = retrieve_geocode.call("#{fields[1].strip()}, #{country}")
+      if !geocode.nil?
+        return geocode
+      end
+    end
+    
+    # If all else fails, just attempt to geocode the country.
+    return retrieve_geocode.call(country)
+  end
+  
   # Generate data for author location geo graph 
   def self.generate_data_for_articles_by_location_chart(report)
     total_authors_data = 0
@@ -91,9 +149,9 @@ module ChartData
     
     found_in_db = {}
     locations.each do |address, _|
-      geocodes = Geocode.where("address = ?", address)
-      if geocodes.length == 1
-        found_in_db[address] = geocodes[0]
+      found = find_geocode_in_db(address)
+      if !found.nil?
+        found_in_db[address] = found
       end
     end
     Rails.logger.info("Found #{found_in_db.length} locations in geocodes table, out of #{locations.length} total")
@@ -102,26 +160,29 @@ module ChartData
     # Otherwise, we send the map data consisting of addresses, which the chart
     # javascript will sequentially geocode, *slowly*.  However, it's not
     # feasible to geocode locations here at request time--see comments in
-    # geocode_request.rb.  So, if we happen to have all the info we need in
-    # the geocodes table, we use that, otherwise we do it the slow way.
-    # (Unfortunately, the map chart won't accept data that's a mix of address
-    # and lat/lng.)
-    # TODO: if we have "most" of the data in the DB, use that instead of the
-    # slow way?  (For some definition of most.)
-    if found_in_db.length == locations.length
+    # geocode_request.rb.  Also, the map chart won't accept data that's a mix
+    # of address and lat/lng.  So we use the fast way if we have coordinates
+    # for 90% or more of the locations, and there are no more than 5 ungeocoded
+    # locations.  (The geocodes table now has over 300k cities, and in my
+    # experience ones that aren't found there are usually typos.)
+    fraction = found_in_db.length.to_f / locations.length.to_f
+    if fraction > 0.9 && locations.length - found_in_db.length <= 5
       article_locations_data = [["latitude", "longitude", "color", "size"]]
       locations.each do |address, count|
-
-        # Relative size of the marker on the map.  It's nice to have this be a function
-        # of the number of authors in that location, but I've found that if we use
-        # a linear scale, the large markers tend to take over the map.  So after
-        # playing around a while I settled on the following concave function.
-        size = Math.atan(Math.log2(count + 1))
         geo = found_in_db[address]
-        article_locations_data << [geo.latitude, geo.longitude, size, size]
+        if !geo.nil?
+
+          # Relative size of the marker on the map.  It's nice to have this be a function
+          # of the number of authors in that location, but I've found that if we use
+          # a linear scale, the large markers tend to take over the map.  So after
+          # playing around a while I settled on the following concave function.
+          size = Math.atan(Math.log2(count + 1))
+          article_locations_data << [geo.latitude, geo.longitude, size, size]
+        end
       end
     else
-      Rails.logger.warn("Not using geocoded lat/long because we couldn't find all locations in the DB")
+      Rails.logger.warn("Not using geocoded lat/long because we couldn't find enough locations in the DB")
+      log_locations(locations, found_in_db)
       article_locations_data = [["location", "color", "size"]]
       locations.each do |address, count|
         size = Math.atan(Math.log2(count + 1))
