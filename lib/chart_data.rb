@@ -160,26 +160,28 @@ module ChartData
     # Otherwise, we send the map data consisting of addresses, which the chart
     # javascript will sequentially geocode, *slowly*.  However, it's not
     # feasible to geocode locations here at request time--see comments in
-    # geocode_request.rb.  So, if we happen to have all the info we need in
-    # the geocodes table, we use that, otherwise we do it the slow way.
-    # (Unfortunately, the map chart won't accept data that's a mix of address
-    # and lat/lng.)
-    # TODO: if we have "most" of the data in the DB, use that instead of the
-    # slow way?  (For some definition of most.)
-    if found_in_db.length == locations.length
+    # geocode_request.rb.  Also, the map chart won't accept data that's a mix
+    # of address and lat/lng.  So we use the fast way if we have coordinates
+    # for 90% or more of the locations, and there are no more than 5 ungeocoded
+    # locations.  (The geocodes table now has over 300k cities, and in my
+    # experience ones that aren't found there are usually typos.)
+    fraction = found_in_db.length.to_f / locations.length.to_f
+    if fraction > 0.9 && locations.length - found_in_db.length <= 5
       article_locations_data = [["latitude", "longitude", "color", "size"]]
       locations.each do |address, count|
-
-        # Relative size of the marker on the map.  It's nice to have this be a function
-        # of the number of authors in that location, but I've found that if we use
-        # a linear scale, the large markers tend to take over the map.  So after
-        # playing around a while I settled on the following concave function.
-        size = Math.atan(Math.log2(count + 1))
         geo = found_in_db[address]
-        article_locations_data << [geo.latitude, geo.longitude, size, size]
+        if !geo.nil?
+
+          # Relative size of the marker on the map.  It's nice to have this be a function
+          # of the number of authors in that location, but I've found that if we use
+          # a linear scale, the large markers tend to take over the map.  So after
+          # playing around a while I settled on the following concave function.
+          size = Math.atan(Math.log2(count + 1))
+          article_locations_data << [geo.latitude, geo.longitude, size, size]
+        end
       end
     else
-      Rails.logger.warn("Not using geocoded lat/long because we couldn't find all locations in the DB")
+      Rails.logger.warn("Not using geocoded lat/long because we couldn't find enough locations in the DB")
       log_locations(locations, found_in_db)
       article_locations_data = [["location", "color", "size"]]
       locations.each do |address, count|
