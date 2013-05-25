@@ -52,7 +52,7 @@ class Report < ActiveRecord::Base
 
       CSV.generate({ :force_quotes => true }) do | csv |
         csv << [
-          "DOI", "PMID", "Title", "Journal", "Publication Date", "Authors", 
+          "DOI", "PMID", "Title", "Authors", "Author Affiliations", "Journal", "Publication Date", "Article Type",
           "PLOS Total", "PLOS views", "PLOS PDF downloads", "PLOS XML downloads",
           "PMC Total", "PMC views", "PMC PDF Downloads",
           "CrossRef", "Scopus", "PubMed Central",
@@ -65,9 +65,12 @@ class Report < ActiveRecord::Base
           article_alm_data = alm_data[report_doi.doi]
           article_data = solr_data[report_doi.doi]
 
+          authors = article_data["author_display"].nil? ? "" : article_data["author_display"].join(", ")
+          affiliate = article_data["affiliate"].nil? ? "" : article_data["affiliate"].join("; ")
+
           csv << [
-            report_doi.doi, article_data["pmid"], article_data["title"], article_data["cross_published_journal_name"][0], article_data["publication_date"],
-            article_data["author_display"].join(", "),
+            report_doi.doi, article_data["pmid"], article_data["title"], authors, affiliate,
+            article_data["cross_published_journal_name"][0], article_data["publication_date"], article_data["article_type"],
             article_alm_data[:plos_total], article_alm_data[:plos_html], article_alm_data[:plos_pdf], article_alm_data[:plos_xml],
             article_alm_data[:pmc_total], article_alm_data[:pmc_views], article_alm_data[:pmc_pdf],
             article_alm_data[:crossref_citations], article_alm_data[:scopus_citations], article_alm_data[:pmc_citations],
