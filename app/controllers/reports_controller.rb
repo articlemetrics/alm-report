@@ -69,9 +69,7 @@ class ReportsController < ApplicationController
     @show_metrics_data = true
     if @report.report_dois.length > 0
       @total_found = @report.report_dois.length
-
-      results_per_page = 5
-      set_paging_vars(params[:current_page], results_per_page)
+      set_paging_vars(params[:current_page], APP_CONFIG["metrics_results_per_page"])
 
       
       # Create a new array for display that is only the articles on the current page,
@@ -102,8 +100,6 @@ class ReportsController < ApplicationController
     else
       alm_data = AlmRequest.get_data_for_viz(@report.report_dois)
     end
-
-    min_num_of_alm_data_points = 2
 
     solr_data = SolrRequest.get_data_for_articles(@report.report_dois)
 
@@ -136,7 +132,7 @@ class ReportsController < ApplicationController
     else
       # this covers situations where a report contains many articles but very small
       # portion of the articles have alm data  (without alm data, viz page will look very weird)
-      if solr_data.length >= min_num_of_alm_data_points
+      if solr_data.length >= APP_CONFIG["visualization_min_num_of_alm_data_points"]
 
         bubble_data = ChartData.generate_data_for_bubble_charts(@report)
         @article_usage_citations_age_data = bubble_data[:citation_data]

@@ -162,11 +162,12 @@ module ChartData
     # feasible to geocode locations here at request time--see comments in
     # geocode_request.rb.  Also, the map chart won't accept data that's a mix
     # of address and lat/lng.  So we use the fast way if we have coordinates
-    # for 90% or more of the locations, and there are no more than 5 ungeocoded
+    # for "most" of the locations, and there are no more than a few ungeocoded
     # locations.  (The geocodes table now has over 300k cities, and in my
     # experience ones that aren't found there are usually typos.)
     fraction = found_in_db.length.to_f / locations.length.to_f
-    if fraction > 0.9 && locations.length - found_in_db.length <= 5
+    if fraction > APP_CONFIG["min_fraction_of_locations_to_use_geocodes"] \
+        && locations.length - found_in_db.length <= APP_CONFIG["max_unfound_locations_to_use_geocodes"]
       article_locations_data = [["latitude", "longitude", "color", "size"]]
       locations.each do |address, count|
         geo = found_in_db[address]

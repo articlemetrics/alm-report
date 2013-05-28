@@ -66,10 +66,10 @@ class HomeController < ApplicationController
     initial_count = @saved_dois.length
     status = "success"
     if params[:mode] == "SAVE"
-      if initial_count >= $ARTICLE_LIMIT
+      if initial_count >= APP_CONFIG["article_limit"]
         status = "limit"
       else
-        params[:article_ids][0..($ARTICLE_LIMIT - initial_count - 1)].each do |doc_key|
+        params[:article_ids][0..(APP_CONFIG["article_limit"] - initial_count - 1)].each do |doc_key|
           doi, pub_date = parse_article_key(doc_key)
           @saved_dois[doi] = pub_date
         end
@@ -106,10 +106,10 @@ class HomeController < ApplicationController
     # However, this is difficult because the user may have already selected
     # some articles from various pages of the search results, and there is no
     # easy way to determine the intersection of this with the search we're about
-    # to do.  Using $ARTICLE_LIMIT * 2 as our requested number of results handles
+    # to do.  Using article_limit * 2 as our requested number of results handles
     # various pathological cases such as the user having checked every other
     # search result.
-    limit = $ARTICLE_LIMIT * 2
+    limit = APP_CONFIG["article_limit"] * 2
     
     # solr usually returns 500s if you try to retreive all 1000 articles at once,
     # so we do paging here (with a larger page size than in the UI).
@@ -137,7 +137,7 @@ class HomeController < ApplicationController
     # This is a little weird... if the user has no more capacity before the
     # article limit, return an error status, but if at least one article can
     # be added, return success.
-    if initial_count >= $ARTICLE_LIMIT
+    if initial_count >= APP_CONFIG["article_limit"]
       status = "limit"
     else
       status = "success"

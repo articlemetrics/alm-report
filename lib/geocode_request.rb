@@ -12,9 +12,6 @@ class GeocodeRequest
   
   @@GOOGLE_URL = "http://maps.googleapis.com/maps/api/geocode/json"
   
-  # Maximum queries per second to send to Google.  See comment for rate_limit.
-  @@MAX_QPS = 1.0
-  
   # Unix timestamp of when the last query was sent.  Used by rate_limit.
   @@last_query = 0.0
   
@@ -26,7 +23,7 @@ class GeocodeRequest
   # waited at least a certain amount, and sleeps if necessary to enforce that.
   def self.rate_limit
     interval = Time.now.to_f - @@last_query
-    wait = 1.0 / @@MAX_QPS
+    wait = 1.0 / APP_CONFIG["max_geocode_qps"]
     if interval < wait
       Rails.logger.warn("QPS limit to geocoding service exceeded.  Sleeping before making request...")
       sleep(wait - interval)

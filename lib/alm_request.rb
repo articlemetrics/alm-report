@@ -4,9 +4,6 @@ require "json"
 
 # Interface to the PLOS ALM API.
 module AlmRequest
-  
-  # TODO add this to the config file, not hardcoded
-  @@URL = "http://alm.plos.org/api/v3/articles"
 
 
   # Returns a dict containing ALM usage data for a given list of articles.
@@ -25,12 +22,8 @@ module AlmRequest
       end
     end
 
-    # https://github.com/articlemetrics/alm/wiki/API
-    # Queries for up to 50 articles at a time are supported.
-    # TODO configure
-    num_articles = 30
     while dois.length > 0 do
-      subset_dois = dois.slice!(0, num_articles)
+      subset_dois = dois.slice!(0, APP_CONFIG["alm_max_articles_per_request"])
       params = {}
       params[:ids] = subset_dois.join(",")
 
@@ -39,7 +32,7 @@ module AlmRequest
       # if it only has one article and it fails to retrieve data for that one article, 
       # that's when it will return 404
 
-      url = "#{@@URL}/?#{params.to_param}"
+      url = "#{APP_CONFIG["alm_url"]}/?#{params.to_param}"
 
       start_time = Time.now
 
@@ -113,12 +106,9 @@ module AlmRequest
   # already 1 day behind
   def self.get_data_for_viz(report_dois)
 
-    # TODO configure size
-    max_size_for_realtime = 20
-
     # TODO future: only count the articles that are not cached when comparing the # of articles to retrieve alm data for
 
-    if report_dois.size > max_size_for_realtime
+    if report_dois.size > APP_CONFIG["alm_max_size_for_realtime"]
 
       # get alm data from solr
       metric_data = SolrRequest.get_data_for_viz(report_dois)
@@ -153,7 +143,7 @@ module AlmRequest
     params[:info] = "history"
     params[:source] = "crossref,pubmed,scopus"
 
-    url = "#{@@URL}/?#{params.to_param}"
+    url = "#{APP_CONFIG["alm_url"]}/?#{params.to_param}"
     
     resp = Net::HTTP.get_response(URI.parse(url))
 
@@ -187,7 +177,7 @@ module AlmRequest
     params[:info] = "event"
     params[:source] = "counter,pmc,citeulike,twitter,researchblogging,nature,scienceseeker,mendeley"
 
-    url = "#{@@URL}/?#{params.to_param}"
+    url = "#{APP_CONFIG["alm_url"]}/?#{params.to_param}"
     
     resp = Net::HTTP.get_response(URI.parse(url))
 

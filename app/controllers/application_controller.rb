@@ -27,8 +27,8 @@ class SavedDois
   
   
   def []=(x, val)
-    if @saved.length >= $ARTICLE_LIMIT
-      raise DoiLimitReachedError, "Reached limit of #{$ARTICLE_LIMIT} DOIs"
+    if @saved.length >= APP_CONFIG["article_limit"]
+      raise DoiLimitReachedError, "Reached limit of #{APP_CONFIG["article_limit"]} DOIs"
     else
       @saved[x] = val
     end

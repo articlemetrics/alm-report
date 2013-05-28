@@ -8,10 +8,6 @@ jQuery(function(d, $){
     var $preview_list_count_elem = $('.preview-list-count');
     var results_span_pages = ($('.pagination-number').length > 1);
 
-    // Be sure to keep these two constants in sync with the ruby constants of
-    // the same name in custom.rb.
-    var ARTICLE_LIMIT = 500;
-
     return {
       init : function() {
         // update the header and the sidebar with the current list count
