@@ -10,7 +10,6 @@ jQuery(function(d, $){
 
     // Be sure to keep these two constants in sync with the ruby constants of
     // the same name in custom.rb.
-    var RESULTS_PER_PAGE = 25;
     var ARTICLE_LIMIT = 500;
 
     return {

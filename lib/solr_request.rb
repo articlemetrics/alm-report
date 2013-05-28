@@ -14,26 +14,20 @@ end
 # but that was not necessary.
 class SolrRequest
   
-  # Base URL of solr server.
-  @@URL = "http://api.plos.org/search"
-  
   @@SOLR_TIMESTAMP_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
   
   @@FILTER = "fq=doc_type:full&fq=!article_type_facet:#{URI::encode("\"Issue Image\"")}"
   
   # The fields we want solr to return for each article by default.
-  @@FL = "id,publication_date,title,cross_published_journal_name,author_display,article_type,affiliate,subject,pmid"
-  @@FL_METRIC_DATA = "id,alm_scopusCiteCount,alm_mendeleyCount,counter_total_all,alm_pmc_usage_total_all"
+  @@FL = "id,publication_date,title,cross_published_journal_name,author_display,article_type," \
+      "affiliate,subject,pmid"
+
+  @@FL_METRIC_DATA = "id,alm_scopusCiteCount,alm_mendeleyCount,counter_total_all," \
+      "alm_pmc_usage_total_all"
+
   @@FL_VALIDATE_ID = "id"
 
   @@ALL_JOURNALS = "All Journals"
-  
-  @@DEBUG = true
-  
-  # Maximum number of articles we query for in a single request, from the
-  # get_data_for_articles method.  If this is too high solr will return a
-  # 414 "Request-URI Too Large" error.
-  @@MAX_DOIS_PER_REQUEST = 100
 
 
   # Creates a solr request.  The query (q param in the solr request) will be based on
@@ -47,11 +41,6 @@ class SolrRequest
     else
       @fl = "fl=#{fl}"
     end
-  end
-  
-  
-  def self.set_page_size(page_size)
-    @@PAGE_SIZE = page_size
   end
 
 
@@ -155,7 +144,7 @@ class SolrRequest
   # based on the current_page param, if it is present.
   def build_page_block
     rows = @params.delete(:rows)
-    page_size = rows.nil? ? @@PAGE_SIZE : rows
+    page_size = rows.nil? ? APP_CONFIG["results_per_page"] : rows
     result = "rows=#{page_size}"
     start = @params.delete(:start)
     if start.nil?
@@ -163,7 +152,7 @@ class SolrRequest
       page = page.nil? ? "1" : page
       page = page.to_i - 1
       if page > 0
-        result << "&start=#{page * @@PAGE_SIZE + 1}"
+        result << "&start=#{page * APP_CONFIG["results_per_page"] + 1}"
       end
     else  # start is specified
       result << "&start=#{start}"
@@ -177,7 +166,8 @@ class SolrRequest
   def query
     sort = @params.delete(:sort)
     page_block = build_page_block  # This needs to get called before build_query
-    url = "#{@@URL}?#{URI::encode(build_query)}&#{@@FILTER}&#{@fl}&wt=json&facet=false&#{page_block}"
+    url = "#{APP_CONFIG["solr_url"]}?#{URI::encode(build_query)}&#{@@FILTER}" \
+        "&#{@fl}&wt=json&facet=false&#{page_block}"
     if !sort.nil?
       url << "&sort=#{URI::encode(sort)}"
     end
@@ -189,7 +179,8 @@ class SolrRequest
 
   # Performs a query for all known PLOS journals and returns their titles as an array.
   def self.query_for_journals
-    url = "#{@@URL}?q=*:*&facet=true&facet.field=cross_published_journal_name&rows=0&wt=json"
+    url = "#{APP_CONFIG["solr_url"]}?q=*:*&facet=true&facet.field=cross_published_journal_name" \
+        "&rows=0&wt=json"
     json = send_query(url)
     facet_counts = json["facet_counts"]["facet_fields"]["cross_published_journal_name"]
 
@@ -233,7 +224,8 @@ class SolrRequest
     if start_date.nil? || end_date.nil?
       return nil
     else
-      return "[#{start_date.strftime(@@SOLR_TIMESTAMP_FORMAT)} TO #{end_date.strftime(@@SOLR_TIMESTAMP_FORMAT)}]"
+      return "[#{start_date.strftime(@@SOLR_TIMESTAMP_FORMAT)} " \
+          "TO #{end_date.strftime(@@SOLR_TIMESTAMP_FORMAT)}]"
     end
   end
 
@@ -260,10 +252,11 @@ class SolrRequest
     end
 
     while dois.length > 0 do
-      subset_dois = dois.slice!(0, @@MAX_DOIS_PER_REQUEST)
+      subset_dois = dois.slice!(0, APP_CONFIG["solr_max_dois_per_request"])
       q = subset_dois.map { | doi | "id:\"#{doi}\"" }.join(" OR ")
   
-      url = "#{@@URL}?q=#{URI::encode(q)}&#{@@FILTER}&fl=#{fields_to_retrieve}&wt=json&facet=false&rows=#{subset_dois.length}"
+      url = "#{APP_CONFIG["solr_url"]}?q=#{URI::encode(q)}&#{@@FILTER}&fl=#{fields_to_retrieve}" \
+          "&wt=json&facet=false&rows=#{subset_dois.length}"
 
       json = SolrRequest.send_query(url)
 
@@ -298,7 +291,8 @@ class SolrRequest
     data = SolrRequest.get_data_helper(report_dois, nil, @@FL_METRIC_DATA)
 
     end_time = Time.now
-    Rails.logger.debug "SOLR Data for Viz Request for #{report_dois.size} articles took #{end_time - start_time} seconds."
+    Rails.logger.debug "SOLR Data for Viz Request for #{report_dois.size} articles took " \
+        "#{end_time - start_time} seconds."
 
     return data
 
@@ -310,7 +304,8 @@ class SolrRequest
     data = SolrRequest.get_data_helper(report_dois, nil, @@FL_VALIDATE_ID)
 
     end_time = Time.now
-    Rails.logger.debug "SOLR Validate Dois Request for #{report_dois.size} articles took #{end_time - start_time} seconds."
+    Rails.logger.debug "SOLR Validate Dois Request for #{report_dois.size} articles took " \
+        "#{end_time - start_time} seconds."
 
     return data
 
@@ -322,7 +317,8 @@ class SolrRequest
   # in the solr docs.
   def self.query_by_pmids(pmids)
     q = pmids.map {|pmid| "pmid:\"#{pmid}\""}.join(" OR ")
-    url = "#{@@URL}?q=#{URI::encode(q)}&#{@@FILTER}&fl=id,publication_date,pmid&wt=json&facet=false&rows=#{pmids.length}"
+    url = "#{APP_CONFIG["solr_url"]}?q=#{URI::encode(q)}&#{@@FILTER}" \
+        "&fl=id,publication_date,pmid&wt=json&facet=false&rows=#{pmids.length}"
     json = SolrRequest.send_query(url)
     docs = json["response"]["docs"]
     results = {}

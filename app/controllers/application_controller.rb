@@ -119,7 +119,7 @@ class ApplicationController < ActionController::Base
   
   # Sets fields used by the UI for results paging of articles.
   # A precondition of this method is that @total_found is set appropriately.
-  def set_paging_vars(current_page, results_per_page=$RESULTS_PER_PAGE)
+  def set_paging_vars(current_page, results_per_page=APP_CONFIG["results_per_page"])
     current_page = current_page.nil? ? "1" : current_page
     @start_result = (current_page.to_i - 1) * results_per_page + 1
     @end_result = @start_result + results_per_page - 1

@@ -1,0 +1,23 @@
+# Application-wide settings.
+
+defaults: &defaults
+
+  # Number of articles to display per page on the add-articles and preview-list
+  # pages.  (The results metrics page uses a different, smaller value.)
+  results_per_page: 25
+
+  solr_url: http://api.plos.org/search
+  
+  # Maximum number of articles we query for in a single request from solr.
+  # If this is too high solr will return a 414 "Request-URI Too Large" error.
+  solr_max_dois_per_request: 100
+  
+
+development:
+  <<: *defaults
+  
+test:
+  <<: *defaults
+
+production:
+  <<: *defaults
