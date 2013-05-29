@@ -138,7 +138,7 @@ def load_from_geolite
   # Note: I had to convert the GeoLite file from ISO-8859 to UTF-8 before this script
   # could work.  Like this:
   #   iconv -f ISO-8859-1 -t utf-8 GeoLiteCity-Location.csv > GeoLiteCity-Location_utf8.csv
-  CSV.foreach("db/GeoLiteCity-Location_utf8.csv") do |row|
+  CSV.foreach("db/seed/GeoLiteCity-Location_utf8.csv") do |row|
     country = get_country_name(row[1])
     region = get_region(row[1], row[2])
     city = row[3]
@@ -157,8 +157,8 @@ end
 
 
 puts "Loading countries..."
-load_from_csv("db/countries.csv")
+load_from_csv("db/seed/countries.csv")
 puts "Loading geocode data from article subset (4k)..."
-load_from_csv("db/geocodes.csv")
+load_from_csv("db/seed/geocodes.csv")
 puts "Loading geocode data from geolite (300k)..."
 load_from_geolite

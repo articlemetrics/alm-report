@@ -2175,7 +2175,13 @@ div.selector select {
 }
 
 .reports-header-div {
-  height: 45px;
+  height: 48px;
+  margin-bottom: 7px;
+}
+
+.reports-header-div + div {
+  width: 670px;
+  height: 392px;
 }
 
 /* 7. Static content 
