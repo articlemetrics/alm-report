@@ -97,14 +97,18 @@ jQuery(function(d, $){
       },
 
       toggleAllArticles : function(e) {
-        // operate only on the checkboxes that we need to based on what's 
-        // selected and what "mode" we're in. :checked/:not(:checked) FTW!
-        var $checkboxes = $(
-          (e.data['mode'] == 'SAVE') ? 
-            ".check-save-article:not(:checked)" : 
-            ".check-save-article:checked"
-        );
-
+        if (e.data['mode'] == 'SAVE') {
+          
+          // Enforce article limit if necessary by only selecting the
+          // first articles.
+          var max = ARTICLE_LIMIT - preview_list_count;
+          if (max < RESULTS_PER_PAGE) {
+            this.showErrorDialog("article-limit-error-message");
+          }
+          var $checkboxes = $(".check-save-article:not(:checked)").slice(0, max);
+        } else {
+          var $checkboxes = $(".check-save-article:checked");
+        }
         var $containers = []; // this will eventually be a jquery collection
 
         // this data will be serialized in the ajax request
