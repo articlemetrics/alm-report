@@ -36,6 +36,14 @@ defaults: &defaults
   
   visualization_min_num_of_alm_data_points: 2
   
+  # IP ranges that represent external IPs of PLOS offices.
+  # (Internal, private ranges are handled within the code.)
+  # This should be kept in sync with
+  # http://intranet.plos.org/it/ops/priv/SitePages/Network%20Topology.aspx
+  internal_ip_ranges:
+    - ***REMOVED***   # US office
+    - ***REMOVED***  # UK office
+  
 
 development:
   <<: *defaults
