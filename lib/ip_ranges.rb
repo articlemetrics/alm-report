@@ -1,8 +1,10 @@
 require "ipaddr"
 
 # Module to keep track of PLOS-internal IP ranges.
+# TODO: make this IPv6-aware if necessary.
 module IpRanges
   
+  # RFC 1918 private network ranges that should always be considered internal.
   @@private_ranges = [
       IPAddr.new("10.0.0.0/8"),
       IPAddr.new("172.16.0.0/12"),
@@ -14,17 +16,11 @@ module IpRanges
     if ip == "127.0.0.1"
       return true
     end
-    @@private_ranges.each {|range| return true if range.include?(ip)}
-    
-    # Based on http://intranet.plos.org/it/ops/priv/SitePages/Network%20Topology.aspx
-    last_octet = ip.split(".")[-1].to_i
-    if ip.start_with?("***REMOVED***")  # SF Office
-      return (***REMOVED***).cover?(last_octet)
-    elsif ip.start_with?("***REMOVED***")  # UK Office
-      return (***REMOVED***).cover?(last_octet)
-    else
-      return false
-    end
+    ranges = []
+    ranges += @@private_ranges
+    APP_CONFIG["internal_ip_ranges"].each {|range| ranges << IPAddr.new(range)}
+    ranges.each{|range| return true if range.include?(ip)}
+    false
   end
   
 end
