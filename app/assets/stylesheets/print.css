@@ -1,0 +1,31 @@
+header {
+  display: none;
+}
+
+footer {
+  display: none;
+}
+
+.view-report {
+  display: none;
+}
+
+.report-downloads {
+  display: none;
+}
+
+.visualizations-container {
+  width: 100%;
+}
+
+.visualizations-list {
+  page-break-after: always;
+}
+
+.last-visualizations-list {
+  page-break-after: avoid;
+}
+
+.list-numbers {
+  display: none;
+}

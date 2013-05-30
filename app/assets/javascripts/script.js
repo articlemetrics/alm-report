@@ -776,65 +776,8 @@ $(".subject-autocomplete[type='text']").autocomplete({
 // Event handler for downloading visualization 
 jQuery(function(d, $){
   $('#download_viz').click(function() {
-
-    var graphDivs, graphLoc;
-
-    // not the best but listed out all the divs that are involved in graphs
-    if ($('#article_usage_and_citations_age_div').length > 0) {
-      graphDivs = ['#article_usage_and_citations_age_div', '#article_usage_and_mendeley_age_div', '#article_subject_div', '#article_location_div'];
-      graphLoc = [{x: 15, y: 95}, {x: 15, y: 700}, {x: 15, y: 1280}, {x: 2, y: 1860}];
-    } else {
-      graphDivs = ['#article_usage_div', '#article_citation_div', '#social_scatter_div', '#article_mendeley_readers_div'];
-      graphLoc = [{x: 15, y: 95}, {x: 15, y: 625}, {x: 15, y: 1160}, {x: 7, y: 1715}];
-    }
-
-    // get the div element that contains all the graphs and turn that div element into a canvas element
-    var element = $('.visualizations-container').get(0);
-    html2canvas(element, {
-      onrendered: function(canvas) {
-        document.body.appendChild(canvas);
-
-        var graphCanvas = document.createElement('canvas');
-        document.body.appendChild(graphCanvas);
-
-        var ctx = canvas.getContext("2d");
-
-        // html2canvas cannot convert the google charts along with other elements in the parent div.
-        // convert the goolge charts individually into a canvas element and draw that canvas element
-        // in the main canvas element 
-
-        var chartContainer = $(graphDivs[0]).get(0);
-        var svg = $(chartContainer).find('svg').parent().html();
-        canvg(graphCanvas, svg);      
-        ctx.drawImage(graphCanvas, graphLoc[0].x, graphLoc[0].y);
-
-        chartContainer = $(graphDivs[1]).get(0);
-        svg = $(chartContainer).find('svg').parent().html();
-        canvg(graphCanvas, svg);
-        ctx.drawImage(graphCanvas, graphLoc[1].x, graphLoc[1].y);
-
-        chartContainer = $(graphDivs[2]).get(0);
-        svg = $(chartContainer).find('svg').parent().html();
-        canvg(graphCanvas, svg);
-        ctx.drawImage(graphCanvas, graphLoc[2].x, graphLoc[2].y);
-
-        chartContainer = $(graphDivs[3]).get(0);
-        svg = $(chartContainer).find('svg').parent().html();
-        canvg(graphCanvas, svg);
-        ctx.drawImage(graphCanvas, graphLoc[3].x, graphLoc[3].y);
-
-        // convert the main canvas (that contains all the html elements and graphs)
-        // into an image and download the image
-        var imgData = canvas.toDataURL("image/png");
-        window.location = imgData.replace("image/png", "image/octet-stream");
-
-        // remove the convas elements 
-        // note: when you convert the treemap graph into a canvas element, 
-        // it seems to generate extra canvas elements, remove them as well
-        $(canvas).siblings('canvas').remove();
-        $(canvas).remove();
-      }
-    });
+    
+    window.print();
 
   });
 }(document, jQuery));
