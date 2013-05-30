@@ -1378,13 +1378,22 @@ span.next {
   text-decoration: underline;
 }
 
-.visualizations-list a span {
+.visualizations-list a span.arrow-down {
   width: 11px;
   height: 7px;
   margin: 0 0 0 10px;
   padding: 0 0 1px;
   display: inline-block;
   background: url(/assets/sprite.png) -617px -141px no-repeat;
+}
+
+.visualizations-list a span.arrow-up {
+  width: 11px;
+  height: 7px;
+  margin: 0 0 0 10px;
+  padding: 0 0 1px;
+  display: inline-block;
+  background: url(/assets/sprite.png) -627px -141px no-repeat;
 }
 
 .visualizations-list .metrics-table-content {

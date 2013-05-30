@@ -30,7 +30,7 @@
         <% if doi.alm.nil? %>
           <div class="metrics-no-data-para">This article data isn't available.  Please check back later.</div>
         <% else %>
-          <a class="show-all-alms-link">Show all ALMs<span class="show-all-alms-link"></span></a>
+          <a class="show-all-alms-link">Show all ALMs<span class="arrow-down"></span></a>
           <div class="metrics-table-content">
             <div class="metric-row-content">
                 <table class="metrics-table <%= "metric-without-data" if !doi.alm[:viewed_data_present] %>" >
