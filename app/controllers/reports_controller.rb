@@ -199,8 +199,10 @@ class ReportsController < ApplicationController
       options[:field] = params[:field]
     end
 
+    filename = (params[:field] == "doi") ? "doilist.csv" : "almreport.csv"
+
     respond_to do | format |
-      format.csv { send_data @report.to_csv(options), :filename => "report.csv" }
+      format.csv { send_data @report.to_csv(options), :filename => filename }
     end
   end
 
