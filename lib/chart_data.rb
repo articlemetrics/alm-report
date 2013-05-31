@@ -218,7 +218,7 @@ module ChartData
     sorted_keys = counter_data.keys.sort { | data1, data2 | data1 <=> data2 }
 
     article_usage_data = []
-    article_usage_data << ["Months", "Html Views", "PDF Views", "XML Views"]
+
     month_index = 0
 
     # process the usage data in order 
@@ -231,7 +231,11 @@ module ChartData
       pdf_views = pmc_month_data.nil? ? counter_month_data["pdf_views"].to_i : counter_month_data["pdf_views"].to_i + pmc_month_data["pdf"].to_i
       xml_views = counter_month_data["xml_views"].to_i
 
-      article_usage_data << [month_index, html_views, pdf_views, xml_views]
+      article_usage_data << [month_index,
+        html_views, "Month: #{month_index}\nHtml Views: #{html_views}",
+        pdf_views, "Month: #{month_index}\nPDF Views: #{pdf_views}",
+        xml_views, "Month: #{month_index}\nXML Views: #{xml_views}"]
+
       month_index = month_index + 1
     end
 
@@ -251,7 +255,6 @@ module ChartData
     current_date = DateTime.now.to_date
 
     article_citation_data = []
-    article_citation_data << ["Months", "CrossRef", "PubMed", "Scopus"]
 
     prev_crossref_data = 0
     prev_pubmed_data = 0
@@ -271,7 +274,11 @@ module ChartData
       pubmed_data = prev_pubmed_data if (pubmed_data < prev_pubmed_data)
       scopus_data = prev_scopus_data if (scopus_data < prev_scopus_data)
 
-      article_citation_data << [month_index, crossref_data, pubmed_data, scopus_data]
+      article_citation_data << [month_index,
+        crossref_data, "Month: #{month_index}\nCrossRef: #{crossref_data}",
+        pubmed_data, "Month: #{month_index}\nPubMed: #{pubmed_data}",
+        scopus_data, "Month: #{month_index}\nScopus: #{scopus_data}"]
+
       data_date = data_date >> 1
       month_index = month_index + 1
 

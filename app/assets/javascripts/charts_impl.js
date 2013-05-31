@@ -87,7 +87,16 @@ function drawArticleLocation() {
 }
 
 function drawArticleUsageAge() {
-  var data = google.visualization.arrayToDataTable(getArticleUsageData());
+
+  var data = new google.visualization.DataTable();
+  data.addColumn('number', 'Months');
+  data.addColumn('number', 'Html Views');
+  data.addColumn({type: 'string', role: 'tooltip'});
+  data.addColumn('number', 'PDF Views');
+  data.addColumn({type: 'string', role: 'tooltip'});
+  data.addColumn('number', 'XML Views');
+  data.addColumn({type: 'string', role: 'tooltip'});
+  data.addRows(getArticleUsageData());
 
   var options = {
     backgroundColor: '#efefef',
@@ -108,7 +117,15 @@ function drawArticleUsageAge() {
 }
 
 function drawArticleCitationAge() {
-  var data = google.visualization.arrayToDataTable(getArticleCitationData());
+  var data = new google.visualization.DataTable();
+  data.addColumn('number', 'Months');
+  data.addColumn('number', 'CrossRef');
+  data.addColumn({type: 'string', role: 'tooltip'});
+  data.addColumn('number', 'PubMed');
+  data.addColumn({type: 'string', role: 'tooltip'});
+  data.addColumn('number', 'Scopus');
+  data.addColumn({type: 'string', role: 'tooltip'});
+  data.addRows(getArticleCitationData());
 
   var options = {
     backgroundColor: '#efefef',
