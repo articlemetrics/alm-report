@@ -478,6 +478,11 @@ select {
   font-size: 15px;
 }
 
+.disabled-submit-btn {
+  background: #333 !important;
+  cursor: default !important;
+}
+
 .button-hover-dark-black:hover {
   background: #333 !important;
 }
