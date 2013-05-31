@@ -1,0 +1,5 @@
+tmp/
+public/assets/
+log/*
+
+.idea/
