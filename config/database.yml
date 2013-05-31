@@ -38,5 +38,4 @@ production:
   database: alm-report_production
   pool: 5
   username: root
-#  password: test
-  socket: /var/run/mysqld/mysqld.sock
+#  password: 
