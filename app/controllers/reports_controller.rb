@@ -4,9 +4,11 @@ class ReportsController < ApplicationController
   # display it.
   def generate
     dois = session[:dois]
-    if dois.nil?
+    if dois.nil? || dois.length == 0
 
-      # TODO: user-friendly error handling
+      # We don't need to give a polite message to the user, since the link
+      # to this action shouldn't be visible if they have no articles in
+      # the session.
       raise "No DOIs saved in session!"
     end
 

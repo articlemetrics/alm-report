@@ -12,6 +12,9 @@ jQuery(function(d, $){
       init : function() {
         // update the header and the sidebar with the current list count
         this.updateListCount(initial_list_count);
+        if (initial_list_count == 0) {
+          this.disableButton($('#preview-list-submit'));
+        }
 
         // set up event handlers
         $('.check-save-article').on("click", jQuery.proxy(this.checkboxClickHandler, this));
@@ -228,6 +231,13 @@ jQuery(function(d, $){
 
         // update "your list" and "preview list" buttons with new article count
         this.incrementListCount(json_resp.delta);
+        if (preview_list_count === 0) {
+          this.disableButton($('#create-report-submit'));
+          this.disableButton($('#preview-list-submit'));
+        } else {
+          this.enableButton($('#create-report-submit'));
+          this.enableButton($('#preview-list-submit'));
+        }
 
         // one last thing to do if no errors occurred...
         if (!error_occurred) {
@@ -254,6 +264,19 @@ jQuery(function(d, $){
           }
         }
 
+      },
+      
+      // Changes the visual appearance of one of the styled submit buttons
+      // in the UI and prevents it from being activated.
+      disableButton : function($button) {
+        $button.addClass('disabled-submit-btn');
+        $button.attr('disabled', 'disabled');
+      },
+      
+      // Enables a submit button that was previously disabled through disableButton.
+      enableButton : function($button) {
+        $button.removeClass('disabled-submit-btn');
+        $button.removeAttr('disabled');
       },
 
       updateProgressIndicators : function($containers, status_data) {
