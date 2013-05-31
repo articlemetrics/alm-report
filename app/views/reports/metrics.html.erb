@@ -63,7 +63,7 @@
                 </table>
 
                 <table class="metrics-table <%= "metric-without-data" if !doi.alm[:cited_data_present] %>">
-                  <caption>Blogs &amp; Media</caption>
+                  <caption>Cited</caption>
                   <%= render "alm_stat", :stat =>doi.alm[:pmc_citations], :label => "PubMed Central" %>
                   <%= render "alm_stat", :stat => doi.alm[:crossref_citations], :label => "CrossRef" %>
                   <%= render "alm_stat", :stat => doi.alm[:scopus_citations], :label => "Scopus" %>
