@@ -838,6 +838,7 @@ select {
 
 .article-lists ul {
   margin: 44px 0 0 41px;
+  float: left;
 }
 
 .article-lists li {
@@ -870,6 +871,12 @@ p.select-articles-message {
   margin: 16px 0 12px 44px;
   font-size: 14px;
   color: #858585;
+  clear: both;
+}
+
+/* I think the nasty hack from DP doesn't fix the problem because we had to make the select wider to accommodate the length of the text */
+#uniform-add-article-select {
+  margin-bottom: 7px; /* nasty hack to allow the "select-articles-message" element to have the correct top vertical margin */
 }
 
 .invisible {
