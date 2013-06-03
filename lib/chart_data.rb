@@ -155,7 +155,7 @@ module ChartData
       end
     end
     Rails.logger.info("Found #{found_in_db.length} locations in geocodes table, out of #{locations.length} total")
-    
+
     # Rendering the map with pre-geocoded info is by far the fastest option.
     # Otherwise, we send the map data consisting of addresses, which the chart
     # javascript will sequentially geocode, *slowly*.  However, it's not
@@ -168,7 +168,7 @@ module ChartData
     fraction = found_in_db.length.to_f / locations.length.to_f
     if fraction > APP_CONFIG["min_fraction_of_locations_to_use_geocodes"] \
         && locations.length - found_in_db.length <= APP_CONFIG["max_unfound_locations_to_use_geocodes"]
-      article_locations_data = [["latitude", "longitude", "color", "size"]]
+      article_locations_data = []
       locations.each do |address, count|
         geo = found_in_db[address]
         if !geo.nil?
@@ -178,19 +178,25 @@ module ChartData
           # a linear scale, the large markers tend to take over the map.  So after
           # playing around a while I settled on the following concave function.
           size = Math.atan(Math.log2(count + 1))
-          article_locations_data << [geo.latitude, geo.longitude, size, size]
+          
+          # There's an undocumented feature of the GeoChart where you can specify
+          # the first line of tooltip text as an element right after the lat/lng.
+          # Otherwise, the first line will be lat/lng.  The final element is the
+          # second line.
+          
+          # TODO: set the second line appropriately (author names)
+          article_locations_data << [geo.latitude, geo.longitude, address, size, size, ""]
         end
       end
     else
       Rails.logger.warn("Not using geocoded lat/long because we couldn't find enough locations in the DB")
       log_locations(locations, found_in_db)
-      article_locations_data = [["location", "color", "size"]]
+      article_locations_data = []
       locations.each do |address, count|
         size = Math.atan(Math.log2(count + 1))
-        article_locations_data << [address, size, size]
+        article_locations_data << [address, size, size, ""]
       end
     end
-
     return {:total_authors_data => total_authors_data, :locations_data => article_locations_data}
   end
 

@@ -66,7 +66,21 @@ function drawArticleUsageCitationSubjectArea() {
 }
 
 function drawArticleLocation() {
-  var data = google.visualization.arrayToDataTable(getArticleLocationData());
+  var raw_data = getArticleLocationData();
+  var data = new google.visualization.DataTable();
+  
+  // Determine if we're in lat/lng mode, or just getting addresses passed to us.
+  if (raw_data[0].length == 6) {
+    data.addColumn('number', 'latitude', 'latitude');
+    data.addColumn('number', 'longitude', 'longitude');
+    data.addColumn('string', 'description', 'description');
+  } else {
+    data.addColumn('string', 'location', 'location');
+  }
+  data.addColumn('number', 'color', 'color');
+  data.addColumn('number', 'size', 'size');
+  data.addColumn({type:'string', role:'tooltip'});
+  data.addRows(raw_data);
 
   // sizeAxis is a hack to make the marker smaller
   var options = {
@@ -79,7 +93,15 @@ function drawArticleLocation() {
       trigger: 'none'
     },
     legend: 'none',
-    colorAxis: {colors: ['#033703', '#00ff40']}
+    colorAxis: {colors: ['#033703', '#00ff40']},
+    magnifyingGlass: {
+      enable: true,
+      zoomFactor: 2.5
+    },
+    tooltip: {
+      trigger: 'focus'
+    },
+    enableRegionInteractivity: true
   };
 
   var chart = new google.visualization.GeoChart(document.getElementById('article_location_div'));
