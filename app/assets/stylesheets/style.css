@@ -124,9 +124,8 @@ sub {
 .cf:before, .cf:after {
   content: "";
   display: table;
+  clear: both;
 }
-
-.cf:after { clear: both; }
 
 .cf { zoom: 1; }
 
@@ -386,8 +385,8 @@ h1 + ul li {
 
 .home-form {
   width: 500px;
-  margin: 70px 0 0 103px;
-  display: inline-block;
+  margin: 70px 0 50px 103px;
+  float: left;
 }
 
 h2 {
@@ -808,7 +807,7 @@ select {
   width: 635px;
   margin: 45px 0 0 38px;
   position: relative;
-  display: inline-block;
+  float: left;
   min-height: 290px;
 }
 
@@ -1289,7 +1288,7 @@ span.next {
 
 .metrics-left-content {
   width: 715px;
-  display: inline-block;
+  float: left;
   position: relative;
   color: #333;
   min-height: 560px;
@@ -1562,7 +1561,7 @@ caption {
 */
 .visualizations-container {
   width: 705px;
-  display: inline-block;
+  float: left;
   min-height: 560px;
 }
 
