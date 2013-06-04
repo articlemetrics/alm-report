@@ -182,7 +182,8 @@ module ChartData
           # There's an undocumented feature of the GeoChart where you can specify
           # the first line of tooltip text as an element right after the lat/lng.
           # Otherwise, the first line will be lat/lng.  The final element is the
-          # second line.
+          # second line.  See
+          # https://groups.google.com/forum/#!msg/google-visualization-api/U6qOYwjcd-Q/NoGcmqsC_VsJ
           
           # TODO: set the second line appropriately (author names)
           article_locations_data << [geo.latitude, geo.longitude, address, size, size, ""]
