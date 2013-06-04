@@ -61,18 +61,17 @@ class GeocodeRequest
       ])
   
   # Parses the author affiliates field in the article XML to retrieve the location
-  # of the author.  Returns the location or nil if it cannot be determined.
+  # of the author.  Returns a tuple of location and the intitution name (the latter
+  # just being everything found before the location), or nil if the affiliate
+  # cannot be parsed.
   #
   # TODO: maybe put this somewhere else.  It doesn't really belong here.
   def self.parse_location_from_affiliate(affiliate)
     fields = affiliate.split(",")
     fields.map { |location| location.strip! }
     if fields.length >= 3
-      if @@COUNTRIES_WITH_CITIES.include?(fields[-1])
-        fields[-3, 3].join(", ")
-      else
-        fields[-2, 2].join(", ")
-      end
+      offset = @@COUNTRIES_WITH_CITIES.include?(fields[-1]) ? 3 : 2
+      return [fields[-offset, offset].join(", "), fields[0, fields.length - offset].join(", ")]
     else
       nil
     end

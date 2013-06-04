@@ -125,10 +125,36 @@ module ChartData
     return retrieve_geocode.call(country)
   end
   
+  # Generates tooltip text for markers on the article locations chart,
+  # based on the author affiliations.  Returns a tuple of the first
+  # and second lines of the tooltip.  (Unfortunately, it seems impossible
+  # to have more than two lines of tooltip text when using the
+  # google.visualization.GeoChart.)
+  #
+  # TODO: show author names in the tooltip.  This is not possible with our
+  # current solr schema, since we just have flat lists of authors, and
+  # author affiliations, and no linkage between them.  (In the article XML
+  # they are linked.)
+  def self.generate_location_tooltip(address, author_count, institutions)
+    line1 = "#{address}: #{author_count} author"
+    if author_count > 1
+      line1 += "s"
+    end
+    if institutions.length == 1
+      line2 = institutions[0]
+    else
+      line2 = "#{institutions.length} institutions"
+    end
+    return [line1, line2]
+  end
+  
   # Generate data for author location geo graph 
   def self.generate_data_for_articles_by_location_chart(report)
     total_authors_data = 0
-    locations = Hash.new{|h, k| h[k] = 0}
+    
+    # Map from address to author count and list of author institutions, parsed
+    # from the author affiliate data.
+    address_to_count_and_inst = Hash.new{|h, k| h[k] = [0, []]}
 
     report.report_dois.each do | report_doi |
       solr_data = report_doi.solr
@@ -139,22 +165,25 @@ module ChartData
 
       if (!solr_data["affiliate"].nil?)
         solr_data["affiliate"].each do | affiliate |
-          location = GeocodeRequest.parse_location_from_affiliate(affiliate)
-          if !location.nil?
-            locations[location] += 1
+          fields = GeocodeRequest.parse_location_from_affiliate(affiliate)
+          if !fields.nil?
+            count, institutions = address_to_count_and_inst[fields[0]]
+            count += 1
+            institutions << fields[1]
+            address_to_count_and_inst[fields[0]] = [count, institutions]
           end
         end
       end
     end
     
     found_in_db = {}
-    locations.each do |address, _|
+    address_to_count_and_inst.each do |address, _|
       found = find_geocode_in_db(address)
       if !found.nil?
         found_in_db[address] = found
       end
     end
-    Rails.logger.info("Found #{found_in_db.length} locations in geocodes table, out of #{locations.length} total")
+    Rails.logger.info("Found #{found_in_db.length} locations in geocodes table, out of #{address_to_count_and_inst.length} total")
 
     # Rendering the map with pre-geocoded info is by far the fastest option.
     # Otherwise, we send the map data consisting of addresses, which the chart
@@ -165,11 +194,13 @@ module ChartData
     # for "most" of the locations, and there are no more than a few ungeocoded
     # locations.  (The geocodes table now has over 300k cities, and in my
     # experience ones that aren't found there are usually typos.)
-    fraction = found_in_db.length.to_f / locations.length.to_f
+    fraction = found_in_db.length.to_f / address_to_count_and_inst.length.to_f
     if fraction > APP_CONFIG["min_fraction_of_locations_to_use_geocodes"] \
-        && locations.length - found_in_db.length <= APP_CONFIG["max_unfound_locations_to_use_geocodes"]
+        && address_to_count_and_inst.length - found_in_db.length <= APP_CONFIG["max_unfound_locations_to_use_geocodes"]
       article_locations_data = []
-      locations.each do |address, count|
+      address_to_count_and_inst.each do |address, fields|
+        count = fields[0]
+        institutions = fields[1]
         geo = found_in_db[address]
         if !geo.nil?
 
@@ -184,18 +215,23 @@ module ChartData
           # Otherwise, the first line will be lat/lng.  The final element is the
           # second line.  See
           # https://groups.google.com/forum/#!msg/google-visualization-api/U6qOYwjcd-Q/NoGcmqsC_VsJ
-          
-          # TODO: set the second line appropriately (author names)
-          article_locations_data << [geo.latitude, geo.longitude, address, size, size, ""]
+          tooltip = generate_location_tooltip(address, count, institutions)
+          article_locations_data << [geo.latitude, geo.longitude, tooltip[0], size, size, tooltip[1]]
         end
       end
     else
       Rails.logger.warn("Not using geocoded lat/long because we couldn't find enough locations in the DB")
-      log_locations(locations, found_in_db)
+      log_locations(address_to_count_and_inst, found_in_db)
       article_locations_data = []
-      locations.each do |address, count|
+      address_to_count_and_inst.each do |address, fields|
+        count = fields[0]
+        institutions = fields[1]
         size = Math.atan(Math.log2(count + 1))
-        article_locations_data << [address, size, size, ""]
+        tooltip = generate_location_tooltip(address, count, institutions)
+        
+        # When we're not in lat/lng mode, the first line of the tooltip must
+        # be the address.
+        article_locations_data << [address, size, size, tooltip[1]]
       end
     end
     return {:total_authors_data => total_authors_data, :locations_data => article_locations_data}
