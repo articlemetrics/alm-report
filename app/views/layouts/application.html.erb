@@ -116,6 +116,9 @@
   <script type="text/javascript">
     var RESULTS_PER_PAGE = <%= APP_CONFIG["results_per_page"] %>;
     var ARTICLE_LIMIT = <%= APP_CONFIG["article_limit"] %>;
+    <% if !@total_found.nil? %>
+      var search_total_found = <%= @total_found %>;
+    <% end %>
   </script>
   <%= javascript_include_tag "application" %>  
 
