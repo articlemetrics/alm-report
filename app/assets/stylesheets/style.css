@@ -218,7 +218,7 @@ a {
 
 h1 {
   margin: 61px 0 0 10px;
-  float: left;
+  display: inline-block;
 }
 
 h1 + ul {
@@ -242,7 +242,7 @@ h1 + ul li {
 .tagline {
   margin: 63px 0 48px 62px;
   width: 67%;
-  float: left;
+  display: inline-block;
 }
 
 .tagline a:hover,
@@ -761,7 +761,7 @@ select {
   width: 628px;
   margin: 45px 0 0 38px;
   position: relative;
-  float: left;
+  display: inline-block;
   min-height: 330px;
 }
 
