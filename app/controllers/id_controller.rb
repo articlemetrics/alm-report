@@ -1,4 +1,5 @@
 
+require "csv"
 require "set"
 
 # Controller that handles the "Find Articles by DOI/PMID" page.
@@ -116,16 +117,25 @@ class IdController < ApplicationController
     @title = "Upload File"
   end
   
-  
-  # TODO: figure out what the expected format of this file is!  I am assuming
-  # for now that it's just one DOI per line.
+
+  # Parses the uploaded DOI file, which will be something that looks like
+  # a CSV with only one entry/row.
   def parse_file(contents)
-    return contents.split("\n")
+    results = []
+    CSV.parse(contents.read) do |row|
+      test = row[0].downcase
+
+      # Handle the header row.
+      if test != "doi" && test != '"doi"'
+        results << row[0]
+      end
+    end
+    results
   end
   
   
   def process_upload
-    ids = params[:"upload-file-field"].read.split("\n")
+    ids = parse_file(params[:"upload-file-field"])
     valid_dois = []
     valid_pmids = []
     
