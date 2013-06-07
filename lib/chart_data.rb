@@ -95,7 +95,7 @@ module ChartData
   def self.find_geocode_in_db(address)
     
     retrieve_geocode = lambda {|addr|
-      Geocode.first(conditions: ["lower(address) = ?", addr.downcase])
+      Geocode.first(conditions: ["address = ?", addr])
     }
     
     geocode = retrieve_geocode.call(address)
