@@ -25,9 +25,15 @@ function getBubbleChartOptions() {
     bubble: {textStyle: {color: 'none'}},
     backgroundColor: '#efefef',
     chartArea: {left: 75, top: 20, width: "80%", height: "80%"},
-
-    // TODO: confirm colors with product.  The mockups only show 3 max.
-    colors: ['fda328', '1ebd21', 'b526fb', '3366cc', 'dc3912'],
+    series: {
+      'PLOS ONE': {color: 'fda328'},                    // Orange
+      'PLOS Biology': {color: '1ebd21'},                // Green
+      'PLOS Computational Biology': {color: '1ebd21'},  // Green
+      'PLOS Genetics': {color: '1ebd21'}                // Green
+      
+      // All other journals get the default color specified below.
+    },
+    colors: ['b526fb'],  // Purple
     legend: {position: 'none'},
     titlePosition: 'none'
   };
