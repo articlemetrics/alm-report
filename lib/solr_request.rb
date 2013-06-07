@@ -133,7 +133,7 @@ class SolrRequest
   def self.parse_docs(json)
     docs = json["response"]["docs"]
     docs.each do |doc|
-      doc["publication_date"] = Date.strptime(doc["publication_date"], @@SOLR_TIMESTAMP_FORMAT)
+      doc = fix_data(doc)
     end
     return docs
   end
@@ -228,6 +228,26 @@ class SolrRequest
           "TO #{end_date.strftime(@@SOLR_TIMESTAMP_FORMAT)}]"
     end
   end
+  
+  # There are a handful of special cases where we want to display a "massaged"
+  # version of what solr returns, instead of the direct value.  This method
+  # takes care of all of those.
+  def self.fix_data(doc)
+    if doc["publication_date"]
+      doc["publication_date"] = Date.strptime(doc["publication_date"], @@SOLR_TIMESTAMP_FORMAT)
+    end
+    
+    # For articles cross-published in PLOS Collections, we want to display the
+    # original journal name throughout the app.
+    if doc["cross_published_journal_name"] && doc["cross_published_journal_name"].length > 1
+      collections_index = doc["cross_published_journal_name"].index("PLOS Collections")
+      if !collections_index.nil?
+        new_index = collections_index == 0 ? 1 : 0
+        doc["cross_published_journal_name"][0] = doc["cross_published_journal_name"][new_index]
+      end
+    end
+    doc
+  end
 
   # helper function for retrieving data from solr
   def self.get_data_helper(report_dois, cache_postfix, fields_to_retrieve)
@@ -262,10 +282,7 @@ class SolrRequest
 
       docs = json["response"]["docs"]
       docs.each do |doc|
-        if doc["publication_date"]
-          doc["publication_date"] = Date.strptime(doc["publication_date"], @@SOLR_TIMESTAMP_FORMAT)
-        end
-
+        doc = fix_data(doc)
         all_results[doc["id"]] = doc
   
         # store solr data in cache
