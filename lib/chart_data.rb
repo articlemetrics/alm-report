@@ -73,7 +73,10 @@ module ChartData
   # TODO: consider saving these to the DB so they can be geocoded later.
   def self.log_locations(all_locations, found_in_db)
     locations_set = Set.new(all_locations.keys)
-    found_set = Set.new(found_in_db.keys)
+    
+    # Use addresses from the geocode object, not the key in the map, since
+    # the key is always lowercase (and all_locations is not).
+    found_set = Set.new(found_in_db.values.map{|geo| geo.address})
     diff = locations_set - found_set
     Rails.logger.warn("Dumping addresses not found...")
     diff.each {|i| Rails.logger.warn("    #{i}")}
