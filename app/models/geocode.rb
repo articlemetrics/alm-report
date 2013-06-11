@@ -17,23 +17,22 @@ class Geocode < ActiveRecord::Base
       }
   
   
-  # Performs a batch query against the addresses field of the geocodes table and
-  # returns results as a map of address to geocode object.
+  # Performs a batch query against the addresses field of the geocodes table.
+  #
+  # Input: a map where the keys are the addresses that will be queried, and
+  #     the values are "original" addresses which are associated with the keys.
+  #
+  # Output: a tuple of a map from address to geocode object, and a list of the
+  #     original addresses that were found.
   def self.load_from_addresses_impl(addresses)
-    geos = Geocode.where(:address => addresses)
+    geos = Geocode.where(:address => addresses.keys)
     results = {}
-    geos.each {|geo| results[geo.address] = geo}
-    results
-  end
-  
-  
-  # Returns an array of addresses that are in the input addresses array, and are
-  # not present as a key of the geocodes map (with case-insensitive matching).
-  def self.find_difference(addresses, geocodes)
-    lower_addrs = Set.new(addresses.map {|a| a.downcase})
-    lower_geos = Set.new(geocodes.keys.map {|a| a.downcase})
-    diff = lower_addrs - lower_geos
-    diff.to_a
+    orig_addresses = []
+    geos.each do |geo|
+      results[geo.address] = geo
+      orig_addresses << addresses[geo.address.downcase]
+    end
+    [results, orig_addresses]
   end
   
   
@@ -44,59 +43,70 @@ class Geocode < ActiveRecord::Base
   # from input address to geocode object (not all input addresses may be present
   # in the output, if they were not found).
   def self.load_from_addresses(addrs)
-    addresses = addrs.map {|a| a.downcase}
+    
+    # Copy the addresses into a set.  We will delete them from this set as
+    # they are found in the DB.
+    addresses = Set.new(addrs.map{|a| a.downcase})
 
     # 1. Use the entire address
-    geocodes = load_from_addresses_impl(addresses)
-    if geocodes.length < addresses.length
-      not_found = find_difference(addresses, geocodes)
-      
+    address_map = {}
+    addresses.each {|a| address_map[a] = a}
+    geocodes, orig_addresses = load_from_addresses_impl(address_map)
+    orig_addresses.each {|i| addresses.delete(i)}
+    if addresses.length > 0
+
       # 2. Substitute country synonyms we know we have in the DB.
-      country_synonym_addrs = []
-      not_found.each do |address|
+      substitutions = {}
+      addresses.each do |address|
         fields = address.split(",")
         country = fields[-1].strip.downcase
         if !@@COUNTRY_SYNONYMS[country.to_sym].nil?
           country = @@COUNTRY_SYNONYMS[country.to_sym]
-          country_synonym_addrs << "#{fields[-2].strip()}, #{country}"
+          substitutions["#{fields[-2].strip()}, #{country}"] = address
         end
       end
-      if country_synonym_addrs.length > 0
-        geocodes.merge!(load_from_addresses_impl(Set.new(country_synonym_addrs).to_a))
+      if substitutions.length > 0
+        found, orig_addresses = load_from_addresses_impl(substitutions)
+        geocodes.merge!(found)
+        orig_addresses.each {|i| addresses.delete(i)}
       end
-      if geocodes.length < addresses.length
-        not_found = find_difference(addresses, geocodes)
-        
+      if addresses.length > 0
+
         # 3. Sometimes, addresses for countries where we normally get
         # "City, Province, Country" only have "City, Country".
-        city_country_addrs = []
-        not_found.each do |address|
+        substitutions = {}
+        addresses.each do |address|
           fields = address.split(",")
           if fields.length == 3
             country = fields[-1].strip.downcase
             country = @@COUNTRY_SYNONYMS[country.to_sym].nil? ? country : @@COUNTRY_SYNONYMS[country.to_sym]
-            city_country_addrs << "#{fields[1].strip()}, #{country}"
+            substitutions["#{fields[1].strip()}, #{country}"] = address
           end
         end
-        if city_country_addrs.length > 0
-          geocodes.merge!(load_from_addresses_impl(Set.new(city_country_addrs).to_a))
+        if substitutions.length > 0
+          found, orig_addresses = load_from_addresses_impl(substitutions)
+          geocodes.merge!(found)
+          orig_addresses.each {|i| addresses.delete(i)}
         end
       end
-      if geocodes.length < addresses.length
-        not_found = find_difference(addresses, geocodes)
-        
+      if addresses.length > 0
+
         # 4. If all else fails, just attempt to geocode the country.
-        country_addrs = []
-        not_found.each do |address|
+        substitutions = {}
+        addresses.each do |address|
           fields = address.split(",")
           country = fields[-1].strip.downcase
           country = @@COUNTRY_SYNONYMS[country.to_sym].nil? ? country : @@COUNTRY_SYNONYMS[country.to_sym]
-          country_addrs << country
+          substitutions[country] = address
         end
-        geocodes.merge!(load_from_addresses_impl(Set.new(country_addrs).to_a))
+        if substitutions.length > 0
+          found, orig_addresses = load_from_addresses_impl(substitutions)
+          geocodes.merge!(found)
+          orig_addresses.each {|i| addresses.delete(i)}
+        end
       end
     end
-    geocodes
+    [geocodes, addresses.to_a]
   end
   
 end

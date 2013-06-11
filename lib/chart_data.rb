@@ -68,19 +68,7 @@ module ChartData
 
     return article_usage_citation_subject_area_data
   end
-  
-  # Logs locations that were not found in the geocodes table.
-  # TODO: consider saving these to the DB so they can be geocoded later.
-  def self.log_locations(all_locations, found_in_db)
-    locations_set = Set.new(all_locations.keys)
-    
-    # Use addresses from the geocode object, not the key in the map, since
-    # the key is always lowercase (and all_locations is not).
-    found_set = Set.new(found_in_db.values.map{|geo| geo.address})
-    diff = locations_set - found_set
-    Rails.logger.warn("Dumping addresses not found...")
-    diff.each {|i| Rails.logger.warn("    #{i}")}
-  end
+
   
   # Generates tooltip text for markers on the article locations chart,
   # based on the author affiliations.  Returns a tuple of the first
@@ -132,7 +120,7 @@ module ChartData
         end
       end
     end
-    found_in_db = Geocode.load_from_addresses(address_to_count_and_inst.keys)
+    found_in_db, not_found = Geocode.load_from_addresses(address_to_count_and_inst.keys)
     Rails.logger.info("Found #{found_in_db.length} locations in geocodes table, out of #{address_to_count_and_inst.length} total")
 
     # Rendering the map with pre-geocoded info is by far the fastest option.
@@ -171,7 +159,7 @@ module ChartData
       end
     else
       Rails.logger.warn("Not using geocoded lat/long because we couldn't find enough locations in the DB")
-      log_locations(address_to_count_and_inst, found_in_db)
+      not_found.each {|i| Rails.logger.warn("Not found: #{i}")}
       article_locations_data = []
       address_to_count_and_inst.each do |address, fields|
         count = fields[0]
