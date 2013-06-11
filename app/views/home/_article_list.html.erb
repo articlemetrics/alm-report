@@ -10,8 +10,16 @@
     doc_key = "#{doc['id']}|#{doc['publication_date'].strftime("%s")}"  # Convert to unix timestamp
 %>
     <div class="article-info cf">
-      <input class="check-save-article" type="checkbox"
+
+      <% if !doc[:doc_checked].nil? && doc[:doc_checked] == true %>
+        <input class="check-save-article" type="checkbox" checked="yes" name="" id="" value="<%= doc_key %>">
+
+      <% else %>
+        <input class="check-save-article" type="checkbox"
           <%= @articles_checked ? 'checked="yes"' : '' %> name="" id="" value="<%= doc_key %>">
+
+      <% end %>
+
       <a href="http://dx.doi.org/info:doi/<%= doc['id'] %>" target="_blank"><%= doc["title"] %></a>
 
       <% if !doc["author_display"].nil? %>

@@ -48,6 +48,19 @@ class HomeController < ApplicationController
     @tab = :select_articles
     @title = "Add Articles"
     @docs, @total_found = search_from_params
+
+    # get the dois that have been selected
+    dois = session[:dois]
+
+    # make sure that the articles that have been checked previously are checked when we render the page
+    if (!dois.nil? && !dois.empty?)
+      @docs.each do | doc |
+        if (dois.has_key?(doc["id"]))
+          doc[:doc_checked] = true
+        end
+      end
+    end
+
     set_paging_vars(params[:current_page])
   end
   
