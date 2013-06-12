@@ -5,6 +5,8 @@ class Geocode < ActiveRecord::Base
   attr_accessible :address, :latitude, :longitude
   
   
+  @@CACHE_PREFIX = "geocodes.address."
+  
   # Map of variations of certain countries' names, to the value that we
   # have stored in the geocodes table.
   @@COUNTRY_SYNONYMS = {
@@ -15,6 +17,30 @@ class Geocode < ActiveRecord::Base
       :"republic of panama" => "panama",
       :"the netherlands" => "netherlands",
       }
+      
+      
+  # Checks to see if any of the addresses are in the rails cache.  Returns a tuple
+  # of a list of geocodes found in the cache, and a list of addresses not found.
+  def self.check_cache(addresses)
+    results = []
+    not_in_cache = []
+    addresses.each do |a|
+      cached = Rails.cache.read("#{@@CACHE_PREFIX}#{a}")
+      if cached.nil?
+        not_in_cache << a
+      else
+        results << cached
+      end
+    end
+    [results, not_in_cache]
+  end
+  
+  
+  # Adds the geocodes to the rails cache.
+  def self.add_to_cache(geos)
+    geos.each {|geo| Rails.cache.write("#{@@CACHE_PREFIX}#{geo.address.downcase}", geo,
+        :expires_in => 1.day)}
+  end
   
   
   # Performs a batch query against the addresses field of the geocodes table.
@@ -25,7 +51,12 @@ class Geocode < ActiveRecord::Base
   # Output: a tuple of a map from address to geocode object, and a list of the
   #     original addresses that were found.
   def self.load_from_addresses_impl(addresses)
-    geos = Geocode.where(:address => addresses.keys)
+    geos, not_in_cache = check_cache(addresses.keys.clone)
+    if geos.length < addresses.length
+      db_geos = Geocode.where(:address => not_in_cache)
+      add_to_cache(db_geos)
+      geos += db_geos
+    end
     results = {}
     orig_addresses = []
     geos.each do |geo|
