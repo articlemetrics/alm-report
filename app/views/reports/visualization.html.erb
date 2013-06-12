@@ -75,6 +75,9 @@ function getArticleCitationData() {
   return <%= raw @article_citation_data %>;
 }
 
+function getSocialScatterHeader() {
+  return <%= raw @social_scatter_header.to_json %>;
+}
 function getSocialScatterData() {
   return <%= raw @social_scatter.to_json %>;
 }

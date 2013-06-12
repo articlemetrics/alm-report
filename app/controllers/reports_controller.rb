@@ -124,7 +124,10 @@ class ReportsController < ApplicationController
       #render single article report
       @article_usage_data = ChartData.generate_data_for_usage_chart(@report)
       @article_citation_data = ChartData.generate_data_for_citation_chart(@report)
-      @social_scatter = ChartData.generate_data_for_social_data_chart(@report)
+
+      social_scatter_data = ChartData.generate_data_for_social_data_chart(@report)
+      @social_scatter_header = social_scatter_data[:column_header]
+      @social_scatter = social_scatter_data[:data]
 
       mendeley_reader_data = ChartData.generate_data_for_mendeley_reader_chart(@report)
       @reader_data = mendeley_reader_data[:reader_loc_data]
