@@ -242,8 +242,8 @@ module ChartData
   def self.generate_data_for_usage_chart(report)
 
     # get counter and pmc usage stat data
-    counter = report.report_dois[0].alm[:counter]
-    pmc = report.report_dois[0].alm[:pmc]
+    counter = report.report_dois[0].alm[:counter][:events]
+    pmc = report.report_dois[0].alm[:pmc][:events]
 
     counter_data = counter.inject({}) do | result, month_data |
       month_date = Date.new(month_data["year"].to_i, month_data["month"].to_i, 1)
@@ -289,15 +289,22 @@ module ChartData
   # generate data for single article citation chart
   def self.generate_data_for_citation_chart(report)
 
-    crossref_history_data = process_history_data(report.report_dois[0].alm[:crossref])
-    pubmed_history_data = process_history_data(report.report_dois[0].alm[:pubmed])
-    scopus_history_data = process_history_data(report.report_dois[0].alm[:scopus])
+    article_citation_data = []
+
+    if (report.report_dois[0].alm[:crossref][:total] == 0 && 
+      report.report_dois[0].alm[:pubmed][:total] == 0 && 
+      report.report_dois[0].alm[:scopus][:total] == 0)
+
+      return article_citation_data
+    end
+
+    crossref_history_data = process_history_data(report.report_dois[0].alm[:crossref][:histories])
+    pubmed_history_data = process_history_data(report.report_dois[0].alm[:pubmed][:histories])
+    scopus_history_data = process_history_data(report.report_dois[0].alm[:scopus][:histories])
 
     # starting date is the publication date
     data_date = Date.parse(report.report_dois[0].alm[:publication_date])
     current_date = DateTime.now.to_date
-
-    article_citation_data = []
 
     prev_crossref_data = 0
     prev_pubmed_data = 0
@@ -338,25 +345,36 @@ module ChartData
 
     social_data = []
 
+    total_data = 0
+
     citeulike = report.report_dois[0].alm[:citeulike]
-    citeulike_data = process_social_data(citeulike, "post_time")
+    citeulike_data = process_social_data(citeulike[:events], "post_time")
     social_data << {:data => citeulike_data, :column_name => "CiteULike", :column_key => "citeulike"}
+    total_data = total_data + citeulike[:total]
 
     research_blogging = report.report_dois[0].alm[:researchblogging]
-    research_blogging_data = process_social_data(research_blogging, "published_date")
+    research_blogging_data = process_social_data(research_blogging[:events], "published_date")
     social_data << {:data => research_blogging_data, :column_name => "Research Blogging", :column_key => "research_blogging"}
+    total_data = total_data + research_blogging[:total]
 
     nature = report.report_dois[0].alm[:nature]
-    nature_data = process_social_data(nature, "published_at")
+    nature_data = process_social_data(nature[:events], "published_at")
     social_data << {:data => nature_data, :column_name => "Nature", :column_key => "nature"}
+    total_data = total_data + nature[:total]
 
     science_seeker = report.report_dois[0].alm[:scienceseeker]
-    science_seeker_data = process_social_data(science_seeker, "updated")
+    science_seeker_data = process_social_data(science_seeker[:events], "updated")
     social_data << {:data => science_seeker_data, :column_name => "Science Seeker", :column_key => "science_seeker"}
+    total_data = total_data + science_seeker[:total]
 
     twitter = report.report_dois[0].alm[:twitter]
-    twitter_data = process_social_data(twitter, "created_at")
+    twitter_data = process_social_data(twitter[:events], "created_at")
     social_data << {:data => twitter_data, :column_name => "Twitter", :column_key => "twitter"}
+    total_data = total_data + twitter[:total]
+
+    if (total_data == 0)
+      return []
+    end
 
     # start at article publication date
     data_date = Date.parse(report.report_dois[0].alm[:publication_date])
@@ -417,17 +435,20 @@ module ChartData
 
   # Gather Mendeley reader information for geo chart
   def self.generate_data_for_mendeley_reader_chart(report)
-    mendeley = report.report_dois[0].alm[:mendeley]
-
-    reader_total = mendeley["stats"]["readers"].to_i
-
-    reader_country = mendeley["stats"]["country"]
+    mendeley = report.report_dois[0].alm[:mendeley][:events]
 
     reader_data = []
-    reader_data << ["Country", "Readers"]
+    reader_total = 0
 
-    reader_country.each do | data |
-      reader_data << [data["name"], data["value"]]
+    if (!mendeley.nil? && !mendeley.empty?)
+      reader_total = mendeley["stats"]["readers"].to_i
+
+      reader_country = mendeley["stats"]["country"]
+
+      reader_data << ["Country", "Readers"]
+      reader_country.each do | data |
+        reader_data << [data["name"], data["value"]]
+      end
     end
 
     return {:reader_total => reader_total, :reader_loc_data => reader_data}

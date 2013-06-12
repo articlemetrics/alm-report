@@ -2,43 +2,57 @@
 <div class="content wrapper cf">
   <%= render "reports_nav" %>
 
+  <% graph_number = 1 %>
+
   <div class="visualizations-container">
+
     <div class="visualizations-list">
       <div class="reports-header-div">
-        <span class="list-numbers">1</span>
+        <span class="list-numbers"><%= graph_number %></span>
         <h2 class="albert-light-normal">Article Usage as a function of Age</h2>
       </div>
       <div id="article_usage_div"></div>
       <p class="info">Total usage includes page views and downloads from PLOS and PMC.</p>
     </div>
 
+    <% if !@article_citation_data.empty? %>
+    <% graph_number = graph_number + 1 %>
     <div class="visualizations-list">
       <div class="reports-header-div">
-        <span class="list-numbers">2</span>
+        <span class="list-numbers"><%= graph_number %></span>
         <h2 class="albert-light-normal">Article Citations as a function of Age</h2>
       </div>
       <div id="article_citation_div"></div>
       <p class="info">Cumulative citations from each of the citation indices.</p>
     </div>    
-  
+    <% end %>
+
+    <% if !@social_scatter.empty? %>
+    <% graph_number = graph_number + 1 %>
     <div class="visualizations-list">
       <div class="reports-header-div">
-        <span class="list-numbers">3</span>
+        <span class="list-numbers"><%= graph_number %></span>
         <h2 class="albert-light-normal">Discussion Activity as a function of Age</h2>
       </div>
       <div id="social_scatter_div"></div>
       <p class="info">Activity across blogs, news media, social media, and other online content sources. Those with no activity are not displayed.</p>
     </div>
+    <% end %>
 
+    <% if @reader_total > 0 %>
+    <% graph_number = graph_number + 1 %>
     <div class="visualizations-list last-visualizations-list">
       <div class="reports-header-div">
-        <span class="list-numbers">4</span>
+        <span class="list-numbers"><%= graph_number %></span>
         <h2 class="albert-light-normal">Mendeley Bookmarks by Location</h2>
       </div>
       <div id="article_mendeley_readers_div"></div>
       <p class="info">Geolocation of <%= @reader_total %> individuals who have saved the article in Mendeley.</p>
     </div>
+    <% end %>
+
   </div>
+
 
   <div class="report-downloads">
     <h2 class="albert-light-normal">Downloads</h2>

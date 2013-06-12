@@ -145,61 +145,70 @@ function drawArticleUsageAge() {
 }
 
 function drawArticleCitationAge() {
-  var data = new google.visualization.DataTable();
-  data.addColumn('number', 'Months');
-  data.addColumn('number', 'CrossRef');
-  data.addColumn({type: 'string', role: 'tooltip'});
-  data.addColumn('number', 'PubMed');
-  data.addColumn({type: 'string', role: 'tooltip'});
-  data.addColumn('number', 'Scopus');
-  data.addColumn({type: 'string', role: 'tooltip'});
-  data.addRows(getArticleCitationData());
 
-  var options = {
-    backgroundColor: '#efefef',
-    vAxis: {
-      title: 'Citations'
-    },
-    hAxis: {
-      title: 'Months'
-    },
-    chartArea: {
-      top: 40,
-      height: "70%"
-    }
-  };
+  var chartData = getArticleCitationData();
+  if (chartData.length > 0) {
+    var data = new google.visualization.DataTable();
+    data.addColumn('number', 'Months');
+    data.addColumn('number', 'CrossRef');
+    data.addColumn({type: 'string', role: 'tooltip'});
+    data.addColumn('number', 'PubMed');
+    data.addColumn({type: 'string', role: 'tooltip'});
+    data.addColumn('number', 'Scopus');
+    data.addColumn({type: 'string', role: 'tooltip'});
+    data.addRows(chartData);
 
-  var chart = new google.visualization.LineChart(document.getElementById('article_citation_div'));
-  chart.draw(data, options);
+    var options = {
+      backgroundColor: '#efefef',
+      vAxis: {
+        title: 'Citations'
+      },
+      hAxis: {
+        title: 'Months'
+      },
+      chartArea: {
+        top: 40,
+        height: "70%"
+      }
+    };
+
+    var chart = new google.visualization.LineChart(document.getElementById('article_citation_div'));
+    chart.draw(data, options);
+  }
 }
 
 function drawArticleSocialScatter() {
-  var data = google.visualization.arrayToDataTable(getSocialScatterData());
+  var chartData = getSocialScatterData();
+  if (chartData.length > 0) {
+    var data = google.visualization.arrayToDataTable(chartData);
+    var options = {
+      backgroundColor: '#efefef',
+      hAxis: {
+        title: 'Months'
+      },
+      vAxis: {title: 'Activity'},
+      legend: '',
+      pointSize: 15,
+      chartArea: {
+        top: 40,
+        height: "70%"
+      }
+    };
 
-  var options = {
-    backgroundColor: '#efefef',
-    hAxis: {
-      title: 'Months'
-    },
-    vAxis: {title: 'Activity'},
-    legend: '',
-    pointSize: 15,
-    chartArea: {
-      top: 40,
-      height: "70%"
-    }    
-  };
-
-  var chart = new google.visualization.ScatterChart(document.getElementById('social_scatter_div'));
-  chart.draw(data, options);
+    var chart = new google.visualization.ScatterChart(document.getElementById('social_scatter_div'));
+    chart.draw(data, options);
+  }
 }
 
 
 function drawArticleMendeleyData() {
-  var data = google.visualization.arrayToDataTable(getMendeleyReaderData());
-  var options = {};
-  var chart = new google.visualization.GeoChart(document.getElementById('article_mendeley_readers_div'));
-  chart.draw(data, options);
+  var chartData = getMendeleyReaderData();
+  if (chartData.length > 0) {
+    var data = google.visualization.arrayToDataTable(chartData);
+    var options = {};
+    var chart = new google.visualization.GeoChart(document.getElementById('article_mendeley_readers_div'));
+    chart.draw(data, options);
+  }
 }
 
 

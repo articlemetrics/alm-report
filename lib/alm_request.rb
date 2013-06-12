@@ -160,12 +160,13 @@ module AlmRequest
     data.each do | article |
       results = {}
 
-      sources = article["sources"].map { | source | [source["name"], source["histories"]] }
-      sources_dict = Hash[*sources.flatten(1)]
-
-      results[:crossref] = sources_dict["crossref"]
-      results[:scopus] = sources_dict["scopus"]
-      results[:pubmed] = sources_dict["pubmed"]
+      results = article["sources"].inject({}) do | result, source |
+        key = source["name"].to_sym
+        result[key] = {}
+        result[key][:histories] = source["histories"]
+        result[key][:total] = source["metrics"]["total"].to_i
+        result
+      end
 
       results[:publication_date] = article["publication_date"]
 
@@ -192,19 +193,13 @@ module AlmRequest
     data.each do | article |
       results = all_results[article["doi"]]
 
-      sources = article["sources"].map { | source | [source["name"], source["events"]] }
-      sources_dict = Hash[*sources.flatten(1)]
-
-      results[:counter] = sources_dict["counter"]
-      results[:pmc] = sources_dict["pmc"]
-
-      results[:citeulike] = sources_dict["citeulike"]
-      results[:twitter] = sources_dict["twitter"]
-      results[:researchblogging] = sources_dict["researchblogging"]
-      results[:nature] = sources_dict["nature"]
-      results[:scienceseeker] = sources_dict["scienceseeker"]
-      
-      results[:mendeley] = sources_dict["mendeley"]
+      article["sources"].inject(results) do | result, source |
+        key = source["name"].to_sym
+        result[key] = {}
+        result[key][:events] = source["events"]
+        result[key][:total] = source["metrics"]["total"].to_i
+        result
+      end
 
       all_results[article["doi"]] = results
     end    
