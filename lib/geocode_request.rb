@@ -53,8 +53,8 @@ class GeocodeRequest
   
   
   # Contains countries where we have affiliate data of the form "City, Province, Country".
-  # For all other countries the affiliate is in the form "Province, Country".
-  @@COUNTRIES_WITH_CITIES = Set.new([
+  # For all other countries the affiliate is in the form "City, Country".
+  @@COUNTRIES_WITH_PROVINCES = Set.new([
       "Australia",
       "Canada",
       "United States of America",
@@ -70,7 +70,7 @@ class GeocodeRequest
     fields = affiliate.split(",")
     fields.map { |location| location.strip! }
     if fields.length >= 3
-      offset = @@COUNTRIES_WITH_CITIES.include?(fields[-1]) ? 3 : 2
+      offset = @@COUNTRIES_WITH_PROVINCES.include?(fields[-1]) ? 3 : 2
       return [fields[-offset, offset].join(", "), fields[0, fields.length - offset].join(", ")]
     else
       nil
