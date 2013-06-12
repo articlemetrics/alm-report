@@ -650,12 +650,16 @@ jQuery(function(d, $){
 // add custom button and select boxes for all browsers on home, home-welcomeback, add-article and upload-file pages
 if (jQuery.fn.uniform) {
   jQuery(function(){
-  $('select').uniform();
-  $('#add-article-select').uniform();
-  $('#upload-file-field').uniform();
-  $('.filename, .action').click(function(){
-    $('#upload-file-field').trigger('click');
-    });
+    $('select').uniform();
+    $('#add-article-select').uniform();
+    
+    // Evil hack for ALM-340.  See that ticket for more discussion.
+    if (!($.browser.msie)) {
+      $('#upload-file-field').uniform();
+      $('.filename, .action').click(function(){
+        $('#upload-file-field').trigger('click');
+        });
+    }
   })
 }
 
