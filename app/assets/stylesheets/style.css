@@ -1572,7 +1572,7 @@ caption {
   min-height: 560px;
 }
 
-.last-visualizations-list {
+.visualizations-container .visualizations-list:last-child {
   margin: 55px 0 240px 35px;
 }
 
