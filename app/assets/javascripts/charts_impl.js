@@ -174,7 +174,18 @@ function drawArticleCitationAge() {
 }
 
 function drawArticleSocialScatter() {
-  var data = google.visualization.arrayToDataTable(getSocialScatterData());
+
+  var header = getSocialScatterHeader();
+  var data = new google.visualization.DataTable();
+
+  data.addColumn('number', 'Months');
+
+  for (var i = 0; i < header.length; i++) {
+    data.addColumn('number', header[i]);
+    data.addColumn({type: 'string', role: 'tooltip'});
+  }
+
+  data.addRows(getSocialScatterData());
 
   var options = {
     backgroundColor: '#efefef',

@@ -303,31 +303,43 @@ module ChartData
     social_scatter = []
 
     column_header = []
-    column_header << "Date"
     index = 1
     column = {}
 
     social_data.each do | data | 
       if (!data[:data].empty?)
+        # collect the sources that will be used for the graph (ones with data)
         column_header << data[:column_name]
+
+        # keep track of the column index
         column[data[:column_key]] = index
-        index = index + 1
+        # + 2 because each column will have tooltip column to go with it
+        index = index + 2
       end
     end
 
-    social_scatter << column_header
-
     month_index = 0
+
+    # make sure the row has the correct number of columns
+    # * 2 => each source column has a tooltip column to go with it
+    # + 1 => month column (the first column)
+    num_of_cols = (column_header.size * 2) + 1
+
     while (current_date > data_date) do
       key = "#{data_date.year}-#{data_date.month}"
 
       social_data.each do | data |
         month_data = data[:data][key]
+        # check to see if there is data for the given month for the given source
         if (!month_data.nil?)
-          row = Array.new(column_header.size)
+          row = Array.new(num_of_cols)
           row[0] = month_index
+
+          # use the correct column index of the given source
           col_index = column[data[:column_key]]
           row[col_index] = month_data.to_i
+          row[col_index + 1] = "Month: #{month_index}\n#{data[:column_name]}: #{month_data.to_i}"
+
           social_scatter << row
         end
       end
@@ -336,7 +348,7 @@ module ChartData
       data_date = data_date >> 1
     end
 
-    return social_scatter
+    return {:column_header => column_header, :data => social_scatter}
   end
 
 

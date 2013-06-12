@@ -121,7 +121,11 @@ class SolrRequest
 
 
   def self.send_query(url)
+    start_time = Time.now
     resp = Net::HTTP.get_response(URI.parse(url))
+    end_time = Time.now
+    Rails.logger.debug "SOLR Request took #{end_time - start_time} seconds\n#{url}"
+
     if resp.code != "200"
       raise SolrError, "Server returned #{resp.code}: " + resp.body
     end
@@ -171,6 +175,9 @@ class SolrRequest
     if !sort.nil?
       url << "&sort=#{URI::encode(sort)}"
     end
+    # exclude things that we do not need (hl => highlighting)
+    url << "&hl=false"
+
     json = SolrRequest.send_query(url)
     docs = SolrRequest.parse_docs(json)
     return docs, json["response"]["numFound"]
