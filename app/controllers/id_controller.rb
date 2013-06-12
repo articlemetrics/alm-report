@@ -135,6 +135,11 @@ class IdController < ApplicationController
   
   
   def process_upload
+    if params[:"upload-file-field"].nil?
+      @file_absent = true
+      render "upload"
+      return
+    end
     ids = parse_file(params[:"upload-file-field"])
     valid_dois = []
     valid_pmids = []
