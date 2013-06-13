@@ -652,14 +652,10 @@ if (jQuery.fn.uniform) {
   jQuery(function(){
     $('select').uniform();
     $('#add-article-select').uniform();
-    
-    // Evil hack for ALM-340.  See that ticket for more discussion.
-    if (!($.browser.msie)) {
-      $('#upload-file-field').uniform();
-      $('.filename, .action').click(function(){
-        $('#upload-file-field').trigger('click');
-        });
-    }
+    $('#upload-file-field').uniform();
+    $('.filename, .action').click(function(){
+      $('#upload-file-field').trigger('click');
+    });
   })
 }
 

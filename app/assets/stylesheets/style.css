@@ -2071,7 +2071,6 @@ div.uploader span.filename {
 
 div.uploader input {
   position: absolute;
-  display: none;
 }
 
 div.uploader span.action {
