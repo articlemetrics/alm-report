@@ -2222,13 +2222,13 @@ div.selector select {
   position: fixed;
   top: 50%;
   left: 50%;
-  margin-left: -33px;
-  margin-top: -33px;
+  margin-left: -25px;
+  margin-top: -25px;
   text-align: center;
   z-index: 20;
   overflow: auto;
-  width: 66px;
-  height: 68px;
+  width: 50px;
+  height: 52px;
   display: none;
 }
 
