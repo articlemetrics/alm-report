@@ -311,7 +311,7 @@ module ChartData
     total_data = total_data + twitter[:total]
 
     if (total_data == 0)
-      return []
+      return {:column_header => [], :data => []}
     end
 
     # start at article publication date
