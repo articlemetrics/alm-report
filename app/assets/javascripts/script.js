@@ -343,7 +343,7 @@ jQuery(function(d, $){
       selectAllSearchResultsResponseHandler : function(xhr, status) {
         $("#gray-out-screen").hide();
         $("#select-all-spinner").hide();
-        $(".select-articles-message").hide();
+        $(".select-articles-message").addClass('invisible');
 
         var json_resp = $.parseJSON(xhr.responseText);
         if (status == "success" && json_resp.status == "success") {
