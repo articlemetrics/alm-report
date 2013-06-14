@@ -321,6 +321,17 @@ h1 + ul li {
   background: #3c63af;
 }
 
+.list-hover span {
+  width: 100%;
+  margin: 3px 0 0;
+  padding: 9px 0;
+  border-radius: 4px;
+  float: left;
+  font-size: 14px;
+  text-align: center;
+  background: black;
+}
+
 .hover-bg-dark-black {
   background: #333 !important;
 }

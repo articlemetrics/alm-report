@@ -58,9 +58,14 @@
             <span class="list-label">Your List</span>
             <span class="list-count"><%= @saved_dois.nil? ? 0 : @saved_dois.length %></span>
           </div>
-          <div class="list-hover">
-            <a href="/reports/generate">View Report</a>
-            <a href="/preview-list">Edit List</a>
+          <div id="your-list-choices" class="list-hover">
+            <% if @saved_dois.nil? || @saved_dois.length == 0 %>
+              <span>View Report</span>
+              <span>Edit List</span>
+            <% else %>
+              <a href="/reports/generate">View Report</a>
+              <a href="/preview-list">Edit List</a>
+            <% end %>
           </div>
         </div>
         

@@ -44,6 +44,16 @@ jQuery(function(d, $){
 
         // update preview list button
         $preview_list_count_elem.val("Preview List (" + new_count + ")");
+
+        // add the correct options depending on the user action 
+        // remove all children
+        $('#your-list-choices').children().remove();
+        // add the correct options
+        if (new_count == 0) {
+          $('#your-list-choices').append('<span>View Report</span><span>Edit List</span>');
+        } else {
+          $('#your-list-choices').append('<a href="/reports/generate">View Report</a><a href="/preview-list">Edit List</a>')
+        }
       },
       
       // Increments the preview list counts in the UI by the specified delta, which
