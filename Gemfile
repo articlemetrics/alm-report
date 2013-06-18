@@ -18,6 +18,11 @@ group :assets do
   gem "jquery-rails", "~> 2.1.4"
 end
 
+group :test do
+  gem "webmock", "~> 1.9.2"
+end
+
 group :test, :development do
   gem "rspec-rails", "~> 2.13.0"
 end
+
