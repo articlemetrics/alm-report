@@ -258,8 +258,12 @@ jQuery(function(d, $){
             $('#select-articles-message-text').html("The " + RESULTS_PER_PAGE + " articles on this page have been selected.");
             var select_all_message = $('#select-all-articles-message-text').html();
             var additional_count = Math.min(ARTICLE_LIMIT, search_total_found) - preview_list_count;
-            select_all_message = select_all_message.replace("__SELECT_ALL_NUM__", additional_count);
-            $('#select-all-articles-message-text').html(select_all_message);
+            if (additional_count > 0) {
+              select_all_message = select_all_message.replace("__SELECT_ALL_NUM__", additional_count);
+              $('#select-all-articles-message-text').html(select_all_message);
+            } else {
+              $('#select-all-articles-message-text').hide();
+            }
             $('.select-articles-message').removeClass("invisible");
             
             // We have to re-add this onclick, since the above DOM manipulation
