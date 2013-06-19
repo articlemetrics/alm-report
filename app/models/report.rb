@@ -9,9 +9,16 @@ class Report < ActiveRecord::Base
   
   
   # Creates a child ReportDoi object for each DOI passed in in the input array.
-  # Sort order is determined by the position in the array.
+  # Sort order is determined by the position in the array.  This object must have
+  # already been saved to the DB before this method is called.
   def add_all_dois(dois)
-    dois.each_with_index {|doi, i| report_dois.create(:doi => doi, :sort_order => i)}
+    
+    # Since reports can have many DOIs, for performance we do a batch insert.
+    # Active Record won't do this on its own.
+    sql = "INSERT report_dois(doi, report_id, sort_order, created_at, updated_at) VALUES "
+    dois.each_with_index {|doi, i| sql << "('#{doi}', #{self.id}, #{i}, NOW(), NOW()), "}
+    sql[-2] = ";"
+    self.connection.execute(sql)
   end
   
   
