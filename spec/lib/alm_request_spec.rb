@@ -120,4 +120,46 @@ describe AlmRequest do
     # TODO test caching logic
   end
 
+  it "get ALM data for viualization" do
+
+  end
+
+  it "get ALM data for one article" do
+    report = Report.new
+    report.save
+
+    dois = [
+      '10.1371/journal.pmed.0020124'
+    ]
+    report.add_all_dois(dois)
+
+    params = {}
+    params[:ids] = dois.join(",")
+    params[:info] = "history"
+    params[:source] = "crossref,pubmed,scopus"
+    url = "#{APP_CONFIG["alm_url"]}/?#{params.to_param}"
+
+    body = File.read("#{fixture_path}alm_one_article_history.json")
+    stub_request(:get, "#{url}").to_return(:body => body, :status => 200)
+
+    params = {}
+    params[:ids] = dois.join(",")
+    params[:info] = "event"
+    params[:source] = "counter,pmc,citeulike,twitter,researchblogging,nature,scienceseeker,mendeley"
+    url = "#{APP_CONFIG["alm_url"]}/?#{params.to_param}"
+
+    body = File.read("#{fixture_path}alm_one_article_event.json")
+    stub_request(:get, "#{url}").to_return(:body => body, :status => 200)
+
+    data = AlmRequest.get_data_for_one_article(report.report_dois)
+
+    data.size.should eq(1)
+
+    data['10.1371/journal.pmed.0020124'][:crossref][:total].should eq(528)
+
+    data['10.1371/journal.pmed.0020124'][:pubmed][:total].should eq(208)
+
+    data['10.1371/journal.pmed.0020124'][:scopus][:total].should eq(915)
+
+  end
 end
