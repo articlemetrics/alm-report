@@ -1713,6 +1713,10 @@ caption {
   background: #3c63af;
 }
 
+.report-share-block:hover span {
+  background-color: #3c63af;
+}
+
 .share-box {
   height: 116px;
   margin: 2px 0 0;
@@ -1736,6 +1740,26 @@ caption {
 
 .report-share-block .share-box a:hover span {
   text-decoration: underline;
+}
+
+/*
+ * This is a bit of a hack--see ALM-359.  DP originally had this button
+ * as an <a> but we changed it to a <span> since it's not supposed to be
+ * a link.  Removing the link seems to wreak havoc with the organization
+ * of the related styles (note all the !important below).
+ */
+.share-button {
+  margin: 0;
+  padding: 8px 54px 9px 53px;
+  min-width: 78px;
+  border: none;
+  border-radius: 4px;
+  background: #000;
+  color: #fff !important;
+  text-align: center;
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: bold !important;
+  font-size: 15px !important;
 }
 
 .share-box a span {
