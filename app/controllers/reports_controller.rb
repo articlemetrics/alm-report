@@ -35,11 +35,10 @@ class ReportsController < ApplicationController
     @report = Report.find(id)
 
     # Save the report DOIs in the session (overwriting whatever might already be there).
-    saved_dois = {}
+    @saved_dois.clear
     @report.report_dois.each do |report_doi|
-      saved_dois[report_doi.doi] = report_doi.sort_order
+      @saved_dois[report_doi.doi] = report_doi.sort_order
     end
-    session[:dois] = saved_dois
   end
 
 
