@@ -118,7 +118,7 @@ function drawArticleUsageAge() {
 
   var data = new google.visualization.DataTable();
   data.addColumn('number', 'Months');
-  data.addColumn('number', 'Html Views');
+  data.addColumn('number', 'HTML Views');
   data.addColumn({type: 'string', role: 'tooltip'});
   data.addColumn('number', 'PDF Views');
   data.addColumn({type: 'string', role: 'tooltip'});

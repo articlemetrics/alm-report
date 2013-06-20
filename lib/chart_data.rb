@@ -213,7 +213,7 @@ module ChartData
       xml_views = counter_month_data["xml_views"].to_i
 
       article_usage_data << [month_index,
-        html_views, "Month: #{month_index}\nHtml Views: #{html_views}",
+        html_views, "Month: #{month_index}\nHTML Views: #{html_views}",
         pdf_views, "Month: #{month_index}\nPDF Views: #{pdf_views}",
         xml_views, "Month: #{month_index}\nXML Views: #{xml_views}"]
 
