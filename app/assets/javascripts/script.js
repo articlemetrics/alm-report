@@ -7,6 +7,7 @@ jQuery(function(d, $){
     var preview_list_count = initial_list_count;
     var $preview_list_count_elem = $('.preview-list-count');
     var results_span_pages = ($('.pagination-number').length > 1);
+    var select_all_error_msg_visible = false;
 
     return {
       init : function() {
@@ -115,17 +116,21 @@ jQuery(function(d, $){
           // Enforce article limit if necessary by only selecting the
           // first articles.
           var max = ARTICLE_LIMIT - preview_list_count;
-          if (max < RESULTS_PER_PAGE) {
-            if (max == 0) {
-              this.showErrorDialog("article-limit-error-message");
-            } else {
-              var message = $("#article-limit-error-message").html();
-              message = "Only the first " + max + " of the results have been added.  " + message;
-              $('#partial-select-all-error-message').html(message);
-              this.showErrorDialog("partial-select-all-error-message");
+          if (!select_all_error_msg_visible) {
+            if (max < RESULTS_PER_PAGE) {
+              if (max == 0) {
+                this.showErrorDialog("article-limit-error-message");
+              } else {
+                var message = $("#article-limit-error-message").html();
+                message = "Only the first " + max + " of the results have been added.  " + message;
+                $('#partial-select-all-error-message').html(message);
+                this.showErrorDialog("partial-select-all-error-message");
+              }
             }
+            select_all_error_msg_visible = true;
           }
           var $checkboxes = $(".check-save-article:not(:checked)").slice(0, max);
+          already_clicked_select_all = true;
         } else {
           var $checkboxes = $(".check-save-article:checked");
         }
