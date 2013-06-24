@@ -9,9 +9,16 @@ class Report < ActiveRecord::Base
   
   
   # Creates a child ReportDoi object for each DOI passed in in the input array.
-  # Sort order is determined by the position in the array.
+  # Sort order is determined by the position in the array.  This object must have
+  # already been saved to the DB before this method is called.
   def add_all_dois(dois)
-    dois.each_with_index {|doi, i| report_dois.create(:doi => doi, :sort_order => i)}
+    
+    # Since reports can have many DOIs, for performance we do a batch insert.
+    # Active Record won't do this on its own.
+    sql = "INSERT report_dois(doi, report_id, sort_order, created_at, updated_at) VALUES "
+    dois.each_with_index {|doi, i| sql << "('#{doi}', #{self.id}, #{i}, NOW(), NOW()), "}
+    sql[-2] = ";"
+    self.connection.execute(sql)
   end
   
   
@@ -64,19 +71,23 @@ class Report < ActiveRecord::Base
 
           article_alm_data = alm_data[report_doi.doi]
           article_data = solr_data[report_doi.doi]
-
-          authors = article_data["author_display"].nil? ? "" : article_data["author_display"].join(", ")
-          affiliate = article_data["affiliate"].nil? ? "" : article_data["affiliate"].join("; ")
-
-          csv << [
-            report_doi.doi, article_data["pmid"], article_data["title"], authors, affiliate,
-            article_data["cross_published_journal_name"][0], article_data["publication_date"], article_data["article_type"],
-            article_alm_data[:plos_total], article_alm_data[:plos_html], article_alm_data[:plos_pdf], article_alm_data[:plos_xml],
-            article_alm_data[:pmc_total], article_alm_data[:pmc_views], article_alm_data[:pmc_pdf],
-            article_alm_data[:crossref_citations], article_alm_data[:scopus_citations], article_alm_data[:pmc_citations],
-            article_alm_data[:citeulike], article_alm_data[:mendeley], article_alm_data[:twitter], article_alm_data[:facebook], article_alm_data[:wikipedia],
-            article_alm_data[:research_blogging], article_alm_data[:nature], article_alm_data[:scienceseeker]
-          ]
+          
+          # If the article was unpublished (rare), skip it.
+          if !article_alm_data.nil? && !article_data.nil?
+  
+            authors = article_data["author_display"].nil? ? "" : article_data["author_display"].join(", ")
+            affiliate = article_data["affiliate"].nil? ? "" : article_data["affiliate"].join("; ")
+  
+            csv << [
+              report_doi.doi, article_data["pmid"], article_data["title"], authors, affiliate,
+              article_data["cross_published_journal_name"][0], article_data["publication_date"], article_data["article_type"],
+              article_alm_data[:plos_total], article_alm_data[:plos_html], article_alm_data[:plos_pdf], article_alm_data[:plos_xml],
+              article_alm_data[:pmc_total], article_alm_data[:pmc_views], article_alm_data[:pmc_pdf],
+              article_alm_data[:crossref_citations], article_alm_data[:scopus_citations], article_alm_data[:pmc_citations],
+              article_alm_data[:citeulike], article_alm_data[:mendeley], article_alm_data[:twitter], article_alm_data[:facebook], article_alm_data[:wikipedia],
+              article_alm_data[:research_blogging], article_alm_data[:nature], article_alm_data[:scienceseeker]
+            ]
+          end
         end
       end
 

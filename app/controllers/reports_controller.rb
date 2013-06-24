@@ -46,45 +46,45 @@ class ReportsController < ApplicationController
     load_report(params[:id])
     @report_sub_tab = :metrics
     @title = "Report Metrics"
-
     
-    # validate dois.  remove dois that are pulled / deleted (this happens rarely)
-    valid_dois = SolrRequest.validate_dois(@report.report_dois)
-
-    current_report_dois = @report.report_dois.inject([]) { | result, report_doi | result << report_doi.doi }
-
-    dois_to_delete = current_report_dois - valid_dois.keys
-
-    if (!dois_to_delete.empty?)
-      logger.info "Dois to delete from report #{@report.id}: #{dois_to_delete.inspect}"
-
-      # delete the bad dois from the report
-      ReportDoi.destroy_all(:report_id => @report.id, :doi => dois_to_delete)
-
-      @report.reload
-
-      # TODO fix sort order
-    end
-
-    # edge case where somehow the report does not have any dois after validating dois
-    @show_metrics_data = true
-    if @report.report_dois.length > 0
+    paging_logic = lambda {
       @total_found = @report.report_dois.length
       set_paging_vars(params[:current_page], APP_CONFIG["metrics_results_per_page"])
 
-      
       # Create a new array for display that is only the articles on the current page,
       # to limit what we have to load from solr and ALM.
       @dois = @report.report_dois[(@start_result) - 1..(@end_result - 1)]
-      i = @start_result
-
       alm_data = AlmRequest.get_data_for_articles(@dois)
       solr_data = SolrRequest.get_data_for_articles(@dois)
+      [solr_data, alm_data]
+    }
 
-      manage_report_data(@dois, solr_data, alm_data, i)
+    @show_metrics_data = true
+    if @report.report_dois.length > 0
+      solr_data, alm_data = paging_logic.call()
+      i = @start_result
+      dois_to_delete = manage_report_data(@dois, solr_data, alm_data, i)
+      if (!dois_to_delete.empty?)
+        purge_bad_dois(dois_to_delete)
+        
+        # We need to re-do paging logic since the number of articles has changed.
+        solr_data, alm_data = paging_logic.call()
+        i = @start_result
+        manage_report_data(@dois, solr_data, alm_data, i)
+      end
     else
       @show_metrics_data = false
     end
+  end
+
+  
+  # Permanently removes the given DOIs from a report.
+  def purge_bad_dois(dois_to_delete)
+    logger.warn("Nonexistend DOIs detected; will delete from report: #{@report.id}: #{dois_to_delete.inspect}")
+
+    # delete the bad dois from the report
+    ReportDoi.destroy_all(:id => dois_to_delete)
+    @report.reload
   end
 
 
@@ -107,11 +107,7 @@ class ReportsController < ApplicationController
     dois_to_delete = manage_report_data(@report.report_dois, solr_data, alm_data)
 
     if (!dois_to_delete.empty?)
-      logger.info "Dois to delete from report #{@report.id}: #{dois_to_delete.inspect}"
-
-      # delete the bad dois from the report
-      ReportDoi.destroy_all(:id => dois_to_delete)
-      @report.reload
+      purge_bad_dois(dois_to_delete)
 
       # TODO fix sort order
 
@@ -195,9 +191,6 @@ class ReportsController < ApplicationController
   # handles download data links
   def download_data
     load_report(params[:id])
-
-    # by the time the user has clicked on a download link, the bad dois should have been removed.
-
     options = {}
     if (params[:field])
       options[:field] = params[:field]
