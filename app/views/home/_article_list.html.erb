@@ -20,7 +20,7 @@
 
       <% end %>
 
-      <a href="http://dx.doi.org/info:doi/<%= doc['id'] %>" target="_blank"><%= doc["title"] %></a>
+      <a href="http://dx.doi.org/<%= doc['id'] %>" target="_blank"><%= doc["title"] %></a>
 
       <% if !doc["author_display"].nil? %>
       <p>
