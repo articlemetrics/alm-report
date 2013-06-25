@@ -55,18 +55,7 @@
    <% @articles_checked = false %>
    <%= render "article_list" %>
  </div>
- <div class="aside-container rollover-fixed">
-   <form class="preview-list-aside-form" action="/preview-list" method="get">
-     <input id="preview-list-submit" class="preview-list-count preview-list-submit button-hover-dark-black submit-btn right-list-btn" type="submit" value="Preview List" name="" />
-     <span class="btn-arrow"></span>
-   </form>
-   <p class="albert-light-normal">Add more articles</p>
-   <ul class="add-article-links">
-     <li><a href="/" class="article-links">Search Again</a></li>
-     <li><a href="/id/" class="article-links">By DOI/PMID</a></li>
-     <li><a href="/upload" class="article-links">Upload File</a></li>
-   </ul>
- </div>
+ <%= render "right_nav", :current_page => :add_articles %>
 </div>
 
 <div id="gray-out-screen"></div>
