@@ -22,7 +22,6 @@ jQuery(function(d, $){
         $('.select-all-articles-link').on("click", { 'mode' : "SAVE" }, jQuery.proxy(this.toggleAllArticles, this));
         $('.unselect-all-articles-link').on("click", { 'mode' : "REMOVE" }, jQuery.proxy(this.toggleAllArticles, this));
         $('.reset-btn').on("click", { 'mode' : "REMOVE" }, jQuery.proxy(this.toggleAllArticles, this));
-        $('#select_all_searchresults').on("click", jQuery.proxy(this.selectAllSearchResults, this));
         
         // We want the preview list count to be accurate even if the user navigates
         // with the back button.  So we always load the current preview list count
@@ -267,29 +266,66 @@ jQuery(function(d, $){
           // result set spans multiple pages and we've just checked all the 
           // articles on this page
           if ( results_span_pages && (selected_articles_count == RESULTS_PER_PAGE) ) {
-            $('#select-articles-message-text').html("The " + RESULTS_PER_PAGE + " articles on this page have been selected.");
-            var select_all_message = $('#select-all-articles-message-text').html();
-            var additional_count = Math.min(ARTICLE_LIMIT, search_total_found) - preview_list_count;
-            if (additional_count > 0) {
-              select_all_message = select_all_message.replace("__SELECT_ALL_NUM__", additional_count);
-              $('#select-all-articles-message-text').html(select_all_message);
-            } else {
-              $('#select-all-articles-message-text').hide();
-            }
-            $('.select-articles-message').removeClass("invisible");
-            
-            // We have to re-add this onclick, since the above DOM manipulation
-            // apparently un-does it.
-            $('#select_all_searchresults').on("click",
-                jQuery.proxy(this.selectAllSearchResults, this));
-
-          // in all other cases, just hide it. (it's easier this way)
-          } else {
-            $('#select-articles-message-text').html("");
-            $('.select-articles-message').addClass("invisible");
+            this.showSelectAll();
+          } else if (json_resp.delta === -RESULTS_PER_PAGE
+              || json_resp.delta === -search_total_found) {
+            this.showUnselectAll(-json_resp.delta);
           }
         }
 
+      },
+      
+      // Removes any "select all" or "unselect all" message from the add articles page.
+      clearSelectAllMessage : function(message) {
+        if ($('.select-articles-message').is(':visible')) {
+          $('#select-articles-message-text').html('');
+          $('#select-all-articles-message-text').html('');
+          $('.select-articles-message').addClass('invisible');
+        }
+      },
+      
+      // Shows the "select all" message on the add articles page.
+      showSelectAll : function() {
+        this.clearSelectAllMessage();
+        $('#select-articles-message-text').html(
+            'The ' + RESULTS_PER_PAGE + ' articles on this page have been selected.');
+        var additional_count = Math.min(ARTICLE_LIMIT, search_total_found) - preview_list_count;
+        if (additional_count > 0) {
+          $('#select-all-articles-message-text').html(
+              '<a href="#" id="select_all_searchresults">Select the first '
+              + additional_count + ' articles</a>.');
+        } else {
+          $('#select-all-articles-message-text').hide();
+        }
+        $('.select-articles-message').removeClass('invisible');
+        $('#select_all_searchresults').on('click',
+            jQuery.proxy(this.selectAllSearchResults, this));
+      },
+      
+      // Shows the "unselect all" message on the add articles page.
+      showUnselectAll : function(unselect_count) {
+        
+        // We use the same DOM components as showSelectAll above.  Don't let that
+        // confuse you...
+        this.clearSelectAllMessage();
+        $('#select-articles-message-text').html(
+            'The ' + unselect_count + ' articles on this page have been unselected.');
+        if (preview_list_count > 0) {
+          $('#select-all-articles-message-text').html(
+              '<a href="#" id="select_all_searchresults">Unselect all articles</a>.');
+        } else {
+          $('#select-all-articles-message-text').hide();
+        }
+        $('.select-articles-message').removeClass('invisible');
+        $('#select_all_searchresults').on('click', jQuery.proxy(function(e) {
+          $.ajax('/start-over', {
+            type: 'GET',
+            success: jQuery.proxy(function(e) {
+              this.clearSelectAllMessage();
+              this.updateListCount(0);
+            }, this)
+          })
+        }, this));
       },
       
       // Changes the visual appearance of one of the styled submit buttons
