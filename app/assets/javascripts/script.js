@@ -166,11 +166,13 @@ jQuery(function(d, $){
 
         if (ajax_data["article_ids"].length) {
           // pass the data to the server to update the session
-          this.updateServer(ajax_data, $checkboxes, $containers);
+          this.updateServer(ajax_data, $checkboxes, $containers, true);
         }
       },
 
-      updateServer : function(ajax_data, $checkboxes, $containers) {
+      updateServer : function(ajax_data, $checkboxes, $containers, toggle_all) {
+        toggle_all = toggle_all || false;
+        
         // disable the checkboxes while we await confirmation the server that it's been updated
         $checkboxes.prop('disabled', true);
         $.ajax('/update-session', {
@@ -185,12 +187,13 @@ jQuery(function(d, $){
         
           // NOTE: ajaxResponseHandler requires checkboxes and containers passed in to the handler
           // so that we can update the correct article(s)!
-          complete : jQuery.proxy(this.ajaxResponseHandler, this, ajax_data.mode, $checkboxes, $containers)
+          complete : jQuery.proxy(this.ajaxResponseHandler, this, ajax_data.mode,
+              $checkboxes, $containers, toggle_all)
         });
       },
 
       // expects a jquery collections of checkboxes and containers
-      ajaxResponseHandler : function(mode, $checkboxes, $containers, xhr, status) {
+      ajaxResponseHandler : function(mode, $checkboxes, $containers, toggle_all, xhr, status) {
         var json_resp = $.parseJSON(xhr.responseText);
 
         // collection of values that controls what kind of status message gets 
@@ -267,8 +270,7 @@ jQuery(function(d, $){
           // articles on this page
           if ( results_span_pages && (selected_articles_count == RESULTS_PER_PAGE) ) {
             this.showSelectAll();
-          } else if (json_resp.delta === -RESULTS_PER_PAGE
-              || json_resp.delta === -search_total_found) {
+          } else if (json_resp.delta < 0 && toggle_all) {
             this.showUnselectAll(-json_resp.delta);
           }
         }
