@@ -18,18 +18,5 @@
       <%= render "article_list" %>
     </form>
   </div>
-
-  <div class="preview-list-aside aside-container rollover-fixed">
-    <form class="preview-list-aside-form" action="/reports/generate" method="get">
-      <input id="create-report-submit" class="button-hover-dark-black submit-btn right-list-btn" type="submit" value="Create Report" />
-      <span class="btn-arrow"></span>
-    </form>
-    <p class="albert-light-normal">Add more articles</p>
-    <ul class="add-article-links">
-      <li><a href="/" class="article-links">Search Again</a></li>
-      <li><a href="/id/" class="article-links">By DOI/PMID</a></li>
-      <li><a href="/upload" class="article-links">Upload File</a></li>
-    </ul>
-  </div>
-
+  <%= render "right_nav", :current_page => :preview_list %>
 </div>

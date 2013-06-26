@@ -1,18 +1,21 @@
 <div class="content wrapper cf">
-  <%= form_tag("/id", :method => "post", :class => "doi-pmid-form") do %>
-    <h2 class="albert-light-normal">Find Articles by DOI/PMID</h2>
-    <% if @errors.length > 0 %>
-      <div class="doi-pmid-error-div">
-        <p class="error-title error-color">Please correct the errors below.</p>
+  <div class="doi-form">
+    <%= form_tag("/id", :method => "post", :class => "doi-pmid-form") do %>
+      <h2 class="albert-light-normal">Find Articles by DOI/PMID</h2>
+      <% if @errors.length > 0 %>
+        <div class="doi-pmid-error-div">
+          <p class="error-title error-color">Please correct the errors below.</p>
+        </div>
+      <% end %>
+      <% (1..@max_doi_field).each do |i| %>
+        <%= render "doi_field", :input_id => "doi-pmid-#{i}".intern, :example => i == 1 %>
+      <% end %>
+  
+      <div class="input-holder">
+        <input class="button-hover-dark-black submit-btn add-to-list-btn" type="submit" value="Add to My List" />
+        <input id="add-fields" class="button-hover-dark-blue submit-btn add-more-fields-btn" type="submit" value="Add More Fields" />
       </div>
     <% end %>
-    <% (1..@max_doi_field).each do |i| %>
-      <%= render "doi_field", :input_id => "doi-pmid-#{i}".intern, :example => i == 1 %>
-    <% end %>
-
-    <div class="input-holder">
-      <input class="button-hover-dark-black submit-btn add-to-list-btn" type="submit" value="Add to My List" />
-      <input id="add-fields" class="button-hover-dark-blue submit-btn add-more-fields-btn" type="submit" value="Add More Fields" />
-    </div>
-  <% end %>
+  </div>
+  <%= render "right_nav", :current_page => :doi_pmid %>
 </div>

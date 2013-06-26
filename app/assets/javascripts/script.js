@@ -565,8 +565,8 @@ var highlightDoiPmidError = function($element, error_message) {
   $parent_div.attr('class', 'error-holder');
   $parent_div.children('.input-example').remove();
   if ($parent_div.children('.error-message').length == 0) {
-    $parent_div.append('<p class="error-message error-color">' + error_message + '</p>');
     $parent_div.append('<span class="doi-pmid-remove">Remove</span>');
+    $parent_div.append('<p class="error-message error-color">' + error_message + '</p>');
 
     // Need to re-add this listener since we recreated the element above.
     $('.doi-pmid-remove').on("click", dismissDoiPmidErrors);
