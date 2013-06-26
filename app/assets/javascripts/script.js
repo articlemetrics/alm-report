@@ -263,14 +263,15 @@ jQuery(function(d, $){
           this.enableButton($('#preview-list-submit'));
         }
 
-        // one last thing to do if no errors occurred...
-        if (!error_occurred) {
+        // Show select all/unselect all messaging if applicable.
+        if (!error_occurred && toggle_all) {
+
           // show "select all articles across all pages" message if this 
           // result set spans multiple pages and we've just checked all the 
           // articles on this page
-          if ( results_span_pages && (selected_articles_count == RESULTS_PER_PAGE) ) {
+          if (results_span_pages && (selected_articles_count == RESULTS_PER_PAGE)) {
             this.showSelectAll();
-          } else if (json_resp.delta < 0 && toggle_all) {
+          } else if (json_resp.delta < 0) {
             this.showUnselectAll(-json_resp.delta);
           }
         }
