@@ -5,11 +5,17 @@
     <form class="preview-form" action="/preview-list" method="get">
       <h2 class="albert-light-normal">Review your list of articles</h2>
       <p><%= @start_result %>-<%= @end_result %> of <%= @total_found %> articles</p>
+
+      <ul>
+        <li class="unselect-all-articles-link">Clear All </li>
+      </ul>
+      <p class="select-articles-message albert-light-normal invisible">
+        <span id="select-articles-message-text"></span>
+        <span id="select-all-articles-message-text"></span>
+      </p>
+
       <% @articles_checked = true %>
       <%= render "article_list" %>
-      <div class="input-list">
-        <input class="reset-btn" type="reset" value="Clear All" />
-      </div>
     </form>
   </div>
 
