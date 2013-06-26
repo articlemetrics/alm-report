@@ -263,14 +263,15 @@ jQuery(function(d, $){
           this.enableButton($('#preview-list-submit'));
         }
 
-        // one last thing to do if no errors occurred...
-        if (!error_occurred) {
+        // Show select all/unselect all messaging if applicable.
+        if (!error_occurred && toggle_all) {
+
           // show "select all articles across all pages" message if this 
           // result set spans multiple pages and we've just checked all the 
           // articles on this page
-          if ( results_span_pages && (selected_articles_count == RESULTS_PER_PAGE) ) {
+          if (results_span_pages && (selected_articles_count == RESULTS_PER_PAGE)) {
             this.showSelectAll();
-          } else if (json_resp.delta < 0 && toggle_all) {
+          } else if (json_resp.delta < 0) {
             this.showUnselectAll(-json_resp.delta);
           }
         }
@@ -565,8 +566,8 @@ var highlightDoiPmidError = function($element, error_message) {
   $parent_div.attr('class', 'error-holder');
   $parent_div.children('.input-example').remove();
   if ($parent_div.children('.error-message').length == 0) {
-    $parent_div.append('<p class="error-message error-color">' + error_message + '</p>');
     $parent_div.append('<span class="doi-pmid-remove">Remove</span>');
+    $parent_div.append('<p class="error-message error-color">' + error_message + '</p>');
 
     // Need to re-add this listener since we recreated the element above.
     $('.doi-pmid-remove').on("click", dismissDoiPmidErrors);

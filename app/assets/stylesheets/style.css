@@ -685,7 +685,7 @@ select {
 
 .input-example {
   font-size: 14px;
-  color: #9f9f9f;
+  color: #9f9f9f !important;
 }
 
 .doi-pmid-form .input-holder {
@@ -723,7 +723,7 @@ select {
 }
 
 .doi-pmid-form .input-holder div span {
-  margin: 15px 10px 0 60px;
+  margin: 15px 10px 0 10px;
   padding: 0 22px 0 0;
   display: inline-block;
   vertical-align: top;
@@ -732,6 +732,14 @@ select {
   font-size: 12px;
   cursor: pointer;
   color: #c27e86;
+}
+
+.doi-form {
+  width: 700px;
+  margin: 45px 0 0 0px;
+  position: relative;
+  float: left;
+  min-height: 290px;
 }
 
 .add-to-list-btn {
@@ -1803,7 +1811,10 @@ caption {
    ========================================================================== */
 
 .upload-file {
-  padding: 69px 0 80px 106px;
+  width: 635px;
+  float: left;
+  position: relative;
+  margin: 69px 0 80px 38px;
 }
 .upload-file h2 {
   margin: 0 0 18px;
