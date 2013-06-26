@@ -133,5 +133,15 @@ class ApplicationController < ActionController::Base
   def display_nav
     @display_nav = true
   end
-  
+
+  def articleLimitReached?
+    # prevent the user from moving forward if the article limit has been reached
+    if (session[:dois].length >= APP_CONFIG["article_limit"])
+      flash[:error] = "The maximum report size is #{APP_CONFIG["article_limit"]} articles. Go to <a href=\"/preview-list\">Preview List</a> and remove articles before adding more to your selection."
+      return true
+    else
+      return false
+    end
+  end
+
 end

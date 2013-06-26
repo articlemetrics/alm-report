@@ -78,7 +78,14 @@
         <% end %>
       </div>
     </header>
-    <div class="wrapper" id="error-message-div"></div>
+
+    <% if !flash[:error].nil? %>
+      <div class="wrapper" id="error-message-div" style="display:block;">
+        <%= flash[:error].html_safe %>
+      </div>
+    <% else %>
+      <div class="wrapper" id="error-message-div"></div>
+    <% end %>
 
     <%= yield %>
 

@@ -8,6 +8,11 @@ class IdController < ApplicationController
   
   before_filter :set_tabs
   
+  def index
+    # doi/pmid page
+
+    articleLimitReached?
+  end
   
   def set_tabs
     @tab = :select_articles
@@ -55,7 +60,12 @@ class IdController < ApplicationController
   
   
   def save
-    
+    # if the user is already at the article limit, do not let the user continue
+    if articleLimitReached?
+      render "index"
+      return
+    end
+
     # Ignore Errors is an option in the case when the user uploads a file
     # and it contains errors (that is, we get here via process_upload).
     if params[:commit] == "Ignore Errors"
@@ -115,6 +125,8 @@ class IdController < ApplicationController
   
   def upload
     @title = "Upload File"
+
+    articleLimitReached?
   end
   
 
@@ -135,6 +147,12 @@ class IdController < ApplicationController
   
   
   def process_upload
+    # if the user is already at the article limit, do not let the user continue
+    if articleLimitReached?
+      render "upload"
+      return
+    end
+
     if params[:"upload-file-field"].nil?
       @file_absent = true
       render "upload"
