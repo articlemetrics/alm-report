@@ -1810,7 +1810,10 @@ caption {
    ========================================================================== */
 
 .upload-file {
-  padding: 69px 0 80px 106px;
+  width: 635px;
+  float: left;
+  position: relative;
+  margin: 69px 0 80px 38px;
 }
 .upload-file h2 {
   margin: 0 0 18px;
