@@ -3,8 +3,8 @@
     <%= label_tag(input_id, "DOI/PMID", :class => "error-color") %>
     <div class="error-holder">
       <%= text_field_tag(input_id, params[input_id]) %>
-      <p class="error-message error-color"><%= @errors[input_id] %></p>
       <span class="doi-pmid-remove">Remove</span>
+      <p class="error-message error-color"><%= @errors[input_id] %></p>
     </div>
   <% else %>
     <%= label_tag(input_id, "DOI/PMID") %>
