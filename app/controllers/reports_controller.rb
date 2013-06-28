@@ -90,6 +90,9 @@ class ReportsController < ApplicationController
 
   def visualizations
     load_report(params[:id])
+    if @report.report_dois.length > APP_CONFIG["viz_limit"]
+      raise "Visualizations not enabled for more than #{APP_CONFIG["viz_limit"]} reports"
+    end
     @report_sub_tab = :visualizations
     @title = "Report Visualizations"
 
