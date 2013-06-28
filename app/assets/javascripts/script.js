@@ -67,10 +67,14 @@ jQuery(function(d, $){
 
         // If we are over the limit, and it's a check event, don't do anything
         // (and uncheck the checkbox).
-        if ($checkbox.prop("checked") && preview_list_count >= ARTICLE_LIMIT) {
-          $checkbox.prop("checked", false);
-          this.showErrorDialog("article-limit-error-message");
-          return;
+        if ($checkbox.prop("checked")) {
+          if (preview_list_count >= VIZ_LIMIT && preview_list_count < ARTICLE_LIMIT) {
+            this.showErrorDialog("viz-limit-error-message");
+          } else if (preview_list_count >= ARTICLE_LIMIT) {
+            $checkbox.prop("checked", false);
+            this.showErrorDialog("article-limit-error-message");
+            return;
+          }
         }
 
         // create some data that we want to send to the server
@@ -115,8 +119,13 @@ jQuery(function(d, $){
           // Enforce article limit if necessary by only selecting the
           // first articles.
           var max = ARTICLE_LIMIT - preview_list_count;
-          if (!select_all_error_msg_visible) {
-            if (max < RESULTS_PER_PAGE) {
+          var $checkboxes = $(".check-save-article:not(:checked)").slice(0, max);
+          if (!select_all_error_msg_visible && $checkboxes.length > 0) {
+            var new_count = preview_list_count + $checkboxes.length;
+            if (new_count >= VIZ_LIMIT && new_count < ARTICLE_LIMIT) {
+              this.showErrorDialog("viz-limit-error-message");
+              select_all_error_msg_visible = true;
+            } else if (new_count >= ARTICLE_LIMIT) {
               if (max == 0) {
                 this.showErrorDialog("article-limit-error-message");
               } else {
@@ -125,10 +134,9 @@ jQuery(function(d, $){
                 $('#partial-select-all-error-message').html(message);
                 this.showErrorDialog("partial-select-all-error-message");
               }
+              select_all_error_msg_visible = true;
             }
-            select_all_error_msg_visible = true;
           }
-          var $checkboxes = $(".check-save-article:not(:checked)").slice(0, max);
           already_clicked_select_all = true;
         } else {
           var $checkboxes = $(".check-save-article:checked");
@@ -415,6 +423,10 @@ jQuery(function(d, $){
           var $unchecked_checkboxes = $(".check-save-article:not(:checked)");
           $unchecked_checkboxes.prop("checked", true);
           this.incrementListCount(json_resp.delta);
+          if (!select_all_error_msg_visible && preview_list_count > VIZ_LIMIT) {
+            this.showErrorDialog("viz-limit-error-message");
+            select_all_error_msg_visible = true;
+          }
         } else {
           var $checked_checkboxes = $(".check-save-article:checked");
           $checked_checkboxes.prop("checked", false);
