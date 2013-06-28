@@ -869,3 +869,21 @@ jQuery(function(d, $){
 
   });
 }(document, jQuery));
+
+// Onclick handler for downloading report metrics.  Pops up a confirmation dialog
+// if there are enough articles in the report that the operation might be slow.
+jQuery(function(d, $){
+  $('#metrics-download-link').click(function(e) {
+    var article_count = parseInt($('.list-count').text(), 10);
+    if (article_count > VIZ_LIMIT) {
+      var msg = 'Downloading metrics data for ' + article_count
+          + ' articles can be quite slow, and take up to several minutes.  Are you sure you want to proceed?'
+      var cont = confirm(msg);
+      if (cont) {
+        return true;
+      } else {
+        e.preventDefault();
+      }
+    }
+  });
+}(document, jQuery));

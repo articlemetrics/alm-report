@@ -83,7 +83,8 @@
     <h2 class="albert-light-normal">Downloads</h2>
     <ul>
       <li>
-        <%= link_to :controller => "reports", :action => "download_data", :id => @report, :format => :csv  do %>
+        <%= link_to(options = {:controller => "reports", :action => "download_data", :id => @report, :format => :csv},
+                html_options = {:id => "metrics-download-link"}) do %>
           <span class="csv"></span>
           <span class="file-name">Metrics Data</span>
           <span class="arrow"></span>
