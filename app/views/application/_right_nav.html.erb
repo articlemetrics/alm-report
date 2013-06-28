@@ -1,17 +1,30 @@
-<div class="aside-container rollover-fixed">
- <form class="preview-list-aside-form" action="/preview-list" method="get">
-   <input id="preview-list-submit" class="preview-list-count preview-list-submit button-hover-dark-black submit-btn right-list-btn" type="submit" value="Preview List" name="" />
-   <span class="btn-arrow"></span>
- </form>
- <p class="albert-light-normal">Add more articles</p>
- <ul class="add-article-links">
-   <li><a href="/" class="article-links">Search Again</a></li>
-   <% if current_page != :doi_pmid %>
-     <li><a href="/id/" class="article-links">By DOI/PMID</a></li>
-   <% end %>
-   <% if current_page != :upload %>
-     <li><a href="/upload" class="article-links">Upload File</a></li>
-   <% end %>
-   <li><a href="/start-over" class="article-links">Start Over</a></li>
- </ul>
+<%
+  div_class = "aside-container rollover-fixed"
+  if current_page == :preview_list
+    div_class = "preview-list-aside " + div_class
+  end
+%>
+<div class="<%= div_class %>">
+  <% if current_page == :preview_list %>
+    <form class="preview-list-aside-form" action="/reports/generate" method="get">
+      <input id="create-report-submit" class="button-hover-dark-black submit-btn right-list-btn" type="submit" value="Create Report" />
+      <span class="btn-arrow"></span>
+    </form>
+  <% else %>
+    <form class="preview-list-aside-form" action="/preview-list" method="get">
+      <input id="preview-list-submit" class="preview-list-count preview-list-submit button-hover-dark-black submit-btn right-list-btn" type="submit" value="Preview List" name="" />
+      <span class="btn-arrow"></span>
+    </form>
+  <% end %>
+  <p class="albert-light-normal">Add more articles</p>
+  <ul class="add-article-links">
+    <li><a href="/" class="article-links">Search Again</a></li>
+    <% if current_page != :doi_pmid %>
+      <li><a href="/id/" class="article-links">By DOI/PMID</a></li>
+    <% end %>
+    <% if current_page != :upload %>
+      <li><a href="/upload" class="article-links">Upload File</a></li>
+    <% end %>
+    <li><a href="/start-over" class="article-links">Start Over</a></li>
+  </ul>
 </div>
