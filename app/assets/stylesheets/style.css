@@ -514,6 +514,16 @@ select {
   font-size: 15px;
 }
 
+/* make it look like reset-btn */
+.home-form h2 a {
+  padding: 8px 6px 9px;
+  cursor: pointer;
+  color: #3c63af;
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: bold;
+  font-size: 17px;
+}
+
 /* 5.2. Aside block
    ========================================================================== */
 
@@ -2406,18 +2416,6 @@ div.selector select {
   border-bottom: 1px solid #b3b3b3;
   padding-top: 10px;
   padding-bottom: 5px;
-}
-
-/* make it look like reset-btn */
-.advanced-form h2 a {
-  padding: 8px 6px 9px;
-  border: none;
-  background: none;
-  cursor: pointer;
-  color: #3c63af;
-  font-family: Arial, Helvetica, sans-serif;
-  font-weight: bold;
-  font-size: 15px;
 }
 
 .advanced-form label {
