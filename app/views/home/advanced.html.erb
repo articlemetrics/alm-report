@@ -2,7 +2,7 @@
 
 <%= form_tag "/add-articles", method: :get, class: 'advanced-form'  do %>
 
-  <h2 class="albert-light-normal">Construct Your Search</h2>
+  <h2 class="albert-light-normal">Construct Your Search <%= link_to "Simle Search", '/' %></h2>
 
   <div class="input-holder">
     <%= select_tag "queryFieldId", options_for_select({
@@ -102,16 +102,14 @@
     <a class="button-hover-dark-black submit-btn" href="/upload">Upload File</a>
 
     <div class="help-block">
-      <h3>Instructions for "Construct Your Search"</h3>
+      <h3>Instructions</h3>
       <ol>
         <li>Choose a field to search from the picklist.</li>
         <li>Enter search term(s).</li>
         <li>Click the AND OR or NOT buttons to add terms to the search box.</li>
         <li>Repeat steps as necessary.</li>
-        <li>Select journals and/or subject categories below, if desired.</li>
-        <li>Click Search to run your query, or click Preview to see the result count of your query in the Search History
-          section.
-        </li>
+        <li>Select journals below, if desired.</li>
+        <li>Click Search to run your query.</li>
       </ol>
 
       <h3>Special Characters</h3>
@@ -119,7 +117,7 @@
         <li>The following characters have special meanings to the query engine: <strong> ! &amp; " ' ^ + - | ( ) [ ] { } \ : </strong></li>
         <li>Therefore, all of these characters will be "escaped" by preceding each one with a backslash character</li>
         <li>The wildcard characters <strong>?</strong> and <strong>*</strong> are <i>not</i> escaped</li>
-        <li>The tilde symbol ("~") at the end of a single word term indicates a fuzzy search</li>
+        <li>The tilde symbol <strong>~</strong> at the end of a single word term indicates a fuzzy search</li>
       </ul>
 
       <h3>Special Words</h3>

@@ -1,7 +1,7 @@
 
     <div class="content wrapper cf">
     <%= form_tag("/add-articles", :method => "get", :class => "home-form") do %>
-        <h2 class="albert-light-normal">Search all Articles <%= link_to "Advanced Search", '/advanced' %><a href="/advanced"></a></h2>
+        <h2 class="albert-light-normal">Search all Articles <%= link_to "Advanced Search", '/advanced' %></h2>
         <div class="input-holder">
           <%= label_tag(:everything, "Keyword") %>
           <%= text_field_tag(:everything) %>

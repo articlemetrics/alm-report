@@ -515,7 +515,8 @@ select {
 }
 
 /* make it look like reset-btn */
-.home-form h2 a {
+.home-form h2 a,
+.advanced-form h2 a {
   padding: 8px 6px 9px;
   cursor: pointer;
   color: #3c63af;
@@ -2418,6 +2419,6 @@ div.selector select {
   padding-bottom: 5px;
 }
 
-.advanced-form label {
+.advanced-form .filter-journals label {
   letter-spacing: normal;
 }
