@@ -3,7 +3,7 @@
     <h2 class="albert-light-normal">Upload File</h2>
     <p>Bulk upload of articles with a file that contains any combination of
        DOIs and PMIDs for PLOS articles, one per line.  The application will retrieve
-       the top entries until the maximum of 500 is reached.  <a href="/sample_upload_file.csv">Sample File</a></p>\
+       the top entries until the maximum of 500 is reached.  <a href="/sample_upload_file.csv">Sample File</a></p>
     <%= form_tag("/upload", :method => "post", :class => "upload-file-form", :multipart => true) do %>
       <% if !@file_absent.nil? && @file_absent %>
         <div class="error-holder">

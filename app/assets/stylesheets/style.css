@@ -674,7 +674,7 @@ select {
    ========================================================================== */
 
 .doi-pmid-form {
-  padding: 69px 0 100px 0;
+  padding: 0 0 100px 0;
   position: relative;
 }
 
@@ -1814,14 +1814,13 @@ caption {
   width: 635px;
   float: left;
   position: relative;
-  margin: 69px 0 80px 38px;
+  margin: 45px 0 80px 38px;
 }
 .upload-file h2 {
   margin: 0 0 18px;
 }
 
 .upload-file p {
-  width: 60%;
   color: #666;
   font-size: 14px;
 }
