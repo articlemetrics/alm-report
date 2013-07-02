@@ -43,7 +43,18 @@ defaults: &defaults
   internal_ip_ranges:
     - ***REMOVED***   # US office
     - ***REMOVED***  # UK office
-  
+
+  journals: {
+    "PLoSONE": "PLOS ONE",
+    "PLoSGenetics": "PLOS Genetics",
+    "PLoSBiology": "PLOS Biology",
+    "PLoSPathogens": "PLOS Pathogens",
+    "PLoSCompBiol": "PLOS Computational Biology",
+    "PLoSMedicine": "PLOS Medicine",
+    "PLoSNTD": "PLOS Neglected Tropical Diseases",
+    "PLoSCollections": "PLOS Collections",
+    "PLoSClinicalTrials": "PLOS Clinical Trials",
+  }
 
 development:
   <<: *defaults

@@ -1,0 +1,105 @@
+<div class="content wrapper cf">
+
+<%= form_tag "/add-articles", method: :get, class: 'advanced-form'  do %>
+
+  <h2 class="albert-light-normal">Construct Your Search <a href="/static/searchHelp">Help</a></h2>
+
+  <div class="input-holder">
+    <%= select_tag "queryFieldId", options_for_select({
+      "----- Popular -----" => 'divider',
+      "All Fields" => 'everything',
+      "Title" => 'title',
+      "Author" => 'author',
+      "Abstract" => 'abstract',
+      "Subject" => 'subject', 
+      "Publication Date" => 'publication_date',
+      "----- Other -----" => 'divider',
+      "Accepted Date" => 'accepted_date',
+      "Article DOI (Digital Object Identifier)" => 'id',
+      "Article Type" => 'article_type',
+      "Author Affiliations" => 'affiliate',
+      "Competing Interest Statement" => 'competing_interest',
+      "Conclusions" => 'conclusions',
+      "Editor" => 'editor',
+      "eNumber" => 'elocation_id',
+      "Figure & Table Captions" => 'figure_table_caption',
+      "Financial Disclosure Statement" => 'financial_disclosure',
+      "Introduction" => 'introduction',
+      "Issue Number" => 'issue',
+      "Materials and Methods" => 'materials_and_methods',
+      "Received Date" => 'received_date',
+      "References" => 'reference',
+      "Results and Discussion" => 'results_and_discussion',
+      "Supporting Information" => 'supporting_information',
+      "Trial Registration" => 'trial_registration',
+      "Volume Number" => 'volume'
+    }, disabled: 'divider'), title: "Search Field" %>
+
+    <div id="queryTermDivBlockId">
+      <%= text_field_tag 'queryTermId', nil, placeholder: 'Enter search terms', title: 'Search Terms' %>
+    </div>
+
+    <div id="startAndEndDateDivBlockId" class="date-input-fields" style="display:none;">
+      <%= text_field_tag 'startDateAsStringId', nil, placeholder: "MM-DD-YYYY" %>
+      <span>to</span>
+      <%= text_field_tag 'endDateAsStringId', nil, placeholder: "MM-DD-YYYY" %>
+    </div>
+
+  </div>
+
+  <div id="queryConjunction">
+    <label>Add to your search with:</label>
+    <%= button_tag "and", type: 'button', id: "queryConjunctionAndId",  value: 'AND', title: "AND", class: "button-hover-dark-black small-btn" %>
+    <%= button_tag "or", type: 'button', id: "queryConjunctionOrId",  value: 'OR', title: "OR", class: "button-hover-dark-black small-btn" %>
+    <%= button_tag "not", type: 'button', id: "queryConjunctionNotId",  value: 'NOT', title: "NOT", class: "button-hover-dark-black small-btn" %>
+  </div>
+
+  <div>
+    <%= text_area_tag 'unformattedQueryId', params["unformattedQueryId"], title: 'Query' %>
+  </div>
+
+  <div class="btnwrap">
+    <%= submit_tag "Search", class: 'button-hover-dark-black submit-btn', id: 'advancedQueryButtonId' %>
+    <input type="button" name="clearUnformattedQueryButton" id="clearUnformattedQueryButtonId" value="Clear Query" title="Clear Query" class="reset-btn">
+  </div>
+
+  <div class="input-holder filter-journals">
+    <ol>
+      <li>
+        <label>
+          <input id="journalsOpt_all" type="radio" name="journalOpt" value="all" title="Search All Journals" 
+            <%= "checked=\"checked\"".html_safe if !(!params["filterJournals"].nil? && params["filterJournals"].size > 0) %> > Search all journals
+        </label>
+      </li>
+      <li>
+        <label>
+          <input id="journalsOpt_slct" type="radio" name="journalOpt" value="some" title="Search Selected Journals"
+          <%= "checked=\"checked\"".html_safe if (!params["filterJournals"].nil? && params["filterJournals"].size > 0)  %> > Only search in the following journals:
+        </label>
+        </li>
+      <li class="options">
+        <fieldset id="fsJournalOpt">
+        <ul>
+          <% @journals.each do | journal | %>
+            <li>
+              <input id="filterJournals_<%=journal[:journal_key]%>" name="filterJournals[]" value="<%=journal[:journal_key]%>" type="checkbox" 
+                title="Select <%=journal[:journal_name]%>" alt="Select Journal <%=journal[:journal_name]%> Check Box" 
+                <%= "checked=\"checked\"".html_safe if (!params["filterJournals"].nil? && params["filterJournals"].include?(journal[:journal_key])) %> >&nbsp;
+              <label for="filterJournals_<%=journal[:journal_key]%>"><%=journal[:journal_name]%></label>
+            </li>
+          <% end %>
+        </ul>
+        </fieldset>
+      </li>
+    </ol>
+  </div>
+
+<% end %>
+
+  <div class="aside aside-container">
+    <h2 class="albert-light-normal">Find Specific Articles</h2>
+    <a class="button-hover-dark-black submit-btn" href="/id/">By DOI/PMID</a>
+    <a class="button-hover-dark-black submit-btn" href="/upload">Upload File</a>
+  </div>
+
+</div>

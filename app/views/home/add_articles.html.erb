@@ -7,27 +7,39 @@
    <% else %>
      <p>No results found for
    <% end %>
-     <% if !params[:everything].nil? && params[:everything].length > 0 %>
-       keyword:
-       <span class="keyword"><%= params[:everything] %>;</span>
+     <% if params.has_key?("unformattedQueryId") %>
+      <span class="keyword"><%=params["unformattedQueryId"]%>;</span>
+      <% if params.has_key?("filterJournals") %>
+      <span>journals: <span class="journals"><%= @filter_journal_names.join(" or ") %></span></span>
+      <% else %>
+      <span>journals: <span class="journals">All Journals</span></span>
+      <% end %>
+     <% else %>
+       <% if !params[:everything].nil? && params[:everything].length > 0 %>
+         keyword:
+         <span class="keyword"><%= params[:everything] %>;</span>
+       <% end %>
+       <% if !params[:author].nil? && params[:author].length > 0 %>
+         <span>author:
+         <span class="author-name"><%= params[:author] %>;</span>
+         </span>
+       <% end %>
+       <% if !params[:author_country].nil? &&params[:author_country].length > 0 %>
+         <span>author country:
+         <span class="author-country"><%= params[:author_country] %>;</span>
+         </span>
+       <% end %>
+       <% if !@start_date.nil? && !@end_date.nil? %>
+         <span>publication date: <span class="publication-date"><%= @start_date.strftime("%m-%d-%Y") %></span>
+         to
+         <span class="publication-date"><%= @end_date.strftime("%m-%d-%Y") %></span></span>
+       <% end %>
+       <span>journals: <span class="journals"><%= params[:cross_published_journal_name] %></span></span>
+
      <% end %>
-     <% if !params[:author].nil? && params[:author].length > 0 %>
-       <span>author:
-       <span class="author-name"><%= params[:author] %>;</span>
-       </span>
-     <% end %>
-     <% if !params[:author_country].nil? &&params[:author_country].length > 0 %>
-       <span>author country:
-       <span class="author-country"><%= params[:author_country] %>;</span>
-       </span>
-     <% end %>
-     <% if !@start_date.nil? && !@end_date.nil? %>
-       <span>publication date: <span class="publication-date"><%= @start_date.strftime("%m-%d-%Y") %></span>
-       to
-       <span class="publication-date"><%= @end_date.strftime("%m-%d-%Y") %></span></span>
-     <% end %>
-     <span>journals: <span class="journals"><%= params[:cross_published_journal_name] %></span></span>
    </p>
+   
+   <% if @total_found > 0 %>
    <ul>
      <li class="select-all-articles-link">select all</li>
      <li class="unselect-all-articles-link">unselect all</li>
@@ -47,6 +59,8 @@
              ], params[:sort]), :class => "styled", :id => "search_results_sort_order_select") %>
 
    </div>
+   <% end %>
+
    <p class="select-articles-message albert-light-normal invisible">
      <span id="select-articles-message-text"></span>
      <span id="select-all-articles-message-text"></span>

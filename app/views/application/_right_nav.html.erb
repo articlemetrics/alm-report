@@ -5,7 +5,14 @@
  </form>
  <p class="albert-light-normal">Add more articles</p>
  <ul class="add-article-links">
-   <li><a href="/" class="article-links">Search Again</a></li>
+   <% if request.query_parameters().key?("unformattedQueryId") %>
+   <li>
+     <%= link_to 'Search Again', {controller: 'home', action: 'advanced', unformattedQueryId: params[:unformattedQueryId], filterJournals: params[:filterJournals] }, class: "article-links" %>
+   </li>
+   <% else %>
+     <li><a href="/" class="article-links">Search Again</a></li>
+   <% end %>
+
    <% if current_page != :doi_pmid %>
      <li><a href="/id/" class="article-links">By DOI/PMID</a></li>
    <% end %>
