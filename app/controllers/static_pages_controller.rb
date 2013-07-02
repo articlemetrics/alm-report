@@ -15,4 +15,8 @@ class StaticPagesController < ApplicationController
   def terms_of_use
     @title = "Terms of Use"
   end
+
+  def search_help
+    @title = "Search Help"
+  end
 end
