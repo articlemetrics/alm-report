@@ -2387,3 +2387,35 @@ div.selector select {
 #fsJournalOpt label {
   padding: 0;
 }
+
+.help-block {
+  margin: 30px 19px 20px 0;
+  font-size: 14px;
+  color: #333;
+}
+
+.help-block li {
+  list-style-type: inherit;
+  padding-top: 5px;
+  margin-left: 20px;
+}
+
+.help-block h3 {
+  font-family: "FS Albert Web Regular", Verdana , sans-serif;
+  font-size: 17px;
+  border-bottom: 1px solid #b3b3b3;
+  padding-top: 10px;
+  padding-bottom: 5px;
+}
+
+/* make it look like reset-btn */
+.advanced-form h2 a {
+  padding: 8px 6px 9px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: #3c63af;
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: bold;
+  font-size: 15px;
+}

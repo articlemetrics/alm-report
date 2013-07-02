@@ -2,7 +2,7 @@
 
 <%= form_tag "/add-articles", method: :get, class: 'advanced-form'  do %>
 
-  <h2 class="albert-light-normal">Construct Your Search <a href="/static/searchHelp">Help</a></h2>
+  <h2 class="albert-light-normal">Construct Your Search <a href="/search_help">Help</a></h2>
 
   <div class="input-holder">
     <%= select_tag "queryFieldId", options_for_select({
@@ -100,6 +100,37 @@
     <h2 class="albert-light-normal">Find Specific Articles</h2>
     <a class="button-hover-dark-black submit-btn" href="/id/">By DOI/PMID</a>
     <a class="button-hover-dark-black submit-btn" href="/upload">Upload File</a>
+
+    <div class="help-block">
+      <h3>Instructions for "Construct Your Search"</h3>
+      <ol>
+        <li>Choose a field to search from the picklist.</li>
+        <li>Enter search term(s).</li>
+        <li>Click the AND OR or NOT buttons to add terms to the search box.</li>
+        <li>Repeat steps as necessary.</li>
+        <li>Select journals and/or subject categories below, if desired.</li>
+        <li>Click Search to run your query, or click Preview to see the result count of your query in the Search History
+          section.
+        </li>
+      </ol>
+
+      <h3>Special Characters</h3>
+      <ul>
+        <li>The following characters have special meanings to the query engine</li>
+        <li><strong> : ! &amp; " ' ^ + - | ( ) [ ] { } \ </strong></li>
+        <li>Therefore, all of these characters will be "escaped" by preceding each one with a backslash character</li>
+        <li>The wildcard characters <strong>?</strong> and <strong>*</strong> are <i>not</i> escaped</li>
+      </ul>
+
+      <h3>Special Words</h3>
+      <ul>
+        <li>The upper-case words <strong>AND</strong>, <strong>OR</strong>, <strong>NOT</strong>,
+          and <strong>TO</strong> have special meanings to the query engine, so these words
+          will be changed to lower-case when they are used as searchable terms
+        </li>
+      </ul>
+    </div>
+
   </div>
 
 </div>
