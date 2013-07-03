@@ -25,6 +25,7 @@
     5.16. Page: Upload file - Fix Errors
   6. Footer
   7. Static content
+  8. Advanced Search page
 
   -------------------------------------------------------------------*/
   /*------------------------------------------------------------------
@@ -394,7 +395,8 @@ h1 + ul li {
 /* 5.1. Form block
    ========================================================================== */
 
-.home-form {
+.home-form,
+.advanced-form {
   width: 500px;
   margin: 70px 0 50px 103px;
   float: left;
@@ -510,6 +512,17 @@ select {
   font-family: Arial, Helvetica, sans-serif;
   font-weight: bold;
   font-size: 15px;
+}
+
+/* make it look like reset-btn */
+.home-form h2 a,
+.advanced-form h2 a {
+  padding: 8px 6px 9px;
+  cursor: pointer;
+  color: #3c63af;
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: bold;
+  font-size: 17px;
 }
 
 /* 5.2. Aside block
@@ -2329,4 +2342,82 @@ div.selector select {
 
 .exception-message {
   font-family: "courier"
+}
+
+
+/* ==========================================================================
+   8. Advanced search page
+   ========================================================================== */
+
+/* text area.  should look like input text box*/
+#unformattedQueryId {
+  height: 10.5em;
+  width: 434px;
+  padding: 10px 0 10px 12px;
+  border-radius: 6px;
+  font-size: 18px;
+}
+
+.ui-datepicker-month,
+.ui-datepicker-year {
+  height: 21px;
+}
+
+.advanced-form .input-holder {
+  margin: 11px 0 0;
+}
+
+.advanced-form input[type="text"] {
+  margin-top: 10px;
+}
+
+.small-btn {
+  margin: 0 0 0 5px;
+  padding: 3px 0 3px 0;
+  min-width: 45px;
+  border: none;
+  border-radius: 4px;
+  background: #3c63af;
+  color: #fff;
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: bold;
+  font-size: 15px;
+}
+
+.filter-journals label {
+  font-size: 15px;
+  color: #333;
+  font-weight: normal;
+}
+
+#fsJournalOpt {
+  padding-left: 20px;
+}
+
+#fsJournalOpt label {
+  padding: 0;
+}
+
+.help-block {
+  margin: 30px 19px 20px 0;
+  font-size: 14px;
+  color: #333;
+}
+
+.help-block li {
+  list-style-type: inherit;
+  padding-top: 5px;
+  margin-left: 20px;
+}
+
+.help-block h3 {
+  font-family: "FS Albert Web Regular", Verdana , sans-serif;
+  font-size: 17px;
+  border-bottom: 1px solid #b3b3b3;
+  padding-top: 10px;
+  padding-bottom: 5px;
+}
+
+.advanced-form .filter-journals label {
+  letter-spacing: normal;
 }

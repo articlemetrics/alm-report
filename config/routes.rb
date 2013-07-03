@@ -8,6 +8,7 @@ AlmReport::Application.routes.draw do
   match "/start-over" => "home#start_over"
   match "/preview-list" => "home#preview_list"
   match "/get-article-count" => "home#get_article_count"
+  match "/advanced" => "home#advanced"
 
   match "/reports/generate" => "reports#generate"
   match '/reports/:action/:id', :controller => "reports"

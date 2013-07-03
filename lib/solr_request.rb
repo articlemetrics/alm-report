@@ -120,6 +120,26 @@ class SolrRequest
   end
 
 
+  # Returns the portion of the solr URL with the query parameter and journal filter populated
+  def build_advanced_query
+    solr_params = {}
+
+    if @params.has_key?("unformattedQueryId")
+      solr_params[:q] = @params["unformattedQueryId"].strip
+    else
+      # this shouldn't happen but just in case
+      solr_params[:q] = "*:*"
+    end
+
+    if @params.has_key?("filterJournals")
+      filter_journals = @params["filterJournals"]
+      solr_params[:fq] = filter_journals.map { | filter_journal | "cross_published_journal_key:#{filter_journal}"}.join(" OR ")
+    end
+
+    return solr_params
+  end
+
+
   def self.send_query(url)
     start_time = Time.now
     resp = Net::HTTP.get_response(URI.parse(url))
@@ -167,11 +187,21 @@ class SolrRequest
 
   # Performs a single solr search, based on the parameters set on this object.  Returns a tuple
   # of the documents retrieved, and the total number of results.
-  def query
+  def query(is_advanced=false)
     sort = @params.delete(:sort)
     page_block = build_page_block  # This needs to get called before build_query
-    url = "#{APP_CONFIG["solr_url"]}?#{URI::encode(build_query)}&#{@@FILTER}" \
-        "&#{@fl}&wt=json&facet=false&#{page_block}"
+
+    common_params = "#{@@FILTER}&#{@fl}&wt=json&facet=false&#{page_block}"
+
+    if (!is_advanced)
+      # execute home page search
+      url = "#{APP_CONFIG["solr_url"]}?#{URI::encode(build_query)}&#{common_params}"
+    else
+      # advanced search query
+      solr_params = build_advanced_query
+      url = "#{APP_CONFIG["solr_url"]}?#{solr_params.to_param}&#{common_params}"
+    end
+
     if !sort.nil?
       url << "&sort=#{URI::encode(sort)}"
     end
@@ -196,7 +226,39 @@ class SolrRequest
     return facet_counts.select{|x| x.class == String && x[0..3] == "PLOS"}
   end
 
-  
+
+  # The goal is to mimic advanced search journal filter on the ambra side (journal site)
+  # 1. use fq (filter query) with cross_published_journal_key field
+  # 2. display the journal names that are tied to the cross_published_journal_key field on the front end
+  # There wasn't a way to tie cross_published_journal_key field values to cross_published_journal_name values 
+  # easily without matching them up by hand
+  def self.get_journal_name_key
+    params = {}
+    params[:q] = "*:*"
+    params[:facet] = "true"
+    params["facet.field"] = "cross_published_journal_key"
+    params["facet.mincount"] = 1
+    params[:rows] = 0
+    params[:wt] = "json"
+
+    url = "#{APP_CONFIG["solr_url"]}?#{params.to_param}&#{@@FILTER}"
+    json = send_query(url)
+
+    journal_keys = json["facet_counts"]["facet_fields"]["cross_published_journal_key"]
+    journal_keys = journal_keys.values_at(* journal_keys.each_index.select {|i| i.even?})
+
+    journals = []
+    if (!APP_CONFIG["journals"].nil? && APP_CONFIG["journals"].size > 0)
+      journal_keys.each do | journal_key |
+        journal_name = APP_CONFIG["journals"][journal_key]
+        journals << {:journal_name => APP_CONFIG["journals"][journal_key], :journal_key => journal_key} if !journal_name.nil?
+      end
+    end
+
+    return journals
+  end
+
+
   def self.get_now
     return Time.new
   end

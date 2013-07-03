@@ -47,10 +47,32 @@ class HomeController < ApplicationController
   def add_articles
     @tab = :select_articles
     @title = "Add Articles"
-    @docs, @total_found = search_from_params
+
+    if params["unformattedQueryId"].nil?
+      # search executed from the home page
+      @docs, @total_found = search_from_params
+    else
+      # search exected from the advanced search page
+      q = SolrRequest.new(params, nil)
+      @docs, @total_found  = q.query(true)
+
+      @filter_journal_names = []
+      if !params["filterJournals"].nil?
+        if (!APP_CONFIG["journals"].nil? && APP_CONFIG["journals"].size > 0)
+          params["filterJournals"].each do | journal_key |
+            journal_name = APP_CONFIG["journals"][journal_key]
+            if !journal_name.nil?
+              @filter_journal_names << journal_name
+            end
+          end
+        end
+      end
+
+    end
 
     # get the dois that have been selected
     dois = session[:dois]
+
 
     # make sure that the articles that have been checked previously are checked when we render the page
     if (!dois.nil? && !dois.empty?)
@@ -205,5 +227,12 @@ class HomeController < ApplicationController
       @docs << solr_data[doi]
     end
   end
-  
+
+
+  def advanced
+    @tab = :select_articles
+    @title = "Advanced Search"
+
+    @journals = SolrRequest.get_journal_name_key
+  end
 end
