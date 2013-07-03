@@ -74,6 +74,11 @@
 
 <div id="gray-out-screen"></div>
 
+<div id="viz-limit-error-message" style="display: none;">
+  Although the ALM report data can contain up to <%= APP_CONFIG["article_limit"] %> articles,
+  the maximum size for visualizations is <%= APP_CONFIG["viz_limit"] %> articles.
+</div>
+
 <div id="article-limit-error-message" style="display: none;">
   The maximum report size is <%= APP_CONFIG["article_limit"] %> articles. Go to
   <a href="/preview-list">Preview List</a> and remove articles before adding

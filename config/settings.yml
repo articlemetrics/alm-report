@@ -8,7 +8,12 @@ defaults: &defaults
   metrics_results_per_page: 5
   
   # Maximum number of articles that can be stored in a single report.
-  article_limit: 500
+  article_limit: 2000
+  
+  # Maximum number of articles for which we generate the report visualizations page.
+  # If the number of articles in a report is between article_limit and this,
+  # all pages are available except the visualizations page.
+  viz_limit: 500
 
   solr_url: http://api.plos.org/search
   

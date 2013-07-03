@@ -6,10 +6,17 @@
     <%= link_to "Metrics Data", {:controller => "reports",  :action => "metrics", :id => @report }, :class => "metrics-icon" %>
   <% end %>
 
-  <% if (@report_sub_tab == :visualizations) %>
-    <%= link_to "Visualizations", {:controller => "reports",  :action => "visualizations", :id => @report }, :class => "chart-view chart-view-active" %>
-  <% else %>
-    <%= link_to "Visualizations", {:controller => "reports",  :action => "visualizations", :id => @report }, :class => "chart-view" %>
+  <% if @report.report_dois.length > APP_CONFIG["viz_limit"] %>
+    <div class="inactive-viz-holder">
+      <span class="inactive-viz-link chart-view">Visualizations</span>
+      <span class="inactive-viz-msg">The limit for visualizations is <%= APP_CONFIG["viz_limit"] %> articles.</span>
+    </div>
+  <% else
+       if (@report_sub_tab == :visualizations) %>
+         <%= link_to "Visualizations", {:controller => "reports",  :action => "visualizations", :id => @report }, :class => "chart-view chart-view-active" %>
+       <% else %>
+         <%= link_to "Visualizations", {:controller => "reports",  :action => "visualizations", :id => @report }, :class => "chart-view" %>
+       <% end %>
   <% end %>
 
   <span class="download-visuals">

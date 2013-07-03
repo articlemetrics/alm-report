@@ -128,6 +128,7 @@
   <script type="text/javascript">
     var RESULTS_PER_PAGE = <%= APP_CONFIG["results_per_page"] %>;
     var ARTICLE_LIMIT = <%= APP_CONFIG["article_limit"] %>;
+    var VIZ_LIMIT = <%= APP_CONFIG["viz_limit"] %>;
     <% if !@total_found.nil? %>
       var search_total_found = <%= @total_found %>;
     <% end %>
