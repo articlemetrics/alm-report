@@ -57,8 +57,7 @@ defaults: &defaults
     "PLoSCompBiol": "PLOS Computational Biology",
     "PLoSMedicine": "PLOS Medicine",
     "PLoSNTD": "PLOS Neglected Tropical Diseases",
-    "PLoSCollections": "PLOS Collections",
-    "PLoSClinicalTrials": "PLOS Clinical Trials",
+    "PLoSCollections": "PLOS Collections"
   }
 
 development:
