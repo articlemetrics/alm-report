@@ -7,7 +7,9 @@ class HomeController < ApplicationController
   def index
     @tab = :select_articles
     @title = "Homepage"
-    journals = SolrRequest.query_for_journals.collect{|x| [x, x]}
+
+    journals = SolrRequest.get_journal_name_key
+    journals.collect! { | journal | [journal[:journal_name], journal[:journal_name]] }
 
     # Add a fake entry for "all journals"
     @journals = journals.unshift([SolrRequest.ALL_JOURNALS, SolrRequest.ALL_JOURNALS])

@@ -214,19 +214,6 @@ class SolrRequest
   end
 
 
-  # Performs a query for all known PLOS journals and returns their titles as an array.
-  def self.query_for_journals
-    url = "#{APP_CONFIG["solr_url"]}?q=*:*&facet=true&facet.field=cross_published_journal_name" \
-        "&rows=0&wt=json"
-    json = send_query(url)
-    facet_counts = json["facet_counts"]["facet_fields"]["cross_published_journal_name"]
-
-    # TODO: cache this value
-
-    return facet_counts.select{|x| x.class == String && x[0..3] == "PLOS"}
-  end
-
-
   # The goal is to mimic advanced search journal filter on the ambra side (journal site)
   # 1. use fq (filter query) with cross_published_journal_key field
   # 2. display the journal names that are tied to the cross_published_journal_key field on the front end
