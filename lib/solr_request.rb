@@ -124,16 +124,16 @@ class SolrRequest
   def build_advanced_query
     solr_params = {}
 
-    if @params.has_key?("unformattedQueryId")
-      solr_params[:q] = @params["unformattedQueryId"].strip
+    if @params.has_key?(:unformattedQueryId)
+      solr_params[:q] = @params[:unformattedQueryId].strip
     else
       # this shouldn't happen but just in case
       solr_params[:q] = "*:*"
     end
 
-    if @params.has_key?("filterJournals")
-      filter_journals = @params["filterJournals"]
-      solr_params[:fq] = filter_journals.map { | filter_journal | "cross_published_journal_key:#{filter_journal}"}.join(" OR ")
+    if @params.has_key?(:filterJournals)
+      filter_journals = @params[:filterJournals]
+      solr_params[:fq] = filter_journals.map { | filter_journal | "cross_published_journal_key:#{filter_journal}" }.join(" OR ")
     end
 
     return solr_params
@@ -187,13 +187,13 @@ class SolrRequest
 
   # Performs a single solr search, based on the parameters set on this object.  Returns a tuple
   # of the documents retrieved, and the total number of results.
-  def query(is_advanced=false)
+  def query
     sort = @params.delete(:sort)
     page_block = build_page_block  # This needs to get called before build_query
 
     common_params = "#{@@FILTER}&#{@fl}&wt=json&facet=false&#{page_block}"
 
-    if (!is_advanced)
+    if !@params.has_key?(:unformattedQueryId)
       # execute home page search
       url = "#{APP_CONFIG["solr_url"]}?#{URI::encode(build_query)}&#{common_params}"
     else

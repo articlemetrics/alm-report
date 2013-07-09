@@ -48,14 +48,11 @@ class HomeController < ApplicationController
     @tab = :select_articles
     @title = "Add Articles"
 
-    if params["unformattedQueryId"].nil?
-      # search executed from the home page
-      @docs, @total_found = search_from_params
-    else
-      # search exected from the advanced search page
-      q = SolrRequest.new(params, nil)
-      @docs, @total_found  = q.query(true)
+    @docs, @total_found = search_from_params
 
+    if !params["unformattedQueryId"].nil?
+      # search exected from the advanced search page
+      # convert the journal key to journal name
       @filter_journal_names = []
       if !params["filterJournals"].nil?
         if (!APP_CONFIG["journals"].nil? && APP_CONFIG["journals"].size > 0)
