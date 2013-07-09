@@ -54,6 +54,16 @@ jQuery(function(d, $){
         } else {
           $('#your-list-choices').append('<a href="/reports/generate">View Report</a><a href="/preview-list">Edit List</a>')
         }
+
+        // make sure the next action button is in a correct state
+        if (new_count === 0) {
+          this.disableButton($('#create-report-submit'));
+          this.disableButton($('#preview-list-submit'));
+        } else {
+          this.enableButton($('#create-report-submit'));
+          this.enableButton($('#preview-list-submit'));
+        }
+
       },
       
       // Increments the preview list counts in the UI by the specified delta, which
