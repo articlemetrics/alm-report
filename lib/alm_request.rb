@@ -135,6 +135,7 @@ module AlmRequest
     end
   end
 
+  # get data for single article visualization report
   def self.get_data_for_one_article(report_dois)
     dois = report_dois.map { |report_doi| report_doi.doi }
 
