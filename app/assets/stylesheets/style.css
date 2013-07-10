@@ -1363,19 +1363,20 @@ span.next {
 }
 
 .visualizations-list .list-numbers {
-  width: 24px;
-  height: 24px;
+  min-width: 20px;
+  height: 22px;
   margin: 0;
-  padding: 4px 0 0 1px;
+  padding: 4px 2px 0 3px;
   position: absolute;
   top: 0;
   left: 0;  
-  background: url(/assets/sprite.png) no-repeat -197px -142px;
   color: #fff;
   font-size: 14px;
   font-weight: bold;
   text-align: center;
   line-height: 17px;
+  background-color: #000;
+  border-radius: 4px;
 }
 
 .visualizations-list .metrics-description {
