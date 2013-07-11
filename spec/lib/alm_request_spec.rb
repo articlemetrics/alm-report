@@ -6,8 +6,6 @@ describe AlmRequest do
   context "get ALM Data for articles" do
 
     it "get ALM data for articles" do
-      Rails.cache.clear
-
       report = Report.new
       report.save
 
@@ -92,8 +90,6 @@ describe AlmRequest do
     end
 
     it "fail to get ALM data for articles" do
-      Rails.cache.clear
-
       report = Report.new
       report.save
 
@@ -118,8 +114,6 @@ describe AlmRequest do
     end
 
     it "get ALM data for valid articles in the list" do
-      Rails.cache.clear
-
       report = Report.new
       report.save
 
@@ -176,8 +170,6 @@ describe AlmRequest do
   end
 
   it "get ALM data for one article" do
-    Rails.cache.clear
-
     report = Report.new
     report.save
 
@@ -243,10 +235,8 @@ describe AlmRequest do
 
   end
 
-  context "get ALM data for viualization" do
+  context "get ALM data for visualization" do
     it "use Solr to get the data" do
-      Rails.cache.clear
-
       APP_CONFIG["alm_max_size_for_realtime"] = 1
 
       report = Report.new
@@ -278,8 +268,6 @@ describe AlmRequest do
     end
 
     it "use ALM to get the data" do
-      Rails.cache.clear
-
       report = Report.new
       report.save
 
