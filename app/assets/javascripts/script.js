@@ -313,7 +313,7 @@ jQuery(function(d, $){
         var additional_count = Math.min(ARTICLE_LIMIT, search_total_found) - preview_list_count;
         if (additional_count > 0) {
           $('#select-all-articles-message-text').html(
-              '<a href="#" id="select_all_searchresults">Select the first '
+              '<a href="#" id="select_all_searchresults">Select the remaining '
               + additional_count + ' articles</a>.');
         } else {
           $('#select-all-articles-message-text').hide();
