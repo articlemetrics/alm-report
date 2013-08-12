@@ -18,7 +18,7 @@ describe AlmRequest do
 
       params = {}
       params[:ids] = dois.join(",")
-      url = "#{APP_CONFIG["alm_url"]}/?#{params.to_param}"
+      url = AlmRequest.get_alm_url(params)
 
       body = File.read("#{fixture_path}alm_good_response.json")
 
@@ -101,7 +101,7 @@ describe AlmRequest do
 
       params = {}
       params[:ids] = dois.join(",")
-      url = "#{APP_CONFIG["alm_url"]}/?#{params.to_param}"
+      url = AlmRequest.get_alm_url(params)
 
       body = File.read("#{fixture_path}alm_bad_response.json")
 
@@ -126,7 +126,7 @@ describe AlmRequest do
 
       params = {}
       params[:ids] = dois.join(",")
-      url = "#{APP_CONFIG["alm_url"]}/?#{params.to_param}"
+      url = AlmRequest.get_alm_url(params)
 
       body = File.read("#{fixture_path}alm_good_response2.json")
 
@@ -182,7 +182,7 @@ describe AlmRequest do
     params[:ids] = dois.join(",")
     params[:info] = "history"
     params[:source] = "crossref,pubmed,scopus"
-    url = "#{APP_CONFIG["alm_url"]}/?#{params.to_param}"
+    url = AlmRequest.get_alm_url(params)
 
     body = File.read("#{fixture_path}alm_one_article_history.json")
     stub_request(:get, "#{url}").to_return(:body => body, :status => 200)
@@ -191,7 +191,7 @@ describe AlmRequest do
     params[:ids] = dois.join(",")
     params[:info] = "event"
     params[:source] = "counter,pmc,citeulike,twitter,researchblogging,nature,scienceseeker,mendeley"
-    url = "#{APP_CONFIG["alm_url"]}/?#{params.to_param}"
+    url = AlmRequest.get_alm_url(params)    
 
     body = File.read("#{fixture_path}alm_one_article_event.json")
     stub_request(:get, "#{url}").to_return(:body => body, :status => 200)
@@ -280,7 +280,7 @@ describe AlmRequest do
 
       params = {}
       params[:ids] = dois.join(",")
-      url = "#{APP_CONFIG["alm_url"]}/?#{params.to_param}"
+      url = AlmRequest.get_alm_url(params)
 
       body = File.read("#{fixture_path}alm_good_response.json")
 
