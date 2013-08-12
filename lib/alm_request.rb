@@ -32,7 +32,7 @@ module AlmRequest
       # if it only has one article and it fails to retrieve data for that one article, 
       # that's when it will return 404
 
-      url = "#{APP_CONFIG["alm_url"]}/?#{params.to_param}"
+      url = get_alm_url(params)
 
       start_time = Time.now
 
@@ -144,7 +144,7 @@ module AlmRequest
     params[:info] = "history"
     params[:source] = "crossref,pubmed,scopus"
 
-    url = "#{APP_CONFIG["alm_url"]}/?#{params.to_param}"
+    url = get_alm_url(params)
     
     resp = Net::HTTP.get_response(URI.parse(url))
 
@@ -179,7 +179,7 @@ module AlmRequest
     params[:info] = "event"
     params[:source] = "counter,pmc,citeulike,twitter,researchblogging,nature,scienceseeker,mendeley"
 
-    url = "#{APP_CONFIG["alm_url"]}/?#{params.to_param}"
+    url = get_alm_url(params)
     
     resp = Net::HTTP.get_response(URI.parse(url))
 
@@ -208,4 +208,12 @@ module AlmRequest
     return all_results
   end
 
+  # Params are the parameters to be used to query for alm data
+  def self.get_alm_url(params)
+    url = ""
+    if (!params.nil? && params.length > 0)
+      url = "#{APP_CONFIG["alm_url"]}/?api_key=#{APP_CONFIG["alm_api_key"]}&#{params.to_param}"
+    end
+    return url
+  end
 end
