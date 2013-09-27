@@ -612,16 +612,27 @@ var doiPmidInputOnChange = function() {
     pmid = Number(value);
   }
   var doi = null;
+  
+  // There are two types of PLOS DOIs that we have to handle differently.  Currents
+  // DOIs are not in solr, so we don't want to attempt to validate against that
+  // if it looks like a currents DOI.
+  var is_currents_doi = false;
   if (pmid === null) {
-    var match = /(info:)?(doi\/)?(10\.1371\/journal\.p[a-z]{3}\.\d{7})/.exec(value);
-    if (match == null || match[3] == null) {
-      highlightDoiPmidError(input_element, 'This DOI/PMID is not a PLOS article');
-    } else {
+    var match = /(info:)?(doi\/)?(10\.1371\/currents\.\S+)/.exec(value);
+    if (match != null && match[3] != null) {
       doi = match[3];
+      is_currents_doi = true;
+    } else {
+      var match = /(info:)?(doi\/)?(10\.1371\/journal\.p[a-z]{3}\.\d{7})/.exec(value);
+      if (match == null || match[3] == null) {
+        highlightDoiPmidError(input_element, 'This DOI/PMID is not a PLOS article');
+      } else {
+        doi = match[3];
+      }
     }
   }
 
-  if (pmid !== null || doi !== null) {
+  if (!is_currents_doi && (pmid !== null || doi !== null)) {
   
     // Validate ID against solr.  We need to make a jsonp request to get around the
     // same-origin policy.
@@ -645,6 +656,10 @@ var doiPmidInputOnChange = function() {
           }
         }
     });
+  } else {
+    
+    // Looks like a valid currents doi.  Remove any previous error message.
+    dismissDoiPmidFieldError($(input_element).parent('.error-holder'));
   }
 };
 
