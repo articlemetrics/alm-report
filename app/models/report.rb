@@ -55,7 +55,7 @@ class Report < ActiveRecord::Base
     if (field.nil?)
 
       alm_data = AlmRequest.get_data_for_articles(report_dois)
-      solr_data = SolrRequest.get_data_for_articles(report_dois)
+      solr_data = BackendService.get_article_data_for_list_display(report_dois)
 
       CSV.generate({ :force_quotes => true }) do | csv |
         csv << [
