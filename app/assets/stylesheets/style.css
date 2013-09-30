@@ -2446,3 +2446,8 @@ div.selector select {
 .advanced-form .filter-journals label {
   letter-spacing: normal;
 }
+
+.nona-link {
+  cursor: pointer;
+  text-decoration: underline;
+}

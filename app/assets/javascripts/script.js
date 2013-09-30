@@ -924,3 +924,11 @@ jQuery(function(d, $){
     }
   });
 }(document, jQuery));
+
+// Onclick handler for pseudo-links that aren't actually <a>'s.  This is sometimes
+// easier than dealing with CSS issues.
+jQuery(function(d, $) {
+  $('.nona-link').click(function() {
+    window.location.href = $(this).data('href');
+  });
+}(document, jQuery));
