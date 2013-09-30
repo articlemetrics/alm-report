@@ -220,10 +220,10 @@ class HomeController < ApplicationController
     dois = dois.sort_by{|doi, timestamp| -timestamp}.collect{|x| x[0]}
     dois = dois[(@start_result) - 1..(@end_result - 1)]
     @docs = []
-    
-    solr_data = SolrRequest.get_data_for_articles(dois)
+
+    data = BackendService.get_article_data_for_list_display(dois)
     dois.each do |doi|
-      @docs << solr_data[doi]
+      @docs << data[doi]
     end
   end
 

@@ -29,8 +29,16 @@ class IdController < ApplicationController
   # "10.1371/journal.pone.0049349" if it is (without the "info:doi/" prefix,
   # even if it is present on the input).
   def self.validate_doi(doi)
-    %r|(info:)?(doi/)?(10\.1371/journal\.p[a-z]{3}\.\d{7})| =~ doi
-    return $~.nil? ? nil : $~[3]
+    
+    # For simplicity we handle currents DOIs separately, since they don't have
+    # as much internal structure as non-currents ones.
+    %r|(info:)?(doi/)?(10\.1371/currents\.\S+)| =~ doi
+    if !$~.nil?
+      return $~[3]
+    else
+      %r|(info:)?(doi/)?(10\.1371/journal\.p[a-z]{3}\.\d{7})| =~ doi
+      return $~.nil? ? nil : $~[3]
+    end
   end
   
   
@@ -87,6 +95,7 @@ class IdController < ApplicationController
     # deal with at all.
     field_to_parsed_doi = {}
     field_to_parsed_pmid = {}
+    currents_dois = []
     params.each do |k, v|
       if k.start_with?("doi-pmid-") && !v.empty?
         
@@ -99,6 +108,11 @@ class IdController < ApplicationController
           validated = IdController.validate_doi(v)
           if validated.nil?
             @errors[k.to_sym] = "This DOI/PMID is not a PLOS article"
+            
+          # Don't attempt to validate currents DOIs against solr, since they
+          # won't be there.
+          elsif BackendService.is_currents_doi(validated)
+            currents_dois << validated
           else
             field_to_parsed_doi[k] = validated
           end
@@ -115,6 +129,10 @@ class IdController < ApplicationController
     # Now, for all the identifiers that passed regex validation, query against solr.
     solr_docs = query_solr_for_ids(field_to_parsed_doi, field_to_parsed_pmid)
     if @errors.length == 0
+      
+      # We don't have a publication date for currents articles, so just use
+      # the order they were added to the form instead.
+      currents_dois.each_with_index {|doi, i| @saved_dois[doi] = i}
       solr_docs.each {|_, doc| @saved_dois[doc["id"]] = doc["publication_date"].strftime("%s").to_i}
       redirect_to "/preview-list"
     else
@@ -188,7 +206,7 @@ class IdController < ApplicationController
       end
     end
 
-    solr_docs = SolrRequest.get_data_for_articles(valid_dois)
+    solr_docs = BackendService.get_article_data_for_list_display(valid_dois)
     valid_dois.each do |doi|
       doc = solr_docs[doi]
       if doc.nil?

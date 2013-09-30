@@ -55,7 +55,7 @@ class ReportsController < ApplicationController
       # to limit what we have to load from solr and ALM.
       @dois = @report.report_dois[(@start_result) - 1..(@end_result - 1)]
       alm_data = AlmRequest.get_data_for_articles(@dois)
-      solr_data = SolrRequest.get_data_for_articles(@dois)
+      solr_data = BackendService.get_article_data_for_list_display(@dois)
       [solr_data, alm_data]
     }
 
@@ -80,7 +80,7 @@ class ReportsController < ApplicationController
   
   # Permanently removes the given DOIs from a report.
   def purge_bad_dois(dois_to_delete)
-    logger.warn("Nonexistend DOIs detected; will delete from report: #{@report.id}: #{dois_to_delete.inspect}")
+    logger.warn("Nonexistent DOIs detected; will delete from report: #{@report.id}: #{dois_to_delete.inspect}")
 
     # delete the bad dois from the report
     ReportDoi.destroy_all(:id => dois_to_delete)
@@ -105,7 +105,7 @@ class ReportsController < ApplicationController
       alm_data = AlmRequest.get_data_for_viz(@report.report_dois)
     end
 
-    solr_data = SolrRequest.get_data_for_articles(@report.report_dois)
+    solr_data = BackendService.get_article_data_for_list_display(@report.report_dois)
 
     dois_to_delete = manage_report_data(@report.report_dois, solr_data, alm_data)
 
@@ -133,6 +133,14 @@ class ReportsController < ApplicationController
 
       render 'visualization.html.erb'
     else
+      @is_currents_only = true
+      @report.report_dois.each do |report_doi|
+        if !report_doi.is_currents_doi
+          @is_currents_only = false
+          break
+        end
+      end
+      
       # this covers situations where a report contains many articles but very small
       # portion of the articles have alm data  (without alm data, viz page will look very weird)
       if solr_data.length >= APP_CONFIG["visualization_min_num_of_alm_data_points"]

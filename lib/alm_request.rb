@@ -4,24 +4,13 @@ require "json"
 
 # Interface to the PLOS ALM API.
 module AlmRequest
-
-
-  # Returns a dict containing ALM usage data for a given list of articles.
-  def self.get_data_for_articles(report_dois)
-
-    all_results = {}
-
-    dois = report_dois.map { |report_doi| report_doi.doi }
-
-    # get alm data from cache
-    dois.delete_if  do | doi |
-      results = Rails.cache.read("#{doi}.alm")
-      if !results.nil?
-        all_results[doi] = results
-        true
-      end
-    end
-
+  
+  
+  # Retrieves and returns all ALM data for the given DOIs.  Multiple requests to ALM
+  # may be made if the number of DOIs is large.  The returned list is the raw JSON
+  # output from ALM, with no additional processing.
+  def self.get_raw_data(dois)
+    json = []
     while dois.length > 0 do
       subset_dois = dois.slice!(0, APP_CONFIG["alm_max_articles_per_request"])
       params = {}
@@ -47,54 +36,102 @@ module AlmRequest
         # move to the next set of articles
         next
       end
-
-      json = JSON.parse(resp.body)
-
-      json.each do | article |
-        sources = article["sources"].map { | source | ([source["name"], source["metrics"]]) }
-        sources_dict = Hash[*sources.flatten(1)]
-
-        results = {}
-
-        results[:plos_html] = sources_dict["counter"]["html"].to_i
-        results[:plos_pdf] = sources_dict["counter"]["pdf"].to_i
-        results[:plos_xml] = sources_dict["counter"]["total"].to_i - (results[:plos_html] + results[:plos_pdf])
-        results[:plos_total] = sources_dict["counter"]["total"].to_i
-
-        results[:pmc_views] = sources_dict["pmc"]["html"].to_i
-        results[:pmc_pdf] = sources_dict["pmc"]["pdf"].to_i
-        results[:pmc_total] = results[:pmc_views] + results[:pmc_pdf]
-
-        results[:total_usage] = results[:plos_html] + results[:plos_pdf] + results[:plos_xml] + results[:pmc_views] + results[:pmc_pdf]
-        results[:viewed_data_present] = (results[:total_usage] > 0)
-
-        results[:pmc_citations] = sources_dict["pubmed"]["total"].to_i
-        results[:crossref_citations] = sources_dict["crossref"]["total"].to_i
-        results[:scopus_citations] = sources_dict["scopus"]["total"].to_i
-        results[:cited_data_present] = (results[:pmc_citations] + results[:crossref_citations] + results[:scopus_citations]) > 0
-
-        results[:citeulike] = sources_dict["citeulike"]["total"].to_i
-        # removing connotea
-        # results[:connotea] = sources_dict["connotea"]["total"].to_i
-        results[:mendeley] = sources_dict["mendeley"]["total"].to_i
-        results[:saved_data_present] = (results[:citeulike] + results[:mendeley]) > 0
-
-        results[:nature] = sources_dict["nature"]["total"].to_i
-        results[:research_blogging] = sources_dict["researchblogging"]["total"].to_i
-        results[:scienceseeker] = sources_dict["scienceseeker"]["total"].to_i
-        results[:facebook] = sources_dict["facebook"]["total"].to_i
-        results[:twitter] = sources_dict["twitter"]["total"].to_i
-        results[:wikipedia] = sources_dict["wikipedia"]["total"].to_i
-        results[:discussed_data_present] = (results[:nature] + results[:research_blogging] + results[:wikipedia] + results[:scienceseeker] + results[:facebook] + results[:twitter]) > 0        
-
-        all_results[article["doi"]] = results
-
-        # store alm data in cache
-        Rails.cache.write("#{article["doi"]}.alm", results, :expires_in => 1.day)
+      json.concat(JSON.parse(resp.body))
+    end
+    json
+  end
+  
+  
+  # Checks memcache to see if data about the given DOIs are present.
+  #
+  # Params:
+  #   dois: list of DOIs to check
+  #   cache_results: dict that will be filled with results from the cache.  The
+  #     key will be doi, and the value the result found in the cache.
+  #   cache_suffix: the suffix to append to the DOI to generate a cache key
+  #
+  # Returns: all DOIs that were *not* found in the cache
+  def self.check_cache(dois, cache_results, cache_suffix)
+    dois.delete_if  do | doi |
+      results = Rails.cache.read("#{doi}.#{cache_suffix}")
+      if !results.nil?
+        cache_results[doi] = results
+        true
       end
     end
+    dois
+  end
 
-    return all_results
+
+  # Returns a dict containing ALM usage data for a given list of articles.
+  def self.get_data_for_articles(report_dois)
+    all_results = {}
+    dois = report_dois.map { |report_doi| report_doi.doi }
+
+    # get alm data from cache
+    dois = check_cache(dois, all_results, "alm")
+    
+    json = AlmRequest.get_raw_data(dois)
+    json.each do | article |
+      sources = article["sources"].map { | source | ([source["name"], source["metrics"]]) }
+      sources_dict = Hash[*sources.flatten(1)]
+
+      results = {}
+
+      results[:plos_html] = sources_dict["counter"]["html"].to_i
+      results[:plos_pdf] = sources_dict["counter"]["pdf"].to_i
+      results[:plos_xml] = sources_dict["counter"]["total"].to_i - (results[:plos_html] + results[:plos_pdf])
+      results[:plos_total] = sources_dict["counter"]["total"].to_i
+
+      results[:pmc_views] = sources_dict["pmc"]["html"].to_i
+      results[:pmc_pdf] = sources_dict["pmc"]["pdf"].to_i
+      results[:pmc_total] = results[:pmc_views] + results[:pmc_pdf]
+
+      results[:total_usage] = results[:plos_html] + results[:plos_pdf] + results[:plos_xml] + results[:pmc_views] + results[:pmc_pdf]
+      results[:viewed_data_present] = (results[:total_usage] > 0)
+
+      results[:pmc_citations] = sources_dict["pubmed"]["total"].to_i
+      results[:crossref_citations] = sources_dict["crossref"]["total"].to_i
+      results[:scopus_citations] = sources_dict["scopus"]["total"].to_i
+      results[:cited_data_present] = (results[:pmc_citations] + results[:crossref_citations] + results[:scopus_citations]) > 0
+
+      results[:citeulike] = sources_dict["citeulike"]["total"].to_i
+      # removing connotea
+      # results[:connotea] = sources_dict["connotea"]["total"].to_i
+      results[:mendeley] = sources_dict["mendeley"]["total"].to_i
+      results[:saved_data_present] = (results[:citeulike] + results[:mendeley]) > 0
+
+      results[:nature] = sources_dict["nature"]["total"].to_i
+      results[:research_blogging] = sources_dict["researchblogging"]["total"].to_i
+      results[:scienceseeker] = sources_dict["scienceseeker"]["total"].to_i
+      results[:facebook] = sources_dict["facebook"]["total"].to_i
+      results[:twitter] = sources_dict["twitter"]["total"].to_i
+      results[:wikipedia] = sources_dict["wikipedia"]["total"].to_i
+      results[:discussed_data_present] = (results[:nature] + results[:research_blogging] + results[:wikipedia] + results[:scienceseeker] + results[:facebook] + results[:twitter]) > 0        
+
+      all_results[article["doi"]] = results
+
+      # store alm data in cache
+      Rails.cache.write("#{article["doi"]}.alm", results, :expires_in => 1.day)
+    end
+    all_results
+  end
+  
+  # Retrieves article data from ALM suitable for display in a brief list, such
+  # as search results or the preview list.
+  #
+  # Note that most of the time, you'll want to get this data from solr via
+  # SolrRequest.get_data_for_articles.  The exception is PLOS Currents articles,
+  # which are not currently in solr.
+  def self.get_article_data_for_list_display(dois)
+    results = {}
+    dois = check_cache(dois, results, "alm_list_display")
+    json = AlmRequest.get_raw_data(dois)
+    json.each do |article|
+      results[article["doi"]] = article
+      Rails.cache.write("#{article["doi"]}.alm_list_display", article, :expires_in => 1.day)
+    end
+    results
   end
   
   # Gathers ALM data for visualization for a given list of dois

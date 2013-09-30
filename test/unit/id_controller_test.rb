@@ -17,6 +17,14 @@ class IdControllerTest < ActiveSupport::TestCase
         IdController.validate_doi("info:doi/10.1371/journal.pone.0049349"))
     assert_equal("10.1371/journal.pmed.1000077",
         IdController.validate_doi("10.1371/journal.pmed.1000077"))
+        
+    # Currents DOIs.  These are handled slightly differently.
+    assert_equal("10.1371/currents.dis.ad70cd1c8bc585e9470046cde334ee4b",
+        IdController.validate_doi("10.1371/currents.dis.ad70cd1c8bc585e9470046cde334ee4b"))
+    assert_equal("10.1371/currents.tol.53ba26640df0ccaee75bb165c8c26288",
+        IdController.validate_doi("info:doi/10.1371/currents.tol.53ba26640df0ccaee75bb165c8c26288"))
+    assert_equal("10.1371/currents.RRN1226",
+        IdController.validate_doi("doi/10.1371/currents.RRN1226"))
   end
   
 end
