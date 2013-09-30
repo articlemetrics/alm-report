@@ -9,6 +9,12 @@ class BackendService
   # all fields necessary for displaying in an article list, such as is
   # used for search results and the preview list.
   def self.get_article_data_for_list_display(dois)
+    if (dois.first.kind_of? String)
+      dois = dois.clone
+    else
+      dois = dois.map {|report_doi| report_doi.doi}
+    end
+    
     solr_dois = []
     alm_dois =  []
     dois.each do |doi|
