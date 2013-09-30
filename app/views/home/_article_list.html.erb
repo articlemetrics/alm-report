@@ -22,18 +22,28 @@
 
       <a href="http://dx.doi.org/<%= doc['id'] %>" target="_blank"><%= doc["title"] %></a>
 
-      <% if !doc["author_display"].nil? %>
-      <p>
-        <% doc["author_display"].each_with_index do |author, idx| %>
-          <%= author %><% if idx < doc["author_display"].length - 1 %>,<% end %>
-        <% end %>
-      </p>
+      <% detail_displayed = false
+         if !doc["author_display"].nil?
+           detail_displayed = true %>
+        <p>
+          <% doc["author_display"].each_with_index do |author, idx| %>
+            <%= author %><% if idx < doc["author_display"].length - 1 %>,<% end %>
+          <% end %>
+        </p>
       <% end %>
       
       <p>
-        <%= doc["article_type"] %>
-        <span>|</span>
-        published <%= doc["publication_date"].strftime("%d %b %Y") %>
+        <% if !doc["article_type"].nil?
+             detail_displayed = true %>
+          <%= doc["article_type"] %>
+        <% end %>
+        <% if detail_displayed %>
+          <span>|</span>
+          published
+        <% else %>
+          Published
+        <% end %>
+        <%= doc["publication_date"].strftime("%d %b %Y") %>
         <span>|</span>
         <%= doc["cross_published_journal_name"][0] %>
       </p>
