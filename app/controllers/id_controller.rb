@@ -108,16 +108,13 @@ class IdController < ApplicationController
           validated = IdController.validate_doi(v)
           if validated.nil?
             @errors[k.to_sym] = "This DOI/PMID is not a PLOS article"
-          else
             
-            # Don't attempt to validate currents DOIs against solr, since they
-            # won't be there.
-            %r|10\.1371/currents\.\S+| =~ validated
-            if $~.nil?
-              field_to_parsed_doi[k] = validated
-            else
-              currents_dois << validated
-            end
+          # Don't attempt to validate currents DOIs against solr, since they
+          # won't be there.
+          elsif BackendService.is_currents_doi(validated)
+            currents_dois << validated
+          else
+            field_to_parsed_doi[k] = validated
           end
         end
         

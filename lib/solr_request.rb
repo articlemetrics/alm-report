@@ -47,6 +47,11 @@ class SolrRequest
   def self.ALL_JOURNALS
     return @@ALL_JOURNALS
   end
+  
+  
+  def self.SOLR_TIMESTAMP_FORMAT
+    return @@SOLR_TIMESTAMP_FORMAT
+  end
 
 
   # Adds leading and trailing double-quotes to the string if it contains any whitespace.
