@@ -206,7 +206,7 @@ class IdController < ApplicationController
       end
     end
 
-    solr_docs = SolrRequest.get_data_for_articles(valid_dois)
+    solr_docs = BackendService.get_article_data_for_list_display(valid_dois)
     valid_dois.each do |doi|
       doc = solr_docs[doi]
       if doc.nil?
