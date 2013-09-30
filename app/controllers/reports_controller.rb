@@ -133,6 +133,14 @@ class ReportsController < ApplicationController
 
       render 'visualization.html.erb'
     else
+      @is_currents_only = true
+      @report.report_dois.each do |report_doi|
+        if !report_doi.is_currents_doi
+          @is_currents_only = false
+          break
+        end
+      end
+      
       # this covers situations where a report contains many articles but very small
       # portion of the articles have alm data  (without alm data, viz page will look very weird)
       if solr_data.length >= APP_CONFIG["visualization_min_num_of_alm_data_points"]
