@@ -30,14 +30,21 @@ class IdController < ApplicationController
   # even if it is present on the input).
   def self.validate_doi(doi)
     
-    # For simplicity we handle currents DOIs separately, since they don't have
-    # as much internal structure as non-currents ones.
-    %r|(info:)?(doi/)?(10\.1371/currents\.\S+)| =~ doi
-    if !$~.nil?
-      return $~[3]
+    # First strip out any optional parts.
+    %r|(info:)?(doi/)?(\S+)| =~ doi
+    if $~.nil?
+      return nil
     else
-      %r|(info:)?(doi/)?(10\.1371/journal\.p[a-z]{3}\.\d{7})| =~ doi
-      return $~.nil? ? nil : $~[3]
+      doi = $~[3]
+    
+      # For simplicity we handle currents DOIs separately, since they don't have
+      # as much internal structure as non-currents ones.
+      if BackendService.is_currents_doi(doi)
+        return doi
+      else
+        %r|10\.1371/journal\.p[a-z]{3}\.\d{7}| =~ doi
+        return $~.nil? ? nil : doi
+      end
     end
   end
   

@@ -25,6 +25,10 @@ class IdControllerTest < ActiveSupport::TestCase
         IdController.validate_doi("info:doi/10.1371/currents.tol.53ba26640df0ccaee75bb165c8c26288"))
     assert_equal("10.1371/currents.RRN1226",
         IdController.validate_doi("doi/10.1371/currents.RRN1226"))
+    assert_equal("10.1371/4f8d4eaec6af8", IdController.validate_doi("10.1371/4f8d4eaec6af8"))
+    assert_equal("10.1371/5035add8caff4",
+        IdController.validate_doi("info:doi/10.1371/5035add8caff4"))
+    assert_equal("10.1371/4fd1286980c08", IdController.validate_doi("doi/10.1371/4fd1286980c08"))
   end
   
 end

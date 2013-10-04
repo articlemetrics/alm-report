@@ -615,19 +615,19 @@ var doiPmidInputOnChange = function() {
   
   // There are two types of PLOS DOIs that we have to handle differently.  Currents
   // DOIs are not in solr, so we don't want to attempt to validate against that
-  // if it looks like a currents DOI.
+  // if it looks like a currents DOI (which have very little structure).
   var is_currents_doi = false;
   if (pmid === null) {
-    var match = /(info:)?(doi\/)?(10\.1371\/currents\.\S+)/.exec(value);
+    var match = /(info:)?(doi\/)?(10\.1371\/journal\.p[a-z]{3}\.\d{7})/.exec(value);
     if (match != null && match[3] != null) {
       doi = match[3];
-      is_currents_doi = true;
     } else {
-      var match = /(info:)?(doi\/)?(10\.1371\/journal\.p[a-z]{3}\.\d{7})/.exec(value);
-      if (match == null || match[3] == null) {
-        highlightDoiPmidError(input_element, 'This DOI/PMID is not a PLOS article');
-      } else {
+      var match = /(info:)?(doi\/)?(10\.1371\/\S+)/.exec(value);
+      if (match != null && match[3] != null) {
         doi = match[3];
+        is_currents_doi = true;
+      } else {
+        highlightDoiPmidError(input_element, 'This DOI/PMID is not a PLOS article');
       }
     }
   }
