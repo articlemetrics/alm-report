@@ -631,8 +631,12 @@ var doiPmidInputOnChange = function() {
       }
     }
   }
+  
+  if (is_currents_doi) {
 
-  if (!is_currents_doi && (pmid !== null || doi !== null)) {
+    // Looks like a valid currents doi.  Remove any previous error message.
+    dismissDoiPmidFieldError($(input_element).parent('.error-holder'));
+  } else if (pmid !== null || doi !== null) {
   
     // Validate ID against solr.  We need to make a jsonp request to get around the
     // same-origin policy.
@@ -656,10 +660,6 @@ var doiPmidInputOnChange = function() {
           }
         }
     });
-  } else {
-    
-    // Looks like a valid currents doi.  Remove any previous error message.
-    dismissDoiPmidFieldError($(input_element).parent('.error-holder'));
   }
 };
 
