@@ -145,9 +145,17 @@ module AlmRequest
 
     # TODO future: only count the articles that are not cached when comparing the # of articles to retrieve alm data for
 
-    if report_dois.size > APP_CONFIG["alm_max_size_for_realtime"]
-
-      # get alm data from solr
+    # For performance reasons, we get the ALM data from solr instead if there are more
+    # than a certain number of articles.  However we can't do this for currents articles
+    # since these aren't in solr.
+    has_currents_article = false
+    report_dois.each do |report_doi|
+      if report_doi.is_currents_doi
+        has_currents_article = true
+        break
+      end
+    end
+    if report_dois.size > APP_CONFIG["alm_max_size_for_realtime"] && !has_currents_article
       metric_data = SolrRequest.get_data_for_viz(report_dois)
 
       all_results = {}
