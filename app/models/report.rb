@@ -58,15 +58,12 @@ class Report < ActiveRecord::Base
       solr_data = BackendService.get_article_data_for_list_display(report_dois)
 
       CSV.generate({ :force_quotes => true }) do | csv |
-        csv << [
-          "DOI", "PMID", "Publication Date", "Title", "Authors", "Author Affiliations",
-          "PLOS Total", "PLOS views", "PLOS PDF downloads", "PLOS XML downloads",
-          "PMC Total", "PMC views", "PMC PDF Downloads",
-          "CrossRef", "Scopus", "PubMed Central",
-          "CiteULike", "Mendeley", "Twitter", "Facebook", "Wikipedia",
-          "Research Blogging", "Nature", "Science Seeker",
-          "Journal", "Article Type",
-        ]
+        title_row = [
+            "DOI", "PMID", "Publication Date", "Title", "Authors", "Author Affiliations",
+            ]
+        title_row += AlmRequest.ALM_METRICS.values
+        title_row += [ "Journal", "Article Type", ]
+        csv << title_row
 
         report_dois.each do | report_doi |
 
@@ -83,7 +80,7 @@ class Report < ActiveRecord::Base
                 report_doi.doi, article_data["pmid"], article_data["publication_date"],
                 article_data["title"], authors, affiliate,
                 ]
-            AlmRequest.ALM_METRICS.each {|metric| row.push(article_alm_data[metric])}
+            AlmRequest.ALM_METRICS.keys.each {|metric| row.push(article_alm_data[metric])}
             row += [
                 article_data["cross_published_journal_name"][0], article_data["article_type"],
                 ]

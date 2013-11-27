@@ -5,28 +5,39 @@ require "json"
 # Interface to the PLOS ALM API.
 module AlmRequest
   
-  @@ALM_METRICS = [
-      :plos_total,
-      :plos_html,
-      :plos_pdf,
-      :plos_xml,
-      :pmc_total,
-      :pmc_views,
-      :pmc_pdf,
-      :crossref_citations,
-      :scopus_citations,
-      :pmc_citations,
-      :citeulike,
-      :mendeley,
-      :twitter,
-      :facebook,
-      :wikipedia,
-      :research_blogging,
-      :nature,
-      :scienceseeker,
-      ]
+  @@ALM_METRICS = ActiveSupport::OrderedHash.new
+  @@ALM_METRICS[:plos_total] = "PLOS Total"
+  @@ALM_METRICS[:plos_html] = "PLOS views"
+  @@ALM_METRICS[:plos_pdf] = "PLOS PDF downloads"
+  @@ALM_METRICS[:plos_xml] = "PLOS XML downloads"
+  @@ALM_METRICS[:pmc_total] = "PMC Total"
+  @@ALM_METRICS[:pmc_views] = "PMC views"
+  @@ALM_METRICS[:pmc_pdf] = "PMC PDF Downloads"
+  @@ALM_METRICS[:crossref_citations] = "CrossRef"
+  @@ALM_METRICS[:scopus_citations] = "Scopus"
+  @@ALM_METRICS[:pmc_citations] = "PubMed Central"
+  @@ALM_METRICS[:citeulike] = "CiteULike"
+  @@ALM_METRICS[:mendeley] = "Mendeley"
+  @@ALM_METRICS[:twitter] = "Twitter"
+  @@ALM_METRICS[:facebook] = "Facebook"
+  @@ALM_METRICS[:wikipedia] = "Wikipedia"
+  @@ALM_METRICS[:research_blogging] = "Research Blogging"
+  @@ALM_METRICS[:nature] = "Nature"
+  @@ALM_METRICS[:scienceseeker] = "Science Seeker"
+  @@ALM_METRICS[:datacite] = "DataCite"
+  @@ALM_METRICS[:pmc_europe] = "PMC Europe Citations"
+  @@ALM_METRICS[:pmc_europe_data] = "PMC Europe Database Citations"
+  @@ALM_METRICS[:web_of_science] = "Web of Science"
+  @@ALM_METRICS[:reddit] = "Reddit"
+  @@ALM_METRICS[:wordpress] = "Wordpress.com"
+  @@ALM_METRICS[:figshare] = "Figshare"
+  @@ALM_METRICS[:relative_metric] = "Relative Metric"
+  @@ALM_METRICS[:f1000] = "F1000Prime"
       
-  # Returns a list of all the ALM metrics used in the app.
+  # Returns an ordered dict of all ALM metrics used in the app.  The key is
+  # the key returned by get_data_for_articles, and the value is suitable for
+  # display in the UI.  The order is used in some parts of the app (such as
+  # the CSV download field order).
   def self.ALM_METRICS
     @@ALM_METRICS
   end
@@ -48,6 +59,8 @@ module AlmRequest
       # that's when it will return 404
 
       url = get_alm_url(params)
+      
+      Rails.logger.warn("CALLAWAY: #{url}")
 
       start_time = Time.now
 
@@ -133,7 +146,17 @@ module AlmRequest
       results[:facebook] = sources_dict["facebook"]["total"].to_i
       results[:twitter] = sources_dict["twitter"]["total"].to_i
       results[:wikipedia] = sources_dict["wikipedia"]["total"].to_i
-      results[:discussed_data_present] = (results[:nature] + results[:research_blogging] + results[:wikipedia] + results[:scienceseeker] + results[:facebook] + results[:twitter]) > 0        
+      results[:discussed_data_present] = (results[:nature] + results[:research_blogging] + results[:wikipedia] + results[:scienceseeker] + results[:facebook] + results[:twitter]) > 0
+      
+      results[:datacite] = sources_dict["datacite"]["total"].to_i
+      results[:pmc_europe] = sources_dict["pmceurope"]["total"].to_i
+      results[:pmc_europe_data] = sources_dict["pmceuropedata"]["total"].to_i
+      results[:web_of_science] = sources_dict["wos"]["total"].to_i
+      results[:reddit] = sources_dict["reddit"]["total"].to_i
+      results[:wordpress] = sources_dict["wordpress"]["total"].to_i
+      results[:figshare] = sources_dict["figshare"]["total"].to_i
+      results[:relative_metric] = sources_dict["relativemetric"]["total"].to_i
+      results[:f1000] = sources_dict["f1000"]["total"].to_i
 
       all_results[article["doi"]] = results
 
