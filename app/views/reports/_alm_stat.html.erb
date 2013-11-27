@@ -5,6 +5,7 @@ This partial accepts the following parameters:
 
   value: the value to render
   label: label to go along with the value
+  href: if defined, label will be rendered as a link pointing at this URL
   
 If the above two parameters are undefined, data will be rendered from these
 parameters:
@@ -17,6 +18,15 @@ parameters:
   label ||= AlmRequest.ALM_METRICS[stat]
 %>
 <tr class="<%= 'metric-without-data' if !(!value.nil? && value > 0) %>">
- <td class="list-names"><%= label %></td>
- <td class="metrics-list-value"><%= number_with_delimiter(value, :delimiter => ',') %></td>
+  <%
+    show_link = !(defined?(href)).nil?
+    td_class = "list-names"
+    if show_link
+      td_class += " nona-link"
+    end
+  %>
+  <td class="<%= td_class %>" <%= show_link ? "data-href=#{href}" : "" %>>
+    <%= label %>
+  </td>
+  <td class="metrics-list-value"><%= number_with_delimiter(value, :delimiter => ',') %></td>
 </tr>
