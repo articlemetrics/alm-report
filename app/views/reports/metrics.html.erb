@@ -35,39 +35,38 @@
             <div class="metric-row-content">
                 <table class="metrics-table <%= "metric-without-data" if !doi.alm[:viewed_data_present] %>" >
                   <caption>Viewed</caption>
-                  <%= render "alm_stat", :stat => doi.alm[:plos_html], :label => "PLOS views" %>
-                  <%= render "alm_stat", :stat => doi.alm[:plos_pdf], :label => "PLOS PDF downloads" %>
-                  <%= render "alm_stat", :stat => doi.alm[:plos_xml], :label => "PLOS XML downloads" %>
-                  <%= render "alm_stat", :stat => doi.alm[:pmc_views], :label => "PMC views" %>
-                  <%= render "alm_stat", :stat => doi.alm[:pmc_pdf], :label => "PMC PDF downloads" %>
-                  <%= render "alm_stat", :stat => doi.alm[:total_usage], :label => "Total usage" %>
+                  <%= render "alm_stat", :data => doi.alm, :stat => :plos_html %>
+                  <%= render "alm_stat", :data => doi.alm, :stat => :plos_pdf %>
+                  <%= render "alm_stat", :data => doi.alm, :stat => :plos_xml %>
+                  <%= render "alm_stat", :data => doi.alm, :stat => :pmc_views %>
+                  <%= render "alm_stat", :data => doi.alm, :stat => :pmc_pdf %>
+                  <%= render "alm_stat", :value => doi.alm[:total_usage], :label => "Total usage" %>
                 </table>
 
                 <table class="metrics-table <%= "metric-without-data" if !doi.alm[:saved_data_present] %>">
                   <caption>Saved</caption>
-                  <%= render "alm_stat", :stat => doi.alm[:citeulike], :label => "CiteULike" %>
-                  <%= render "alm_stat", :stat => doi.alm[:mendeley], :label => "Mendeley" %>
+                  <%= render "alm_stat", :data => doi.alm, :stat => :citeulike %>
+                  <%= render "alm_stat", :data => doi.alm, :stat => :mendeley %>
                 </table>
             </div>
             <div class="metric-row-content">
                 <table class="metrics-table <%= "metric-without-data" if !doi.alm[:discussed_data_present] %>">
                   <caption>Discussed</caption>
-                  <%= render "alm_stat", :stat => doi.alm[:nature], :label => "Nature Blogs" %>
-                  <%= render "alm_stat", :stat => doi.alm[:research_blogging], :label => "Research Blogging" %>
-                  <%= render "alm_stat", :stat => doi.alm[:scienceseeker], :label => "Science Seeker" %>
-                  <%= render "alm_stat", :stat => doi.alm[:facebook], :label => "Facebook" %>
-                  <%= render "alm_stat", :stat => doi.alm[:twitter], :label => "Twitter" %>
-                  <%= render "alm_stat", :stat => doi.alm[:wikipedia], :label => "Wikipedia" %>
+                  <%= render "alm_stat", :data => doi.alm, :stat => :nature %>
+                  <%= render "alm_stat", :data => doi.alm, :stat => :research_blogging %>
+                  <%= render "alm_stat", :data => doi.alm, :stat => :scienceseeker %>
+                  <%= render "alm_stat", :data => doi.alm, :stat => :facebook %>
+                  <%= render "alm_stat", :data => doi.alm, :stat => :twitter %>
+                  <%= render "alm_stat", :data => doi.alm, :stat => :wikipedia %>
                   <%# TODO: comments.  get from ambra %>
                   <%# TODO: trackbacks.  get from ambra DB %>
                 </table>
 
                 <table class="metrics-table <%= "metric-without-data" if !doi.alm[:cited_data_present] %>">
                   <caption>Cited</caption>
-                  <%= render "alm_stat", :stat =>doi.alm[:pmc_citations], :label => "PubMed Central" %>
-                  <%= render "alm_stat", :stat => doi.alm[:crossref_citations], :label => "CrossRef" %>
-                  <%= render "alm_stat", :stat => doi.alm[:scopus_citations], :label => "Scopus" %>
-                  <%# TODO: web of science.  It is in the mockups, but not in ALM today.  %>
+                  <%= render "alm_stat", :data => doi.alm, :stat => :pmc_citations %>
+                  <%= render "alm_stat", :data => doi.alm, :stat => :crossref_citations %>
+                  <%= render "alm_stat", :data => doi.alm, :stat => :scopus_citations %>
                 </table>
             </div>
           </div>

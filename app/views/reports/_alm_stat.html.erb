@@ -1,9 +1,22 @@
 <%#
 Partial that renders a single table row on the report-metrics page.
-zeros are not shown on initial page load
-%>
+If the data is nil or zero, the row won't be shown.
+This partial accepts the following parameters:
 
-  <tr class="<%= 'metric-without-data' if !(!stat.nil? && stat > 0) %>">
-   <td class="list-names"><%= label %></td>
-   <td class="metrics-list-value"><%= number_with_delimiter(stat, :delimiter => ',') %></td>
-  </tr>
+  value: the value to render
+  label: label to go along with the value
+  
+If the above two parameters are undefined, data will be rendered from these
+parameters:
+
+  data: ALM data structure returned from AlmRequest
+  stat: key into the data dict specifying the value
+%>
+<%
+  value ||= data[stat]
+  label ||= AlmRequest.ALM_METRICS[stat]
+%>
+<tr class="<%= 'metric-without-data' if !(!value.nil? && value > 0) %>">
+ <td class="list-names"><%= label %></td>
+ <td class="metrics-list-value"><%= number_with_delimiter(value, :delimiter => ',') %></td>
+</tr>

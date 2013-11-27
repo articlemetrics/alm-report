@@ -22,7 +22,7 @@ module AlmRequest
   @@ALM_METRICS[:facebook] = "Facebook"
   @@ALM_METRICS[:wikipedia] = "Wikipedia"
   @@ALM_METRICS[:research_blogging] = "Research Blogging"
-  @@ALM_METRICS[:nature] = "Nature"
+  @@ALM_METRICS[:nature] = "Nature Blogs"
   @@ALM_METRICS[:scienceseeker] = "Science Seeker"
   @@ALM_METRICS[:datacite] = "DataCite"
   @@ALM_METRICS[:pmc_europe] = "PMC Europe Citations"
