@@ -79,29 +79,15 @@ class Report < ActiveRecord::Base
             authors = article_data["author_display"].nil? ? "" : article_data["author_display"].join(", ")
             affiliate = article_data["affiliate"].nil? ? "" : article_data["affiliate"].join("; ")
   
-            csv << [
-              report_doi.doi, article_data["pmid"], article_data["publication_date"],
-              article_data["title"], authors, affiliate,
-              article_alm_data[:plos_total],
-              article_alm_data[:plos_html],
-              article_alm_data[:plos_pdf],
-              article_alm_data[:plos_xml],
-              article_alm_data[:pmc_total],
-              article_alm_data[:pmc_views],
-              article_alm_data[:pmc_pdf],
-              article_alm_data[:crossref_citations],
-              article_alm_data[:scopus_citations],
-              article_alm_data[:pmc_citations],
-              article_alm_data[:citeulike],
-              article_alm_data[:mendeley],
-              article_alm_data[:twitter],
-              article_alm_data[:facebook],
-              article_alm_data[:wikipedia],
-              article_alm_data[:research_blogging],
-              article_alm_data[:nature],
-              article_alm_data[:scienceseeker],
-              article_data["cross_published_journal_name"][0], article_data["article_type"],
-            ]
+            row = [
+                report_doi.doi, article_data["pmid"], article_data["publication_date"],
+                article_data["title"], authors, affiliate,
+                ]
+            AlmRequest.ALM_METRICS.each {|metric| row.push(article_alm_data[metric])}
+            row += [
+                article_data["cross_published_journal_name"][0], article_data["article_type"],
+                ]
+            csv << row
           end
         end
       end

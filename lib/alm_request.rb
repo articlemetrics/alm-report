@@ -5,6 +5,32 @@ require "json"
 # Interface to the PLOS ALM API.
 module AlmRequest
   
+  @@ALM_METRICS = [
+      :plos_total,
+      :plos_html,
+      :plos_pdf,
+      :plos_xml,
+      :pmc_total,
+      :pmc_views,
+      :pmc_pdf,
+      :crossref_citations,
+      :scopus_citations,
+      :pmc_citations,
+      :citeulike,
+      :mendeley,
+      :twitter,
+      :facebook,
+      :wikipedia,
+      :research_blogging,
+      :nature,
+      :scienceseeker,
+      ]
+      
+  # Returns a list of all the ALM metrics used in the app.
+  def self.ALM_METRICS
+    @@ALM_METRICS
+  end
+      
   
   # Retrieves and returns all ALM data for the given DOIs.  Multiple requests to ALM
   # may be made if the number of DOIs is large.  The returned list is the raw JSON
