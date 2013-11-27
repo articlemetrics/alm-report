@@ -31,7 +31,6 @@ module AlmRequest
   @@ALM_METRICS[:reddit] = "Reddit"
   @@ALM_METRICS[:wordpress] = "Wordpress.com"
   @@ALM_METRICS[:figshare] = "Figshare"
-  @@ALM_METRICS[:relative_metric] = "Relative Metric"
   @@ALM_METRICS[:f1000] = "F1000Prime"
       
   # Returns an ordered dict of all ALM metrics used in the app.  The key is

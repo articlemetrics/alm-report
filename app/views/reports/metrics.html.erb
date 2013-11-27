@@ -47,6 +47,7 @@
                   <caption>Saved</caption>
                   <%= render "alm_stat", :data => doi.alm, :stat => :citeulike %>
                   <%= render "alm_stat", :data => doi.alm, :stat => :mendeley %>
+                  <%= render "alm_stat", :data => doi.alm, :stat => :figshare %>
                 </table>
             </div>
             <div class="metric-row-content">
@@ -58,6 +59,9 @@
                   <%= render "alm_stat", :data => doi.alm, :stat => :facebook %>
                   <%= render "alm_stat", :data => doi.alm, :stat => :twitter %>
                   <%= render "alm_stat", :data => doi.alm, :stat => :wikipedia %>
+                  <%= render "alm_stat", :data => doi.alm, :stat => :reddit %>
+                  <%= render "alm_stat", :data => doi.alm, :stat => :wordpress %>
+                  <%= render "alm_stat", :data => doi.alm, :stat => :f1000 %>
                   <%# TODO: comments.  get from ambra %>
                   <%# TODO: trackbacks.  get from ambra DB %>
                 </table>
@@ -67,6 +71,10 @@
                   <%= render "alm_stat", :data => doi.alm, :stat => :pmc_citations %>
                   <%= render "alm_stat", :data => doi.alm, :stat => :crossref_citations %>
                   <%= render "alm_stat", :data => doi.alm, :stat => :scopus_citations %>
+                  <%= render "alm_stat", :data => doi.alm, :stat => :datacite %>
+                  <%= render "alm_stat", :data => doi.alm, :stat => :pmc_europe %>
+                  <%= render "alm_stat", :data => doi.alm, :stat => :pmc_europe_data %>
+                  <%= render "alm_stat", :data => doi.alm, :stat => :web_of_science %>
                 </table>
             </div>
           </div>
