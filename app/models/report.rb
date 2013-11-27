@@ -78,7 +78,11 @@ class Report < ActiveRecord::Base
   
             row = [
                 report_doi.doi, article_data["pmid"], article_data["publication_date"],
-                article_data["title"], authors, affiliate,
+                
+                # Some of the long free-form text fields can contain newlines; convert
+                # these to spaces.
+                article_data["title"].gsub(/\n/, ' '), authors.gsub(/\n/, ' '),
+                affiliate.gsub(/\n/, ' '),
                 ]
             AlmRequest.ALM_METRICS.keys.each {|metric| row.push(article_alm_data[metric])}
             row += [
