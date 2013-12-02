@@ -1,1 +1,34 @@
-{"responseHeader":{"status":0,"QTime":21},"response":{"numFound":2,"start":0,"docs":[{"id":"10.1371/journal.pmed.0020124","alm_scopusCiteCount":915,"alm_mendeleyCount":4064,"alm_pmc_usage_total_all":127280,"counter_total_all":686164},{"id":"10.1371/journal.pone.0064652","alm_scopusCiteCount":0,"alm_mendeleyCount":0,"alm_pmc_usage_total_all":1,"counter_total_all":439}]},"highlighting":{"10.1371/journal.pmed.0020124":{},"10.1371/journal.pone.0064652":{}}}
+{
+  "responseHeader": {
+    "status": 0,
+    "QTime": 21
+  },
+  "response": {
+    "numFound": 2,
+    "start": 0,
+    "docs": [
+      {
+        "id": "10.1371\/journal.pmed.0020124",
+        "alm_scopusCiteCount": 915,
+        "alm_mendeleyCount": 4064,
+        "alm_pmc_usage_total_all": 127280,
+        "counter_total_all": 686164
+      },
+      {
+        "id": "10.1371\/journal.pone.0064652",
+        "alm_scopusCiteCount": 0,
+        "alm_mendeleyCount": 0,
+        "alm_pmc_usage_total_all": 1,
+        "counter_total_all": 439
+      }
+    ]
+  },
+  "highlighting": {
+    "10.1371\/journal.pmed.0020124": {
+      
+    },
+    "10.1371\/journal.pone.0064652": {
+      
+    }
+  }
+}
