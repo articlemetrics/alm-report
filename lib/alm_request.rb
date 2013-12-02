@@ -58,8 +58,6 @@ module AlmRequest
       # that's when it will return 404
 
       url = get_alm_url(params)
-      
-      Rails.logger.warn("CALLAWAY: #{url}")
 
       start_time = Time.now
 
