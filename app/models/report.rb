@@ -62,7 +62,10 @@ class Report < ActiveRecord::Base
             "DOI", "PMID", "Publication Date", "Title", "Authors", "Author Affiliations",
             ]
         title_row += AlmRequest.ALM_METRICS.values
-        title_row += [ "Journal", "Article Type", ]
+        title_row += [
+            "Journal", "Article Type", "Funding Statement", "Subject Areas", "Submission Date",
+            "Acceptance Date", "Editors", "Article URL",
+            ]
         csv << title_row
 
         report_dois.each do | report_doi |
@@ -72,21 +75,25 @@ class Report < ActiveRecord::Base
           
           # If the article was unpublished (rare), skip it.
           if !article_alm_data.nil? && !article_data.nil?
-  
-            authors = article_data["author_display"].nil? ? "" : article_data["author_display"].join(", ")
-            affiliate = article_data["affiliate"].nil? ? "" : article_data["affiliate"].join("; ")
-  
             row = [
                 report_doi.doi, article_data["pmid"], article_data["publication_date"],
                 
                 # Some of the long free-form text fields can contain newlines; convert
                 # these to spaces.
-                article_data["title"].gsub(/\n/, ' '), authors.gsub(/\n/, ' '),
-                affiliate.gsub(/\n/, ' '),
+                article_data["title"].gsub(/\n/, ' '),
+                build_delimited_csv_field(article_data["author_display"]),
+                build_delimited_csv_field(article_data["affiliate"], "; "),
                 ]
             AlmRequest.ALM_METRICS.keys.each {|metric| row.push(article_alm_data[metric])}
             row += [
-                article_data["cross_published_journal_name"][0], article_data["article_type"],
+                article_data["cross_published_journal_name"][0],
+                article_data["article_type"],
+                get_optional_field(article_data, "financial_disclosure").gsub(/\n/, ' '),
+                Report.build_subject_string(article_data["subject"]),
+                article_data["received_date"],
+                article_data["accepted_date"],
+                build_delimited_csv_field(article_data["editor_display"]),
+                "http://dx.doi.org/#{report_doi.doi}"
                 ]
             csv << row
           end
@@ -102,6 +109,39 @@ class Report < ActiveRecord::Base
         end
       end
     end
+  end
+  
+  
+  # Returns a string suitable for inclusion in the CSV report for subject areas
+  # of an article.  Only "leaf" or lowest-level categories are included.  The
+  # input is the list of subjects as returned by solr.
+  def self.build_subject_string(subject_list)
+    if subject_list.nil?
+      ""
+    else
+      
+      # We sort on the leaf categories, just like ambra does.
+      subject_list.collect{|subject| subject.split("/")[-1]}.sort.uniq.join(",")
+    end
+  end
+  
+  
+  # Joins fields together for inclusion in a single CSV field.
+  #
+  # Params:
+  #
+  #   fields: list of fields to concatenate
+  #   delimiter: delimiter used to join fields
+  def build_delimited_csv_field(fields, delimiter=", ")
+    result = fields.nil? ? "" : fields.join(delimiter)
+    result.gsub(/\n/, ' ')
+  end
+  
+  
+  # Returns the given field from a solr data structure for an article, or the
+  # empty string if the field does not exist.
+  def get_optional_field(article_data, field_name)
+    article_data[field_name].nil? ? "" : article_data[field_name]
   end
   
 end

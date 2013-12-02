@@ -19,8 +19,9 @@ class SolrRequest
   @@FILTER = "fq=doc_type:full&fq=!article_type_facet:#{URI::encode("\"Issue Image\"")}"
   
   # The fields we want solr to return for each article by default.
-  @@FL = "id,publication_date,title,cross_published_journal_name,author_display,article_type," \
-      "affiliate,subject,pmid"
+  @@FL = "id,pmid,publication_date,received_date,accepted_date,title," \
+      "cross_published_journal_name,author_display,editor_display,article_type,affiliate,subject," \
+      "financial_disclosure"
 
   @@FL_METRIC_DATA = "id,alm_scopusCiteCount,alm_mendeleyCount,counter_total_all," \
       "alm_pmc_usage_total_all"
@@ -294,9 +295,9 @@ class SolrRequest
   # version of what solr returns, instead of the direct value.  This method
   # takes care of all of those.
   def self.fix_data(doc)
-    if doc["publication_date"]
-      doc["publication_date"] = Date.strptime(doc["publication_date"], @@SOLR_TIMESTAMP_FORMAT)
-    end
+    SolrRequest.fix_date(doc, "publication_date")
+    SolrRequest.fix_date(doc, "received_date")
+    SolrRequest.fix_date(doc, "accepted_date")
     
     # For articles cross-published in PLOS Collections, we want to display the
     # original journal name throughout the app.
@@ -306,6 +307,15 @@ class SolrRequest
         new_index = collections_index == 0 ? 1 : 0
         doc["cross_published_journal_name"][0] = doc["cross_published_journal_name"][new_index]
       end
+    end
+    doc
+  end
+  
+  # Substitutes a formatted value for a date field of the given name
+  # in the solr data structure.
+  def self.fix_date(doc, date_field_name)
+    if doc[date_field_name]
+      doc[date_field_name] = Date.strptime(doc[date_field_name], @@SOLR_TIMESTAMP_FORMAT)
     end
     doc
   end
