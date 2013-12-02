@@ -1,1 +1,26 @@
-{"responseHeader":{"status":0,"QTime":21},"response":{"numFound":2,"start":0,"docs":[{"id":"10.1371/journal.pmed.0020124"},{"id":"10.1371/journal.pone.0064652"}]},"highlighting":{"10.1371/journal.pmed.0020124":{},"10.1371/journal.pone.0064652":{}}}
+{
+  "responseHeader": {
+    "status": 0,
+    "QTime": 21
+  },
+  "response": {
+    "numFound": 2,
+    "start": 0,
+    "docs": [
+      {
+        "id": "10.1371\/journal.pmed.0020124"
+      },
+      {
+        "id": "10.1371\/journal.pone.0064652"
+      }
+    ]
+  },
+  "highlighting": {
+    "10.1371\/journal.pmed.0020124": {
+      
+    },
+    "10.1371\/journal.pone.0064652": {
+      
+    }
+  }
+}
