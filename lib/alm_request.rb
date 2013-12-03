@@ -152,7 +152,6 @@ module AlmRequest
       results[:reddit] = sources_dict["reddit"]["total"].to_i
       results[:wordpress] = sources_dict["wordpress"]["total"].to_i
       results[:figshare] = sources_dict["figshare"]["total"].to_i
-      results[:relative_metric] = sources_dict["relativemetric"]["total"].to_i
       results[:f1000] = sources_dict["f1000"]["total"].to_i
 
       all_results[article["doi"]] = results
