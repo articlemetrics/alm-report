@@ -86,6 +86,9 @@ describe AlmRequest do
       data['10.1371/journal.pmed.0020124'][:twitter].should eq(640)
       data['10.1371/journal.pmed.0020124'][:wikipedia].should eq(9)
       data['10.1371/journal.pmed.0020124'][:discussed_data_present].should eq(true)
+      
+      data['10.1371/journal.pmed.0020124'][:reddit].should eq(37)
+      data['10.1371/journal.pmed.0020124'][:wordpress].should eq(0)
 
     end
 

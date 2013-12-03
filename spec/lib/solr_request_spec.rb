@@ -56,7 +56,11 @@ describe SolrRequest do
     ]
 
     q = dois.map { |doi| "id:\"#{doi}\"" }.join(" OR ")
-    url = "http://api.plos.org/search?q=#{URI::encode(q)}&fq=doc_type:full&fq=!article_type_facet:%22Issue%20Image%22&fl=id,publication_date,title,cross_published_journal_name,author_display,article_type,affiliate,subject,pmid&wt=json&facet=false&rows=#{dois.size}"
+    url = "http://api.plos.org/search?q=#{URI::encode(q)}&fq=doc_type:full" \
+        "&fq=!article_type_facet:%22Issue%20Image%22" \
+        "&fl=id,pmid,publication_date,received_date,accepted_date,title," \
+        "cross_published_journal_name,author_display,editor_display,article_type,affiliate," \
+        "subject,financial_disclosure&wt=json&facet=false&rows=#{dois.size}"
     body = File.read("#{fixture_path}solr_get_data_for_articles.json")
     stub_request(:get, url).to_return(:body => body, :status => 200)
 
@@ -111,7 +115,12 @@ describe SolrRequest do
 
   it "query for articles using simple search" do
 
-    url = "http://api.plos.org/search?q=affiliate:%22University%20of%20California%22%20AND%20author:Garmay%20AND%20everything:word%20AND%20subject:%22Gene%20regulation%22&fq=doc_type:full&fq=!article_type_facet:%22Issue%20Image%22&fl=id,publication_date,title,cross_published_journal_name,author_display,article_type,affiliate,subject,pmid&wt=json&facet=false&rows=25&hl=false"
+    url = "http://api.plos.org/search?q=affiliate:%22University%20of%20California%22%20AND%20" \
+        "author:Garmay%20AND%20everything:word%20AND%20subject:%22Gene%20regulation%22&" \
+        "fq=doc_type:full&fq=!article_type_facet:%22Issue%20Image%22&" \
+        "fl=id,pmid,publication_date,received_date,accepted_date,title," \
+        "cross_published_journal_name,author_display,editor_display,article_type,affiliate," \
+        "subject,financial_disclosure&wt=json&facet=false&rows=25&hl=false"
     body = File.read("#{fixture_path}simple_search_result.json")
     stub_request(:get, url).to_return(:body => body, :status => 200)
 
