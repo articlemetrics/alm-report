@@ -129,13 +129,21 @@ module AlmRequest
       results[:pmc_citations] = sources_dict["pubmed"]["total"].to_i
       results[:crossref_citations] = sources_dict["crossref"]["total"].to_i
       results[:scopus_citations] = sources_dict["scopus"]["total"].to_i
-      results[:cited_data_present] = (results[:pmc_citations] + results[:crossref_citations] + results[:scopus_citations]) > 0
+      results[:datacite] = sources_dict["datacite"]["total"].to_i
+      results[:pmc_europe] = sources_dict["pmceurope"]["total"].to_i
+      results[:pmc_europe_data] = sources_dict["pmceuropedata"]["total"].to_i
+      results[:web_of_science] = sources_dict["wos"]["total"].to_i
+      results[:cited_data_present] = (results[:pmc_citations] + results[:crossref_citations] +
+          results[:scopus_citations] + results[:datacite] + results[:pmc_europe] +
+          results[:pmc_europe_data] + results[:web_of_science]) > 0
 
       results[:citeulike] = sources_dict["citeulike"]["total"].to_i
       # removing connotea
       # results[:connotea] = sources_dict["connotea"]["total"].to_i
       results[:mendeley] = sources_dict["mendeley"]["total"].to_i
-      results[:saved_data_present] = (results[:citeulike] + results[:mendeley]) > 0
+      results[:figshare] = sources_dict["figshare"]["total"].to_i
+      results[:saved_data_present] = (results[:citeulike] + results[:mendeley] +
+          results[:figshare]) > 0
 
       results[:nature] = sources_dict["nature"]["total"].to_i
       results[:research_blogging] = sources_dict["researchblogging"]["total"].to_i
@@ -143,16 +151,14 @@ module AlmRequest
       results[:facebook] = sources_dict["facebook"]["total"].to_i
       results[:twitter] = sources_dict["twitter"]["total"].to_i
       results[:wikipedia] = sources_dict["wikipedia"]["total"].to_i
-      results[:discussed_data_present] = (results[:nature] + results[:research_blogging] + results[:wikipedia] + results[:scienceseeker] + results[:facebook] + results[:twitter]) > 0
-      
-      results[:datacite] = sources_dict["datacite"]["total"].to_i
-      results[:pmc_europe] = sources_dict["pmceurope"]["total"].to_i
-      results[:pmc_europe_data] = sources_dict["pmceuropedata"]["total"].to_i
-      results[:web_of_science] = sources_dict["wos"]["total"].to_i
       results[:reddit] = sources_dict["reddit"]["total"].to_i
       results[:wordpress] = sources_dict["wordpress"]["total"].to_i
-      results[:figshare] = sources_dict["figshare"]["total"].to_i
+      results[:discussed_data_present] = (results[:nature] + results[:research_blogging] +
+          results[:scienceseeker] + results[:facebook] + + results[:twitter] + results[:wikipedia] +
+          results[:reddit] + results[:wordpress]) > 0
+      
       results[:f1000] = sources_dict["f1000"]["total"].to_i
+      results[:recommended_data_present] = results[:f1000] > 0
 
       all_results[article["doi"]] = results
 
