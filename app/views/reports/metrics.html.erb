@@ -45,36 +45,36 @@
 
                 <table class="metrics-table <%= "metric-without-data" if !doi.alm[:saved_data_present] %>">
                   <caption>Saved</caption>
-                  <%= render "alm_stat", :data => doi.alm, :stat => :citeulike, :href => "http://www.citeulike.org/" %>
-                  <%= render "alm_stat", :data => doi.alm, :stat => :mendeley, :href => "http://www.mendeley.com/" %>
-                  <%= render "alm_stat", :data => doi.alm, :stat => :figshare, :href => "http://figshare.com/" %>
+                  <%= render "alm_stat", :data => doi.alm, :stat => :citeulike %>
+                  <%= render "alm_stat", :data => doi.alm, :stat => :mendeley %>
+                  <%= render "alm_stat", :data => doi.alm, :stat => :figshare %>
                 </table>
             </div>
             <div class="metric-row-content">
                 <table class="metrics-table <%= "metric-without-data" if !doi.alm[:discussed_data_present] %>">
                   <caption>Discussed</caption>
-                  <%= render "alm_stat", :data => doi.alm, :stat => :nature, :href => "http://blogs.nature.com/" %>
-                  <%= render "alm_stat", :data => doi.alm, :stat => :research_blogging, :href => "http://researchblogging.com/" %>
-                  <%= render "alm_stat", :data => doi.alm, :stat => :scienceseeker, :href => "http://scienceseeker.org/" %>
-                  <%= render "alm_stat", :data => doi.alm, :stat => :facebook, :href => "http://www.facebook.com/" %>
-                  <%= render "alm_stat", :data => doi.alm, :stat => :twitter, :href => "https://twitter.com/" %>
-                  <%= render "alm_stat", :data => doi.alm, :stat => :wikipedia, :href => "http://www.wikipedia.org/" %>
-                  <%= render "alm_stat", :data => doi.alm, :stat => :reddit, :href => "http://www.reddit.com/" %>
-                  <%= render "alm_stat", :data => doi.alm, :stat => :wordpress, :href => "http://wordpress.com/" %>
-                  <%= render "alm_stat", :data => doi.alm, :stat => :f1000, :href => "http://f1000.com/" %>
+                  <%= render "alm_stat", :data => doi.alm, :stat => :nature %>
+                  <%= render "alm_stat", :data => doi.alm, :stat => :research_blogging %>
+                  <%= render "alm_stat", :data => doi.alm, :stat => :scienceseeker %>
+                  <%= render "alm_stat", :data => doi.alm, :stat => :facebook %>
+                  <%= render "alm_stat", :data => doi.alm, :stat => :twitter %>
+                  <%= render "alm_stat", :data => doi.alm, :stat => :wikipedia %>
+                  <%= render "alm_stat", :data => doi.alm, :stat => :reddit %>
+                  <%= render "alm_stat", :data => doi.alm, :stat => :wordpress %>
+                  <%= render "alm_stat", :data => doi.alm, :stat => :f1000 %>
                   <%# TODO: comments.  get from ambra %>
                   <%# TODO: trackbacks.  get from ambra DB %>
                 </table>
 
                 <table class="metrics-table <%= "metric-without-data" if !doi.alm[:cited_data_present] %>">
                   <caption>Cited</caption>
-                  <%= render "alm_stat", :data => doi.alm, :stat => :pmc_citations, :href => "http://www.ncbi.nlm.nih.gov/pmc/citmatch/" %>
-                  <%= render "alm_stat", :data => doi.alm, :stat => :crossref_citations, :href => "http://www.crossref.org/citedby/index.html" %>
-                  <%= render "alm_stat", :data => doi.alm, :stat => :scopus_citations, :href => "http://www.scopus.com/" %>
-                  <%= render "alm_stat", :data => doi.alm, :stat => :datacite, :href => "http://www.datacite.org/" %>
-                  <%= render "alm_stat", :data => doi.alm, :stat => :pmc_europe, :href => "http://europepmc.org/" %>
-                  <%= render "alm_stat", :data => doi.alm, :stat => :pmc_europe_data, :href => "http://europepmc.org/" %>
-                  <%= render "alm_stat", :data => doi.alm, :stat => :web_of_science, :href => "http://thomsonreuters.com/web-of-science/" %>
+                  <%= render "alm_stat", :data => doi.alm, :stat => :pmc_citations %>
+                  <%= render "alm_stat", :data => doi.alm, :stat => :crossref_citations %>
+                  <%= render "alm_stat", :data => doi.alm, :stat => :scopus_citations %>
+                  <%= render "alm_stat", :data => doi.alm, :stat => :datacite %>
+                  <%= render "alm_stat", :data => doi.alm, :stat => :pmc_europe %>
+                  <%= render "alm_stat", :data => doi.alm, :stat => :pmc_europe_data %>
+                  <%= render "alm_stat", :data => doi.alm, :stat => :web_of_science %>
                 </table>
             </div>
           </div>
