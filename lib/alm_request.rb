@@ -5,6 +5,42 @@ require "json"
 # Interface to the PLOS ALM API.
 module AlmRequest
   
+  @@ALM_METRICS = ActiveSupport::OrderedHash.new
+  @@ALM_METRICS[:plos_total] = "PLOS Total"
+  @@ALM_METRICS[:plos_html] = "PLOS views"
+  @@ALM_METRICS[:plos_pdf] = "PLOS PDF downloads"
+  @@ALM_METRICS[:plos_xml] = "PLOS XML downloads"
+  @@ALM_METRICS[:pmc_total] = "PMC Total"
+  @@ALM_METRICS[:pmc_views] = "PMC views"
+  @@ALM_METRICS[:pmc_pdf] = "PMC PDF Downloads"
+  @@ALM_METRICS[:crossref_citations] = "CrossRef"
+  @@ALM_METRICS[:scopus_citations] = "Scopus"
+  @@ALM_METRICS[:pmc_citations] = "PubMed Central"
+  @@ALM_METRICS[:citeulike] = "CiteULike"
+  @@ALM_METRICS[:mendeley] = "Mendeley"
+  @@ALM_METRICS[:twitter] = "Twitter"
+  @@ALM_METRICS[:facebook] = "Facebook"
+  @@ALM_METRICS[:wikipedia] = "Wikipedia"
+  @@ALM_METRICS[:research_blogging] = "Research Blogging"
+  @@ALM_METRICS[:nature] = "Nature Blogs"
+  @@ALM_METRICS[:scienceseeker] = "Science Seeker"
+  @@ALM_METRICS[:datacite] = "DataCite"
+  @@ALM_METRICS[:pmc_europe] = "PMC Europe Citations"
+  @@ALM_METRICS[:pmc_europe_data] = "PMC Europe Database Citations"
+  @@ALM_METRICS[:web_of_science] = "Web of Science"
+  @@ALM_METRICS[:reddit] = "Reddit"
+  @@ALM_METRICS[:wordpress] = "Wordpress.com"
+  @@ALM_METRICS[:figshare] = "Figshare"
+  @@ALM_METRICS[:f1000] = "F1000Prime"
+      
+  # Returns an ordered dict of all ALM metrics used in the app.  The key is
+  # the key returned by get_data_for_articles, and the value is suitable for
+  # display in the UI.  The order is used in some parts of the app (such as
+  # the CSV download field order).
+  def self.ALM_METRICS
+    @@ALM_METRICS
+  end
+      
   
   # Retrieves and returns all ALM data for the given DOIs.  Multiple requests to ALM
   # may be made if the number of DOIs is large.  The returned list is the raw JSON
@@ -93,13 +129,21 @@ module AlmRequest
       results[:pmc_citations] = sources_dict["pubmed"]["total"].to_i
       results[:crossref_citations] = sources_dict["crossref"]["total"].to_i
       results[:scopus_citations] = sources_dict["scopus"]["total"].to_i
-      results[:cited_data_present] = (results[:pmc_citations] + results[:crossref_citations] + results[:scopus_citations]) > 0
+      results[:datacite] = sources_dict["datacite"]["total"].to_i
+      results[:pmc_europe] = sources_dict["pmceurope"]["total"].to_i
+      results[:pmc_europe_data] = sources_dict["pmceuropedata"]["total"].to_i
+      results[:web_of_science] = sources_dict["wos"]["total"].to_i
+      results[:cited_data_present] = (results[:pmc_citations] + results[:crossref_citations] +
+          results[:scopus_citations] + results[:datacite] + results[:pmc_europe] +
+          results[:pmc_europe_data] + results[:web_of_science]) > 0
 
       results[:citeulike] = sources_dict["citeulike"]["total"].to_i
       # removing connotea
       # results[:connotea] = sources_dict["connotea"]["total"].to_i
       results[:mendeley] = sources_dict["mendeley"]["total"].to_i
-      results[:saved_data_present] = (results[:citeulike] + results[:mendeley]) > 0
+      results[:figshare] = sources_dict["figshare"]["total"].to_i
+      results[:saved_data_present] = (results[:citeulike] + results[:mendeley] +
+          results[:figshare]) > 0
 
       results[:nature] = sources_dict["nature"]["total"].to_i
       results[:research_blogging] = sources_dict["researchblogging"]["total"].to_i
@@ -107,7 +151,14 @@ module AlmRequest
       results[:facebook] = sources_dict["facebook"]["total"].to_i
       results[:twitter] = sources_dict["twitter"]["total"].to_i
       results[:wikipedia] = sources_dict["wikipedia"]["total"].to_i
-      results[:discussed_data_present] = (results[:nature] + results[:research_blogging] + results[:wikipedia] + results[:scienceseeker] + results[:facebook] + results[:twitter]) > 0        
+      results[:reddit] = sources_dict["reddit"]["total"].to_i
+      results[:wordpress] = sources_dict["wordpress"]["total"].to_i
+      results[:discussed_data_present] = (results[:nature] + results[:research_blogging] +
+          results[:scienceseeker] + results[:facebook] + + results[:twitter] + results[:wikipedia] +
+          results[:reddit] + results[:wordpress]) > 0
+      
+      results[:f1000] = sources_dict["f1000"]["total"].to_i
+      results[:recommended_data_present] = results[:f1000] > 0
 
       all_results[article["doi"]] = results
 

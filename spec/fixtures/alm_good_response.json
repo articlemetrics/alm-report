@@ -316,6 +316,118 @@
           "total": 0
         },
         "update_date": "2013-05-24T10:13:37Z"
+      },
+      {
+        "name": "datacite",
+        "display_name": "DataCite",
+        "events_url": null,
+        "metrics": {
+          "pdf": null,
+          "html": null,
+          "shares": null,
+          "groups": null,
+          "comments": null,
+          "likes": null,
+          "citations": 0,
+          "total": 0
+        },
+        "update_date": "2013-05-23T09:59:24Z"
+      },
+      {
+        "name": "pmceurope",
+        "display_name": "PMC Europe Citations",
+        "events_url": null,
+        "metrics": {
+          "pdf": null,
+          "html": null,
+          "shares": null,
+          "groups": null,
+          "comments": null,
+          "likes": null,
+          "citations": 0,
+          "total": 0
+        },
+        "update_date": "2013-12-01T05:43:02Z"
+      },
+      {
+        "name": "pmceuropedata",
+        "display_name": "PMC Europe Database Citations",
+        "events_url": null,
+        "metrics": {
+          "pdf": null,
+          "html": null,
+          "shares": null,
+          "groups": null,
+          "comments": null,
+          "likes": null,
+          "citations": 0,
+          "total": 0
+        },
+        "update_date": "2013-12-02T03:49:47Z"
+      },
+      {
+        "name": "reddit",
+        "display_name": "Reddit",
+        "events_url": null,
+        "metrics": {
+          "pdf": null,
+          "html": null,
+          "shares": null,
+          "groups": null,
+          "comments": null,
+          "likes": null,
+          "citations": 0,
+          "total": 0
+        },
+        "update_date": "2013-12-01T19:36:08Z"
+      },
+      {
+        "name": "wordpress",
+        "display_name": "Wordpress.com",
+        "events_url": null,
+        "metrics": {
+          "pdf": null,
+          "html": null,
+          "shares": null,
+          "groups": null,
+          "comments": null,
+          "likes": null,
+          "citations": 0,
+          "total": 0
+        },
+        "update_date": "2013-11-07T19:02:59Z"
+      },
+      {
+        "name": "figshare",
+        "display_name": "Figshare",
+        "events_url": null,
+        "metrics": {
+          "pdf": null,
+          "html": null,
+          "shares": null,
+          "groups": null,
+          "comments": null,
+          "likes": null,
+          "citations": 0,
+          "total": 0
+        },
+        "update_date": "2013-11-28T08:54:41Z"
+      },
+      {
+        "name": "f1000",
+        "display_name": "F1000Prime",
+        "events_url": null,
+        "metrics": {
+          "pdf": null,
+          "html": null,
+          "shares": null,
+          "groups": null,
+          "comments": null,
+          "likes": null,
+          "citations": 0,
+          "total": 0
+        },
+        "update_date": "2013-11-28T23:54:34Z"
       }
     ]
   },
@@ -636,6 +748,118 @@
           "total": 2285295
         },
         "update_date": "2013-05-23T09:59:24Z"
+      },
+      {
+        "name": "datacite",
+        "display_name": "DataCite",
+        "events_url": null,
+        "metrics": {
+          "pdf": null,
+          "html": null,
+          "shares": null,
+          "groups": null,
+          "comments": null,
+          "likes": null,
+          "citations": 0,
+          "total": 0
+        },
+        "update_date": "2013-05-23T09:59:24Z"
+      },
+      {
+        "name": "pmceurope",
+        "display_name": "PMC Europe Citations",
+        "events_url": null,
+        "metrics": {
+          "pdf": null,
+          "html": null,
+          "shares": null,
+          "groups": null,
+          "comments": null,
+          "likes": null,
+          "citations": 0,
+          "total": 0
+        },
+        "update_date": "2013-12-01T05:43:02Z"
+      },
+      {
+        "name": "pmceuropedata",
+        "display_name": "PMC Europe Database Citations",
+        "events_url": null,
+        "metrics": {
+          "pdf": null,
+          "html": null,
+          "shares": null,
+          "groups": null,
+          "comments": null,
+          "likes": null,
+          "citations": 0,
+          "total": 0
+        },
+        "update_date": "2013-12-02T03:49:47Z"
+      },
+      {
+        "name": "reddit",
+        "display_name": "Reddit",
+        "events_url": null,
+        "metrics": {
+          "pdf": null,
+          "html": null,
+          "shares": null,
+          "groups": null,
+          "comments": null,
+          "likes": null,
+          "citations": 37,
+          "total": 37
+        },
+        "update_date": "2013-12-01T19:36:08Z"
+      },
+      {
+        "name": "wordpress",
+        "display_name": "Wordpress.com",
+        "events_url": null,
+        "metrics": {
+          "pdf": null,
+          "html": null,
+          "shares": null,
+          "groups": null,
+          "comments": null,
+          "likes": null,
+          "citations": 0,
+          "total": 0
+        },
+        "update_date": "2013-11-07T19:02:59Z"
+      },
+      {
+        "name": "figshare",
+        "display_name": "Figshare",
+        "events_url": null,
+        "metrics": {
+          "pdf": null,
+          "html": null,
+          "shares": null,
+          "groups": null,
+          "comments": null,
+          "likes": null,
+          "citations": 0,
+          "total": 0
+        },
+        "update_date": "2013-11-28T08:54:41Z"
+      },
+      {
+        "name": "f1000",
+        "display_name": "F1000Prime",
+        "events_url": null,
+        "metrics": {
+          "pdf": null,
+          "html": null,
+          "shares": null,
+          "groups": null,
+          "comments": null,
+          "likes": null,
+          "citations": 0,
+          "total": 0
+        },
+        "update_date": "2013-11-28T23:54:34Z"
       }
     ]
   }
