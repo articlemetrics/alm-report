@@ -237,6 +237,24 @@ describe AlmRequest do
     data['10.1371/journal.pmed.0020124'][:mendeley].has_key?(:events).should eq(true)
 
   end
+  
+  # Test for an ALM source that should exist, but is not present.  I think this
+  # is a bug in ALM (that we have to work around for now).
+  it "source missing" do
+    doi = "10.1371/journal.pntd.0002063"
+    report = Report.new
+    report.save
+    report.add_all_dois([doi])
+    
+    url = AlmRequest.get_alm_url({:ids => doi})
+    body = File.read("#{fixture_path}alm_pntd.0002063.json")
+    stub_request(:get, "#{url}").to_return(:body => body, :status => 200)
+    data = AlmRequest.get_data_for_articles(report.report_dois)
+    
+    data.size.should eq(1)
+    data[doi][:plos_html].should eq(902)
+    data[doi][:web_of_science].should eq(0)
+  end
 
   context "get ALM data for visualization" do
     it "use Solr to get the data" do

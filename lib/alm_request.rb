@@ -126,38 +126,36 @@ module AlmRequest
       results[:total_usage] = results[:plos_html] + results[:plos_pdf] + results[:plos_xml] + results[:pmc_views] + results[:pmc_pdf]
       results[:viewed_data_present] = (results[:total_usage] > 0)
 
-      results[:pmc_citations] = sources_dict["pubmed"]["total"].to_i
-      results[:crossref_citations] = sources_dict["crossref"]["total"].to_i
-      results[:scopus_citations] = sources_dict["scopus"]["total"].to_i
-      results[:datacite] = sources_dict["datacite"]["total"].to_i
-      results[:pmc_europe] = sources_dict["pmceurope"]["total"].to_i
-      results[:pmc_europe_data] = sources_dict["pmceuropedata"]["total"].to_i
-      results[:web_of_science] = sources_dict["wos"]["total"].to_i
+      results[:pmc_citations] = get_source_total(sources_dict, "pubmed")
+      results[:crossref_citations] = get_source_total(sources_dict, "crossref")
+      results[:scopus_citations] = get_source_total(sources_dict, "scopus")
+      results[:datacite] = get_source_total(sources_dict, "datacite")
+      results[:pmc_europe] = get_source_total(sources_dict, "pmceurope")
+      results[:pmc_europe_data] = get_source_total(sources_dict, "pmceuropedata")
+      results[:web_of_science] = get_source_total(sources_dict, "wos")
       results[:cited_data_present] = (results[:pmc_citations] + results[:crossref_citations] +
           results[:scopus_citations] + results[:datacite] + results[:pmc_europe] +
           results[:pmc_europe_data] + results[:web_of_science]) > 0
 
-      results[:citeulike] = sources_dict["citeulike"]["total"].to_i
-      # removing connotea
-      # results[:connotea] = sources_dict["connotea"]["total"].to_i
-      results[:mendeley] = sources_dict["mendeley"]["total"].to_i
-      results[:figshare] = sources_dict["figshare"]["total"].to_i
+      results[:citeulike] = get_source_total(sources_dict, "citeulike")
+      results[:mendeley] = get_source_total(sources_dict, "mendeley")
+      results[:figshare] = get_source_total(sources_dict, "figshare")
       results[:saved_data_present] = (results[:citeulike] + results[:mendeley] +
           results[:figshare]) > 0
 
-      results[:nature] = sources_dict["nature"]["total"].to_i
-      results[:research_blogging] = sources_dict["researchblogging"]["total"].to_i
-      results[:scienceseeker] = sources_dict["scienceseeker"]["total"].to_i
-      results[:facebook] = sources_dict["facebook"]["total"].to_i
-      results[:twitter] = sources_dict["twitter"]["total"].to_i
-      results[:wikipedia] = sources_dict["wikipedia"]["total"].to_i
-      results[:reddit] = sources_dict["reddit"]["total"].to_i
-      results[:wordpress] = sources_dict["wordpress"]["total"].to_i
+      results[:nature] = get_source_total(sources_dict, "nature")
+      results[:research_blogging] = get_source_total(sources_dict, "researchblogging")
+      results[:scienceseeker] = get_source_total(sources_dict, "scienceseeker")
+      results[:facebook] = get_source_total(sources_dict, "facebook")
+      results[:twitter] = get_source_total(sources_dict, "twitter")
+      results[:wikipedia] = get_source_total(sources_dict, "wikipedia")
+      results[:reddit] = get_source_total(sources_dict, "reddit")
+      results[:wordpress] = get_source_total(sources_dict, "wordpress")
       results[:discussed_data_present] = (results[:nature] + results[:research_blogging] +
           results[:scienceseeker] + results[:facebook] + + results[:twitter] + results[:wikipedia] +
           results[:reddit] + results[:wordpress]) > 0
       
-      results[:f1000] = sources_dict["f1000"]["total"].to_i
+      results[:f1000] = get_source_total(sources_dict, "f1000")
       results[:recommended_data_present] = results[:f1000] > 0
 
       all_results[article["doi"]] = results
@@ -166,6 +164,17 @@ module AlmRequest
       Rails.cache.write("#{article["doi"]}.alm", results, :expires_in => 1.day)
     end
     all_results
+  end
+  
+  # Returns the total for the given ALM source, or zero if the source (or its total
+  # attribute) is not present.
+  def self.get_source_total(sources_dict, source_name)
+    source = sources_dict[source_name]
+    if source.nil?
+      0
+    else
+      source["total"].nil? ? 0 : source["total"].to_i
+    end
   end
   
   # Retrieves article data from ALM suitable for display in a brief list, such

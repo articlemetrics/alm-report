@@ -1,0 +1,482 @@
+[
+  {
+    "doi": "10.1371\/journal.pntd.0002063",
+    "title": "Standardizing Visual Control Devices for Tsetse Flies: East African Species <italic>Glossina swynnertoni<\/italic>",
+    "url": "http:\/\/www.plosntds.org\/article\/info%3Adoi%2F10.1371%2Fjournal.pntd.0002063",
+    "mendeley": "8631aa8a-2c5b-3d5c-965e-777c4b361327",
+    "pmid": "23469299",
+    "pmcid": "3584985",
+    "publication_date": "2013-02-28T08:00:00Z",
+    "update_date": "2014-01-02T13:29:15Z",
+    "views": 1226,
+    "shares": 2,
+    "bookmarks": 7,
+    "citations": 0,
+    "sources": [
+      {
+        "name": "bloglines",
+        "display_name": "Bloglines",
+        "events_url": null,
+        "metrics": {
+          "pdf": null,
+          "html": null,
+          "shares": null,
+          "groups": null,
+          "comments": null,
+          "likes": null,
+          "citations": 0,
+          "total": 0
+        },
+        "update_date": "2013-03-01T11:13:08Z"
+      },
+      {
+        "name": "citeulike",
+        "display_name": "CiteULike",
+        "events_url": null,
+        "metrics": {
+          "pdf": null,
+          "html": null,
+          "shares": 0,
+          "groups": null,
+          "comments": null,
+          "likes": null,
+          "citations": null,
+          "total": 0
+        },
+        "update_date": "2013-12-31T10:52:07Z"
+      },
+      {
+        "name": "connotea",
+        "display_name": "Connotea",
+        "events_url": null,
+        "metrics": {
+          "pdf": null,
+          "html": null,
+          "shares": null,
+          "groups": null,
+          "comments": null,
+          "likes": null,
+          "citations": 0,
+          "total": 0
+        },
+        "update_date": "2013-03-01T11:13:08Z"
+      },
+      {
+        "name": "crossref",
+        "display_name": "CrossRef",
+        "events_url": null,
+        "metrics": {
+          "pdf": null,
+          "html": null,
+          "shares": null,
+          "groups": null,
+          "comments": null,
+          "likes": null,
+          "citations": 0,
+          "total": 0
+        },
+        "update_date": "2013-12-26T08:12:43Z"
+      },
+      {
+        "name": "nature",
+        "display_name": "Nature",
+        "events_url": null,
+        "metrics": {
+          "pdf": null,
+          "html": null,
+          "shares": null,
+          "groups": null,
+          "comments": null,
+          "likes": null,
+          "citations": 0,
+          "total": 0
+        },
+        "update_date": "2013-12-11T16:03:33Z"
+      },
+      {
+        "name": "postgenomic",
+        "display_name": "Postgenomic",
+        "events_url": null,
+        "metrics": {
+          "pdf": null,
+          "html": null,
+          "shares": null,
+          "groups": null,
+          "comments": null,
+          "likes": null,
+          "citations": 0,
+          "total": 0
+        },
+        "update_date": "2013-03-01T11:13:08Z"
+      },
+      {
+        "name": "pubmed",
+        "display_name": "PubMed Central",
+        "events_url": null,
+        "metrics": {
+          "pdf": null,
+          "html": null,
+          "shares": null,
+          "groups": null,
+          "comments": null,
+          "likes": null,
+          "citations": 0,
+          "total": 0
+        },
+        "update_date": "2013-12-14T22:06:08Z"
+      },
+      {
+        "name": "scopus",
+        "display_name": "Scopus",
+        "events_url": null,
+        "metrics": {
+          "pdf": null,
+          "html": null,
+          "shares": null,
+          "groups": null,
+          "comments": null,
+          "likes": null,
+          "citations": 0,
+          "total": 0
+        },
+        "update_date": "2014-01-02T08:27:16Z"
+      },
+      {
+        "name": "counter",
+        "display_name": "Counter",
+        "events_url": "http:\/\/www.plosreports.org\/services\/rest?method=usage.stats&doi=10.1371%2Fjournal.pntd.0002063",
+        "metrics": {
+          "pdf": 121,
+          "html": 902,
+          "shares": null,
+          "groups": null,
+          "comments": null,
+          "likes": null,
+          "citations": null,
+          "total": 1077
+        },
+        "update_date": "2014-01-02T13:29:15Z"
+      },
+      {
+        "name": "researchblogging",
+        "display_name": "Research Blogging",
+        "events_url": null,
+        "metrics": {
+          "pdf": null,
+          "html": null,
+          "shares": null,
+          "groups": null,
+          "comments": null,
+          "likes": null,
+          "citations": 0,
+          "total": 0
+        },
+        "update_date": "2013-12-03T04:52:47Z"
+      },
+      {
+        "name": "biod",
+        "display_name": "Biod",
+        "events_url": null,
+        "metrics": {
+          "pdf": null,
+          "html": null,
+          "shares": null,
+          "groups": null,
+          "comments": null,
+          "likes": null,
+          "citations": null,
+          "total": 0
+        },
+        "update_date": "2013-08-07T15:08:38Z"
+      },
+      {
+        "name": "pmc",
+        "display_name": "PubMed Central Usage Stats",
+        "events_url": null,
+        "metrics": {
+          "pdf": 39,
+          "html": 110,
+          "shares": null,
+          "groups": null,
+          "comments": null,
+          "likes": null,
+          "citations": null,
+          "total": 149
+        },
+        "update_date": "2013-12-13T06:06:31Z"
+      },
+      {
+        "name": "facebook",
+        "display_name": "Facebook",
+        "events_url": null,
+        "metrics": {
+          "pdf": null,
+          "html": null,
+          "shares": 2,
+          "groups": null,
+          "comments": 0,
+          "likes": 0,
+          "citations": null,
+          "total": 2
+        },
+        "update_date": "2013-11-20T15:57:21Z"
+      },
+      {
+        "name": "mendeley",
+        "display_name": "Mendeley",
+        "events_url": "http:\/\/www.mendeley.com\/research\/standardizing-visual-control-devices-tsetse-flies-east-african-species-glossina-swynnertoni\/",
+        "metrics": {
+          "pdf": null,
+          "html": null,
+          "shares": 7,
+          "groups": 0,
+          "comments": null,
+          "likes": null,
+          "citations": null,
+          "total": 7
+        },
+        "update_date": "2013-12-30T19:10:06Z"
+      },
+      {
+        "name": "twitter",
+        "display_name": "Twitter",
+        "events_url": null,
+        "metrics": {
+          "pdf": null,
+          "html": null,
+          "shares": null,
+          "groups": null,
+          "comments": 0,
+          "likes": null,
+          "citations": null,
+          "total": 0
+        },
+        "update_date": "2013-12-30T03:37:45Z"
+      },
+      {
+        "name": "wikipedia",
+        "display_name": "Wikipedia",
+        "events_url": null,
+        "metrics": {
+          "pdf": null,
+          "html": null,
+          "shares": null,
+          "groups": null,
+          "comments": null,
+          "likes": null,
+          "citations": 0,
+          "total": 0
+        },
+        "update_date": "2013-12-30T21:03:23Z"
+      },
+      {
+        "name": "scienceseeker",
+        "display_name": "ScienceSeeker",
+        "events_url": null,
+        "metrics": {
+          "pdf": null,
+          "html": null,
+          "shares": null,
+          "groups": null,
+          "comments": null,
+          "likes": null,
+          "citations": 0,
+          "total": 0
+        },
+        "update_date": "2014-01-01T17:41:39Z"
+      },
+      {
+        "name": "relativemetric",
+        "display_name": "Relative Metric",
+        "events_url": null,
+        "metrics": {
+          "pdf": null,
+          "html": null,
+          "shares": null,
+          "groups": null,
+          "comments": null,
+          "likes": null,
+          "citations": null,
+          "total": 4331
+        },
+        "update_date": "2013-12-03T05:50:10Z"
+      },
+      {
+        "name": "f1000",
+        "display_name": "F1000Prime",
+        "events_url": null,
+        "metrics": {
+          "pdf": null,
+          "html": null,
+          "shares": null,
+          "groups": null,
+          "comments": null,
+          "likes": null,
+          "citations": 0,
+          "total": 0
+        },
+        "update_date": "2014-01-01T15:48:54Z"
+      },
+      {
+        "name": "figshare",
+        "display_name": "Figshare",
+        "events_url": null,
+        "metrics": {
+          "pdf": null,
+          "html": null,
+          "shares": null,
+          "groups": null,
+          "comments": null,
+          "likes": null,
+          "citations": 0,
+          "total": 0
+        },
+        "update_date": "2014-01-01T15:21:06Z"
+      },
+      {
+        "name": "pmceurope",
+        "display_name": "PMC Europe Citations",
+        "events_url": null,
+        "metrics": {
+          "pdf": null,
+          "html": null,
+          "shares": null,
+          "groups": null,
+          "comments": null,
+          "likes": null,
+          "citations": 0,
+          "total": 0
+        },
+        "update_date": "2013-12-26T16:31:10Z"
+      },
+      {
+        "name": "pmceuropedata",
+        "display_name": "PMC Europe Database Citations",
+        "events_url": null,
+        "metrics": {
+          "pdf": null,
+          "html": null,
+          "shares": null,
+          "groups": null,
+          "comments": null,
+          "likes": null,
+          "citations": 0,
+          "total": 0
+        },
+        "update_date": "2013-12-26T10:32:56Z"
+      },
+      {
+        "name": "openedition",
+        "display_name": "OpenEdition",
+        "events_url": null,
+        "metrics": {
+          "pdf": null,
+          "html": null,
+          "shares": null,
+          "groups": null,
+          "comments": null,
+          "likes": null,
+          "citations": 0,
+          "total": 0
+        },
+        "update_date": "2013-10-04T21:10:24Z"
+      },
+      {
+        "name": "wordpress",
+        "display_name": "Wordpress.com",
+        "events_url": null,
+        "metrics": {
+          "pdf": null,
+          "html": null,
+          "shares": null,
+          "groups": null,
+          "comments": null,
+          "likes": null,
+          "citations": 0,
+          "total": 0
+        },
+        "update_date": "2013-12-22T16:20:50Z"
+      },
+      {
+        "name": "reddit",
+        "display_name": "Reddit",
+        "events_url": null,
+        "metrics": {
+          "pdf": null,
+          "html": null,
+          "shares": null,
+          "groups": null,
+          "comments": null,
+          "likes": null,
+          "citations": 0,
+          "total": 0
+        },
+        "update_date": "2013-12-28T00:08:15Z"
+      },
+      {
+        "name": "datacite",
+        "display_name": "DataCite",
+        "events_url": null,
+        "metrics": {
+          "pdf": null,
+          "html": null,
+          "shares": null,
+          "groups": null,
+          "comments": null,
+          "likes": null,
+          "citations": 0,
+          "total": 0
+        },
+        "update_date": "2013-12-27T09:07:55Z"
+      },
+      {
+        "name": "copernicus",
+        "display_name": "Copernicus",
+        "events_url": null,
+        "metrics": {
+          "pdf": null,
+          "html": null,
+          "shares": null,
+          "groups": null,
+          "comments": null,
+          "likes": null,
+          "citations": null,
+          "total": 0
+        },
+        "update_date": "2013-11-12T16:46:02Z"
+      },
+      {
+        "name": "articlecoverage",
+        "display_name": "Article Coverage",
+        "events_url": null,
+        "metrics": {
+          "pdf": null,
+          "html": null,
+          "shares": null,
+          "groups": null,
+          "comments": null,
+          "likes": null,
+          "citations": 0,
+          "total": 0
+        },
+        "update_date": "2013-12-31T09:05:43Z"
+      },
+      {
+        "name": "articlecoveragecurated",
+        "display_name": "Article Coverage Curated",
+        "events_url": null,
+        "metrics": {
+          "pdf": null,
+          "html": null,
+          "shares": null,
+          "groups": null,
+          "comments": null,
+          "likes": null,
+          "citations": 0,
+          "total": 0
+        },
+        "update_date": "2014-01-02T11:34:34Z"
+      }
+    ]
+  }
+]
