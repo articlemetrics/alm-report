@@ -67,7 +67,7 @@ SITE
 GIT
   remote: git@github.com:PLOS/alm-report-cookbook.git
   ref: master
-  sha: bcbc2d0241f4d19e9d336802701979ed11e95226
+  sha: c44d077b1331d1c96981e20c1f79662742dae013
   specs:
     alm-report (0.0.1)
       database (>= 0.0.0)
