@@ -2,10 +2,10 @@
 lock '3.1.0'
 
 set :application, 'alm-report'
-set :repo_url, 'https://github.com/PLOS/alm-report.git'
+set :repo_url, 'git@github.com:PLOS/alm-report.git'
 
 # Default branch is :master
-set :branch, 'master'
+set :branch, 'develop'
 
 # Default deploy_to directory is /var/www/my_app
 set :deploy_to, '/var/www/alm-report'
