@@ -1,11 +1,10 @@
 source 'https://rubygems.org'
 
+gem "puma"
+gem "minitest", "~> 4.4.0"
 gem "rails", "3.2.12"
-
 gem "mysql2", "~> 0.3.11"
-
 gem "dalli", "~> 2.6.2"
-
 gem "countries", "~> 0.9.2"
 
 # Gems used only for assets and not required
@@ -24,6 +23,9 @@ group :test do
 end
 
 group :test, :development do
+  gem 'capistrano3-puma'
+  gem "capistrano"
+  gem "capistrano-rails"
   gem "rspec-rails", "~> 2.13.0"
 end
 
