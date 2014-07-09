@@ -70,3 +70,6 @@ test:
 
 production:
   <<: *defaults
+
+stage:
+  <<: *defaults
