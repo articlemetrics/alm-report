@@ -2,7 +2,7 @@ lock '3.2.1'
 
 set :application, 'alm-report'
 set :repo_url, 'git@github.com:PLOS/alm-report.git'
-set :branch, 'master'
+set :branch, -> { ENV["REVISION"] or raise "Please specify REVISION env variable" }
 set :deploy_to, '/var/www/alm_report'
 set :log_level, :info
 set :linked_files, %w{ config/database.yml config/settings.yml }
