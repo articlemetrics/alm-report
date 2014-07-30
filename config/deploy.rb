@@ -5,7 +5,7 @@ set :repo_url, 'git@github.com:PLOS/alm-report.git'
 set :branch, 'master'
 set :deploy_to, '/var/www/alm_report'
 set :log_level, :info
-set :linked_files, %w{ config/database.yml }
+set :linked_files, %w{ config/database.yml config/settings.yml }
 set :linked_dirs, %w{ bin log data tmp/pids tmp/sockets public/files }
 set :keep_releases, 5
 set :puma_workers, 2
