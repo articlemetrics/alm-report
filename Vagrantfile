@@ -6,6 +6,24 @@ Vagrant.configure("2") do |config|
   # options are documented and commented below. For a complete reference,
   # please see the online documentation at vagrantup.com.
 
+  # Check if required plugins are installed.
+  unless Vagrant.has_plugin?('vagrant-omnibus')
+    puts "vagrant-omnibus plugin is missing. Installing..."
+    %x(set -x; vagrant plugin install vagrant-omnibus)
+    restart = true
+  end
+
+  unless Vagrant.has_plugin?('vagrant-librarian-chef')
+    puts "vagrant-librarian-chef plugin is missing. Installing..."
+    %x(set -x; vagrant plugin install vagrant-librarian-chef )
+    restart = true
+  end
+
+  if restart
+    puts "Plugins have now been installed, please rerun vagrant."
+    exit
+  end
+
   # Install latest version of Chef
   config.omnibus.chef_version = :latest
 
