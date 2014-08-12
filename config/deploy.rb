@@ -37,8 +37,10 @@ set :keep_releases, 5
 # Install gems into shared/vendor/bundle
 set :bundle_path, -> { shared_path.join('vendor/bundle') }
 
-namespace :deploy do
+# Use system libraries for Nokogiri
+set :bundle_env_variables, 'NOKOGIRI_USE_SYSTEM_LIBRARIES' => 1
 
+namespace :deploy do
   desc 'Restart application'
   task :restart do
     on roles(:app), in: :sequence, wait: 5 do
@@ -47,15 +49,6 @@ namespace :deploy do
   end
 
   after :publishing, :restart
-
-  after :restart, :clear_cache do
-    on roles(:web), in: :groups, limit: 3, wait: 10 do
-      # Here we can do anything such as:
-      # within release_path do
-      #   execute :rake, 'cache:clear'
-      # end
-    end
-  end
 
   after :finishing, "deploy:cleanup"
 end
