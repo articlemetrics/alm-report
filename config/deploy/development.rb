@@ -10,8 +10,8 @@ set :bundle_binstubs, nil
 set :bundle_path, nil
 set :bundle_flags, '--system'
 
-# don't precompile assets
-set :assets_roles, []
+# precompile assets in development
+set :assets_roles, [:web, :app]
 
 server '33.33.33.55', roles: %w{web app db}
 
