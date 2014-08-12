@@ -1,8 +1,8 @@
 {
-  "alm": { "environment": "development",
-           "admin": { "username": "EXAMPLE", "email": "admin@example.org", "password": "EXAMPLE" },
-           "ip_range_us": null,
-           "ip_range_uk": null },
+  "alm_report": { "environment": "development",
+                  "api_key": null,
+                  "ip_range_us": null,
+                  "ip_range_uk": null },
   "mysql": { "bind_address": "0.0.0.0",
              "server_root_password": "EXAMPLE",
              "server_repl_password": "EXAMPLE",

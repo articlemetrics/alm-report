@@ -57,7 +57,7 @@ Vagrant.configure("2") do |config|
     provider.token = 'EXAMPLE'
   end
 
-  config.vm.hostname = "alm-report"
+  config.vm.hostname = "alm-report.local"
 
   # Boot with a GUI so you can see the screen. (Default is headless)
   # config.vm.boot_mode = :gui
@@ -75,12 +75,13 @@ Vagrant.configure("2") do |config|
 
   # Forward a port from the guest to the host, which allows for outside
   # computers to access the VM, whereas host only networking does not.
-  config.vm.network :forwarded_port, guest: 80, host: 8080 # Apache2
+  config.vm.network :forwarded_port, guest: 80, host: 8090 # Apache2
 
   # Share an additional folder to the guest VM. The first argument is
   # an identifier, the second is the path on the guest to mount the
   # folder, and the third is the path on the host to the actual folder.
-  # config.vm.share_folder "v-data", "/vagrant_data", "../data"
+  config.vm.synced_folder ".", "/vagrant", :disabled => true
+  config.vm.synced_folder ".", "/var/www/alm-report/shared"
 
   # Enable provisioning with chef solo, specifying a cookbooks path, roles
   # path, and data_bags path (all relative to this Vagrantfile), and adding
