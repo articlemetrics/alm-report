@@ -391,9 +391,9 @@ module ChartData
     reader_total = 0
 
     if (!mendeley.nil? && !mendeley.empty?)
-      reader_total = mendeley["stats"]["readers"].to_i
+      reader_total = mendeley["readers"].to_i
 
-      reader_country = mendeley["stats"]["country"]
+      reader_country = mendeley["country"]
 
       reader_data << ["Country", "Readers"]
       reader_country.each do | data |
