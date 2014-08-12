@@ -1,4 +1,5 @@
 set :stage, :development
+set :repo_url, 'file:///var/www/alm-report/shared/'
 set :branch, ENV["REVISION"] || ENV["BRANCH_NAME"] || "develop"
 set :deploy_user, 'vagrant'
 set :rails_env, :development
@@ -12,9 +13,7 @@ set :bundle_flags, '--system'
 # don't precompile assets
 set :assets_roles, []
 
-role :app, %w{33.33.33.111}
-role :web, %w{33.33.33.111}
-role :db,  %w{33.33.33.111}
+server '33.33.33.55', roles: %w{web app db}
 
 set :ssh_options, {
   user: "vagrant",

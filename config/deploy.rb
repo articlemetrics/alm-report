@@ -1,8 +1,8 @@
 # config valid only for Capistrano 3.1
-lock '3.1.0'
+lock '3.2.1'
 
 set :application, 'alm-report'
-set :repo_url, 'git@github.com:PLOS/alm-report.git'
+set :repo_url, 'git@github.com:articlemetrics/alm-report.git'
 
 # Default branch is :master
 set :branch, 'develop'
