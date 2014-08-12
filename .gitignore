@@ -40,3 +40,4 @@ config.json
 /public/assets
 .idea/*
 optimise-db.txt
+/vendor/cookbooks
