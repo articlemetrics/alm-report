@@ -1,6 +1,6 @@
 #
 # Cookbook Name:: apache2
-# Recipe:: ssl
+# Recipe:: mod_ssl
 #
 # Copyright 2008-2013, Opscode, Inc.
 #
@@ -20,6 +20,8 @@ unless node['apache']['listen_ports'].include?('443')
   node.set['apache']['listen_ports'] = node['apache']['listen_ports'] + ['443']
 end
 
+include_recipe 'apache2::default'
+
 if platform_family?('rhel', 'fedora', 'suse')
   package 'mod_ssl' do
     notifies :run, 'execute[generate-module-list]', :immediately
@@ -31,12 +33,17 @@ if platform_family?('rhel', 'fedora', 'suse')
   end
 end
 
-template "#{node['apache']['dir']}/ports.conf" do
-  source    'ports.conf.erb'
-  mode      '0644'
-  notifies  :restart, 'service[apache2]'
+template 'ssl_ports.conf' do
+  path "#{node['apache']['dir']}/ports.conf"
+  source 'ports.conf.erb'
+  mode '0644'
+  notifies :restart, 'service[apache2]', :delayed
 end
 
 apache_module 'ssl' do
   conf true
+end
+
+if node['apache']['version'] == '2.4'
+  include_recipe 'apache2::mod_socache_shmcb'
 end
