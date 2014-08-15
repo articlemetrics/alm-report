@@ -19,6 +19,12 @@ Vagrant.configure("2") do |config|
     restart = true
   end
 
+  unless Vagrant.has_plugin?('vagrant-bindfs')
+    puts "vagrant-bindfs plugin is missing. Installing..."
+    %x(set -x; vagrant plugin install vagrant-bindfs )
+    restart = true
+  end
+
   if restart
     puts "Plugins have now been installed, please rerun vagrant."
     exit
@@ -84,7 +90,7 @@ Vagrant.configure("2") do |config|
   # via the IP. Host-only networks can talk to the host machine as well as
   # any other machines on the same network, but cannot be accessed (through this
   # network interface) by any external networks.
-  config.vm.network :private_network, ip: "33.33.33.55"
+  config.vm.network :private_network, ip: "10.2.2.2"
 
   # Assign this VM to a bridged network, allowing you to connect directly to a
   # network using the host's network device. This makes the VM appear as another
@@ -98,13 +104,15 @@ Vagrant.configure("2") do |config|
   # Share an additional folder to the guest VM. The first argument is
   # an identifier, the second is the path on the guest to mount the
   # folder, and the third is the path on the host to the actual folder.
-  config.vm.synced_folder ".", "/vagrant", :disabled => true
-  config.vm.synced_folder ".", "/var/www/alm-report/shared"
+
+  nfs_setting = RUBY_PLATFORM =~ /darwin/ || RUBY_PLATFORM =~ /linux/
+
+  config.vm.synced_folder ".", "/vagrant", id: "vagrant-root", :nfs => nfs_setting
+  config.bindfs.bind_folder "/vagrant", "/var/www/alm-report/current"
 
   # Enable provisioning with chef solo, specifying a cookbooks path, roles
   # path, and data_bags path (all relative to this Vagrantfile), and adding
   # some recipes and/or roles.
-  #
   config.vm.provision :chef_solo do |chef|
     chef.cookbooks_path = "vendor/cookbooks"
     dna = JSON.parse(File.read("node.json"))
@@ -119,4 +127,7 @@ Vagrant.configure("2") do |config|
       chef.json.merge!(config)
     end
   end
+
+  # Link database.yml generated in alm-report recipe to current app directory
+  config.vm.provision "shell", inline: 'ln -fs /var/www/alm-report/shared/config/database.yml /var/www/alm-report/current/config/database.yml'
 end
