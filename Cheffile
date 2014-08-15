@@ -13,4 +13,6 @@ cookbook "database", "2.1.2"
 cookbook "phantomjs", "1.0.3"
 cookbook "memcached", "1.7.2"
 
-cookbook "alm-report", :git => "git@github.com:articlemetrics/alm-report-cookbook.git"
+cookbook "alm-report", 
+  :git => "git@github.com:articlemetrics/alm-report-cookbook.git",
+  :ref => "24b5db653bc0fa3de406255e941039e20180cee5"
