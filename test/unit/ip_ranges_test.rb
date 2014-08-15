@@ -10,7 +10,6 @@ class IpRangesTest < ActiveSupport::TestCase
     assert(IpRanges.is_internal_ip("192.168.14.2"))
     
     assert(!IpRanges.is_internal_ip("37.134.13.56"))
-    assert(!IpRanges.is_internal_ip("***REMOVED***215"))
     assert(!IpRanges.is_internal_ip("172.32.1.1"))
     assert(!IpRanges.is_internal_ip("192.169.22.178"))
   end
