@@ -14,15 +14,15 @@ BATCH_SIZE = 100
 # This should be a multiple of BATCH_SIZE.
 SOLR_ARTICLES_TO_QUERY = 5000
 
-DB_HOST = "***REMOVED***"
+DB_HOST = "example.com"
 
-DB_PORT = 3307
+DB_PORT = 9999
 
-DB_USER = "ambra"
+DB_USER = "example"
 
-DB_PASSWD = ""
+DB_PASSWD = "example"
 
-DB_NAME = "ambra"
+DB_NAME = "example"
 
 
 # Yields batches of DOIs, from the given file if it is defined, or else from the database.
