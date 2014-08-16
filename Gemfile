@@ -19,6 +19,7 @@ end
 group :test do
   gem "webmock", "~> 1.17.2"
   gem "minitest", "~> 4.4.0"
+  gem "codeclimate-test-reporter", require: false
 end
 
 group :test, :development do
