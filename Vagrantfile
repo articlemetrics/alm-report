@@ -128,7 +128,10 @@ Vagrant.configure("2") do |config|
     end
   end
 
-  # Link database.yml generated in alm-report recipe to current app directory
+  # Link database.yml and settings.yml generated in alm-report recipe to current app directory
   config.vm.provision "shell", inline: 'ln -fs /var/www/alm-report/shared/config/database.yml /var/www/alm-report/current/config/database.yml'
-  config.vm.provision "shell", inline: 'cd /var/www/alm-report/current && bundle'
+  config.vm.provision "shell", inline: 'ln -fs /var/www/alm-report/shared/config/settings.yml /var/www/alm-report/current/config/settings.yml'
+
+  # Install required gems and run pending database migrations
+  config.vm.provision "shell", inline: 'cd /var/www/alm-report/current && bundle && bundle exec rake db:migrate'
 end
