@@ -161,4 +161,5 @@ load_from_csv("db/seed/countries.csv")
 puts "Loading geocode data from article subset (4k)..."
 load_from_csv("db/seed/geocodes.csv")
 puts "Loading geocode data from geolite (300k)..."
-load_from_geolite
+# TODO: Travis failing because this takes too long.
+# load_from_geolite

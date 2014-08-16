@@ -2,6 +2,7 @@ require "codeclimate-test-reporter"
 CodeClimate::TestReporter.start
 
 ENV["RAILS_ENV"] = "test"
+require 'webmock/test_unit'
 require File.expand_path('../../config/environment', __FILE__)
 require 'rails/test_help'
 
