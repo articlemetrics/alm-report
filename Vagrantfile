@@ -34,11 +34,11 @@ Vagrant.configure("2") do |config|
   config.omnibus.chef_version = :latest
 
   # Every Vagrant virtual environment requires a box to build off of.
-  config.vm.box = "opscode-ubuntu-12.04"
+  config.vm.box = "opscode-ubuntu-14.04"
 
   # The url from where the 'config.vm.box' box will be fetched if it
   # doesn't already exist on the user's system.
-  config.vm.box_url = "http://opscode-vm-bento.s3.amazonaws.com/vagrant/virtualbox/opscode_ubuntu-12.04_chef-provisionerless.box"
+  config.vm.box_url = "http://opscode-vm-bento.s3.amazonaws.com/vagrant/virtualbox/opscode_ubuntu-14.04_chef-provisionerless.box"
 
   # Override settings for specific providers
   config.vm.provider :virtualbox do |vb, override|
@@ -130,4 +130,5 @@ Vagrant.configure("2") do |config|
 
   # Link database.yml generated in alm-report recipe to current app directory
   config.vm.provision "shell", inline: 'ln -fs /var/www/alm-report/shared/config/database.yml /var/www/alm-report/current/config/database.yml'
+  config.vm.provision "shell", inline: 'cd /var/www/alm-report/current && bundle'
 end

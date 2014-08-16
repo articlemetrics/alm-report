@@ -13,6 +13,7 @@
                  "root_path": "/var/lib/gems/2.1.0/gems/passenger-4.0.41" },
   "phantomjs": { "version": "1.9.7", "base_url": "https://bitbucket.org/ariya/phantomjs/downloads" },
   "alm_report": {
-    "host": "10.2.2.2"
+    "host": "10.2.2.2",
+    "hostname": "alm-report"
   }
 }

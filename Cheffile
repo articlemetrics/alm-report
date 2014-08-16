@@ -7,12 +7,11 @@ cookbook "apt", "2.3.8"
 cookbook "build-essential", "2.0.0"
 cookbook "git", "4.0.0"
 
+cookbook "apache2", "2.0.0"
 cookbook "passenger_apache2", "2.2.0"
-cookbook "mysql", "5.1.8"
+cookbook "mysql", "5.1.12"
 cookbook "database", "2.1.2"
 cookbook "phantomjs", "1.0.3"
 cookbook "memcached", "1.7.2"
-
 cookbook "alm-report", 
-  :git => "git@github.com:articlemetrics/alm-report-cookbook.git",
-  :ref => "24b5db653bc0fa3de406255e941039e20180cee5"
+  :git => "git@github.com:articlemetrics/alm-report-cookbook.git"
