@@ -47,7 +47,7 @@ defaults: &defaults
   # This should be kept in sync with
   # http://intranet.plos.org/it/ops/priv/SitePages/Network%20Topology.aspx
   internal_ip_ranges:
-    # - US office
+    - 10.0.0.0/8 # - US office
     # - UK office
 
   journals: {
