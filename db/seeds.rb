@@ -12,7 +12,7 @@ def create_geocode(address, lat, lng)
   begin
     Geocode.create!(:address => address, :latitude => lat, :longitude => lng)
   rescue ActiveRecord::RecordNotUnique
-  
+
     # Fine to ignore duplicate key errors, since these might have already
     # been added.
   end
@@ -40,14 +40,14 @@ def get_country_name(country_code)
     return nil
   else
     country = Country.new(country_code)
-    if country.data.nil?
-      return nil
-    else
+    if country && country.data
       if !COUNTRY_NAME_REPLACEMENTS[country.name.to_sym].nil?
         return COUNTRY_NAME_REPLACEMENTS[country.name.to_sym]
       else
         return country.name
       end
+    else
+      return nil
     end
   end
 end
@@ -105,7 +105,7 @@ US_STATES = {
     :WI => "Wisconsin",
     :WY => "Wyoming",
     }
-    
+
 CANADA_PROVINCES = {
     :ON => "Ontario",
     :QC => "Quebec",
@@ -129,23 +129,24 @@ def get_region(country, region)
   end
 end
 
-
 # Loads geocodes from a file downloaded from http://www.maxmind.com/en/opensource .
 # This is mostly a package intended for IP-geolocation, but it also includes
 # lat/lng for all cities.  This is about 317k geocodes.
 def load_from_geolite
-  
-  # Note: I had to convert the GeoLite file from ISO-8859 to UTF-8 before this script
-  # could work.  Like this:
-  #   iconv -f ISO-8859-1 -t utf-8 GeoLiteCity-Location.csv > GeoLiteCity-Location_utf8.csv
-  CSV.foreach("db/seed/GeoLiteCity-Location_utf8.csv") do |row|
-    country = get_country_name(row[1])
-    region = get_region(row[1], row[2])
-    city = row[3]
-    lat = row[5]
-    lng = row[6]
-    if country.to_s != "" && city.to_s != "" && lat.to_f != 0.0 && lng.to_f != 0.0
-      if region.to_s == ""
+
+  # Skip first line of CSV, which contains the copyright
+  locations = File.read('db/seed/GeoLiteCity-Location.csv',
+    encoding: 'iso-8859-1'
+  ).lines[1..-1].join
+
+  CSV.parse(locations, headers: true) do |row|
+    country = get_country_name(row['country'])
+    region = get_region(row['country'], row['region'])
+    city = row['city']
+    lat = row['latitude']
+    lng = row['longitude']
+    if country && city && lat.to_f != 0.0 && lng.to_f != 0.0
+      if region
         address = "#{city}, #{country}"
       else
         address = "#{city}, #{region}, #{country}"
@@ -155,10 +156,10 @@ def load_from_geolite
   end
 end
 
-
 puts "Loading countries..."
 load_from_csv("db/seed/countries.csv")
 puts "Loading geocode data from article subset (4k)..."
 load_from_csv("db/seed/geocodes.csv")
 puts "Loading geocode data from geolite (300k)..."
-load_from_geolite
+# TODO: Travis failing because this takes too long.
+# load_from_geolite

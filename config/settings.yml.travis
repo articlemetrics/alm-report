@@ -1,0 +1,71 @@
+# Application-wide settings.
+
+defaults: &defaults
+  # Number of articles to display per page on the add-articles and preview-list
+  # pages.  (The results metrics page uses a different, smaller value.)
+  results_per_page: 25
+  metrics_results_per_page: 5
+
+  # Maximum number of articles that can be stored in a single report.
+  article_limit: 2000
+
+  # Maximum number of articles for which we generate the report visualizations page.
+  # If the number of articles in a report is between article_limit and this,
+  # all pages are available except the visualizations page.
+  viz_limit: 500
+
+  solr_url: http://api.plos.org/search
+
+  # Maximum number of articles we query for in a single request from solr.
+  # If this is too high solr will return a 414 "Request-URI Too Large" error.
+  solr_max_dois_per_request: 100
+
+  alm_url: http://alm.plos.org/api/v3/articles
+
+  alm_api_key:
+
+  # Max number of articles to request stats for per request.
+  alm_max_articles_per_request: 30
+
+  alm_max_size_for_realtime: 20
+
+  # For the author locations chart, we prefer to use geocoded city info.  If more
+  # than min_fraction_of_locations_to_use_geocodes locations are geocoded, we
+  # only show those, provided that the total number of non-geocoded locations is
+  # under max_unfound_locations_to_use_geocodes.
+  min_fraction_of_locations_to_use_geocodes: 0.9
+  max_unfound_locations_to_use_geocodes: 5
+
+  # Maximum queries per second to send to Google for geocoding.  The service
+  # will stop responding if we send them too fast.
+  max_geocode_qps: 1.0
+
+  visualization_min_num_of_alm_data_points: 2
+
+  # IP ranges that represent external IPs of PLOS offices.
+  # (Internal, private ranges are handled within the code.)
+  # This should be kept in sync with
+  # http://intranet.plos.org/it/ops/priv/SitePages/Network%20Topology.aspx
+  internal_ip_ranges:
+    - 10.0.0.0/8 # - US office
+    # - UK office
+
+  journals: {
+    "PLoSONE": "PLOS ONE",
+    "PLoSGenetics": "PLOS Genetics",
+    "PLoSBiology": "PLOS Biology",
+    "PLoSPathogens": "PLOS Pathogens",
+    "PLoSCompBiol": "PLOS Computational Biology",
+    "PLoSMedicine": "PLOS Medicine",
+    "PLoSNTD": "PLOS Neglected Tropical Diseases",
+    "PLoSCollections": "PLOS Collections"
+  }
+
+development:
+  <<: *defaults
+
+test:
+  <<: *defaults
+
+production:
+  <<: *defaults
