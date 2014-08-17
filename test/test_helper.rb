@@ -1,6 +1,12 @@
+require "codeclimate-test-reporter"
+CodeClimate::TestReporter.start
+
 ENV["RAILS_ENV"] = "test"
+require 'webmock/test_unit'
 require File.expand_path('../../config/environment', __FILE__)
 require 'rails/test_help'
+
+WebMock.disable_net_connect!(allow: 'codeclimate.com')
 
 class ActiveSupport::TestCase
   # Setup all fixtures in test/fixtures/*.(yml|csv) for all tests in alphabetical order.

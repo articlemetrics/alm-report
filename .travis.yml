@@ -1,0 +1,24 @@
+language: ruby
+rvm:
+  - 2.1.2
+
+env:
+  - DB=mysql
+  # - DB=postgresql
+
+services:
+  - memcached
+
+before_script:
+  - cp config/settings.yml.travis config/settings.yml
+  - cp config/database.yml.travis config/database.yml
+  - mkdir -p tmp/pids
+
+script:
+  - bundle exec rake db:setup RAILS_ENV=test
+  - bundle exec rake spec
+  - bundle exec rake test
+
+addons:
+  code_climate:
+    repo_token: fe7cfe1a913538af13fc5fee3a9244584af63ebf43618322c2bf29f04c00f36c
