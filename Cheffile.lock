@@ -38,7 +38,7 @@ SITE
       windows (>= 0.0.0)
     ms_dotnet45 (1.1.2)
       windows (>= 0.0.0)
-    mysql (5.1.8)
+    mysql (5.1.12)
     mysql-chef_gem (0.0.2)
       build-essential (>= 0.0.0)
       mysql (>= 0.0.0)
@@ -64,7 +64,7 @@ SITE
       build-essential (>= 0.0.0)
       yum (~> 3.0)
       yum-epel (>= 0.0.0)
-    windows (1.34.0)
+    windows (1.34.2)
       chef_handler (>= 0.0.0)
     xfs (1.1.0)
     yum (3.2.2)
@@ -73,10 +73,10 @@ SITE
 
 GIT
   remote: git@github.com:articlemetrics/alm-report-cookbook.git
-  ref: master
-  sha: 46e1bf9a46ac24f2867f096552cf14dca1a77bd8
+  ref: ec2
+  sha: 9f765f6081d6926dea89204131445c20874353dc
   specs:
-    alm-report (0.1.10)
+    alm-report (0.1.18)
       database (>= 0.0.0)
       git (>= 0.0.0)
       mysql (>= 0.0.0)
@@ -85,12 +85,13 @@ GIT
 
 DEPENDENCIES
   alm-report (>= 0)
+  apache2 (= 2.0.0)
   apt (= 2.3.8)
   build-essential (= 2.0.0)
   database (= 2.1.2)
   git (= 4.0.0)
   memcached (= 1.7.2)
-  mysql (= 5.1.8)
+  mysql (= 5.1.12)
   passenger_apache2 (= 2.2.0)
   phantomjs (= 1.0.3)
 
