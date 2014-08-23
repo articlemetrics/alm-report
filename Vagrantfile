@@ -123,7 +123,7 @@ Vagrant.configure("2") do |config|
     override.ssh.username = "ubuntu"
 
     provider.region = 'nyc2'
-    provider.image = 'Ubuntu 12.04.4 x64'
+    provider.image = 'Ubuntu 14.04 x64'
     provider.size = '1GB'
 
     # please configure
