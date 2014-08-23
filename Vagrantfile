@@ -64,7 +64,7 @@ Vagrant.configure("2") do |config|
   config.omnibus.chef_version = :latest
 
   # Every Vagrant virtual environment requires a box to build off of.
-  config.vm.box = "opscode-ubuntu-14.04"
+  config.vm.box = "chef/ubuntu-14.04"
 
   # The url from where the 'config.vm.box' box will be fetched if it
   # doesn't already exist on the user's system.
@@ -78,6 +78,8 @@ Vagrant.configure("2") do |config|
     vb.name = "alm-report"
     vb.customize ["modifyvm", :id, "--memory", "1024"]
     nfs_setting = RUBY_PLATFORM =~ /darwin/ || RUBY_PLATFORM =~ /linux/
+    # Disable default synced folder before bindfs tries to bind to it
+    override.vm.synced_folder ".", "/var/www/alm-report/current", disabled: true
     override.vm.synced_folder ".", "/vagrant", id: "vagrant-root", :nfs => nfs_setting
     override.bindfs.bind_folder "/vagrant", "/var/www/alm-report/current"
 
