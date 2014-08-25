@@ -89,7 +89,7 @@ Vagrant.configure("2") do |config|
   config.vm.provider :vmware_fusion do |fusion, override|
     fusion.vmx["memsize"] = "1024"
 
-    override.vm.box_url = "http://files.vagrantup.com/precise64_vmware.box"
+    override.vm.box_url = "http://opscode-vm-bento.s3.amazonaws.com/vagrant/vmware/opscode_ubuntu-14.04_chef-provisionerless.box"
     provision(config, override)
   end
 
