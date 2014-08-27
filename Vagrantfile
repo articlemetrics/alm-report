@@ -27,7 +27,7 @@ def provision(config, override, overrides = {})
   override.vm.provision "shell", inline: <<-EOF
     ln -fs /var/www/alm-report/shared/config/database.yml /var/www/alm-report/current/config/database.yml
     ln -fs /var/www/alm-report/shared/config/settings.yml /var/www/alm-report/current/config/settings.yml
-    cd /var/www/alm-report/current && bundle && bundle exec rake db:migrate
+    cd /var/www/alm-report/current && bundle && bundle exec rake db:setup
   EOF
 end
 
