@@ -4,6 +4,6 @@
   ],
   "alm_report": {
     "host": "10.2.2.2",
-    "hostname": "alm-report"
+    "hostname": "alm-report.local"
   }
 }
