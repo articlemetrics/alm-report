@@ -134,6 +134,7 @@ Vagrant.configure("2") do |config|
   end
 
   config.vm.hostname = "alm-report.local"
+
   # Boot with a GUI so you can see the screen. (Default is headless)
   # config.vm.boot_mode = :gui
 
