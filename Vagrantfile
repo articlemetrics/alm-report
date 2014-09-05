@@ -122,7 +122,7 @@ Vagrant.configure("2") do |config|
     provision(config, override, chef_overrides)
   end
 
-  config.vm.hostname = "alm-report.local"
+  config.vm.hostname = "alm-report"
   # Boot with a GUI so you can see the screen. (Default is headless)
   # config.vm.boot_mode = :gui
 
@@ -135,11 +135,11 @@ Vagrant.configure("2") do |config|
   # Assign this VM to a bridged network, allowing you to connect directly to a
   # network using the host's network device. This makes the VM appear as another
   # physical device on your network.
-  # config.vm.network :bridged
+  config.vm.network "public_network"
 
   # Forward a port from the guest to the host, which allows for outside
   # computers to access the VM, whereas host only networking does not.
-  config.vm.network :forwarded_port, guest: 80, host: 8090 # Apache2
+  # config.vm.network :forwarded_port, guest: 80, host: 8090 # Apache2
 
   # Share an additional folder to the guest VM. The first argument is
   # an identifier, the second is the path on the guest to mount the
