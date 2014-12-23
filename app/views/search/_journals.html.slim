@@ -1,5 +1,5 @@
 ' journals:
-- if params.has_key?(:filterJournals)
-  span.journals #{params[:filterJournals].map{ |j| @journals[j] }.join(" or ")}
+- if params.has_key?(:filters)
+  span.journals #{params[:filters].map{ |j| @journals[j] }.join(" or ")}
 - else
   span.journals All Journals

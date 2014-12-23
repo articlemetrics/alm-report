@@ -33,10 +33,10 @@
 }
 
 #error-message-div {
-  background: #f0d5d8 image-url('warning.png') no-repeat 35px 10px;
+  margin-bottom: 1rem;
+  background: #f0d5d8 image-url('warning.png') no-repeat 35px 15px;
   color: #e4324f;
   padding: 15px 30px 15px 80px;
-  width: 850px;
   display: none;
 }
 

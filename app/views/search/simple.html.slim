@@ -1,6 +1,6 @@
 .row
   .eight.columns
-    = form_tag("/search", :method => "get", :class => "home-form")
+    = form_tag(search_path, :method => "get", :class => "home-form")
       h2
         | Search all Articles
         - if Search.plos?
@@ -36,7 +36,8 @@
         .input-holder
           = label_tag(:cross_published_journal_name, "Journal")
           = collection_select( \
-              "filterJournals", "", @journals, :first, :last, class: "styled" \
+              "filters", "", @journals, :first, :last, class: "styled", \
+              include_blank: "All Journals" \
             )
         .input-holder
           = label_tag(:financial_disclosure, "Funder Name or Funding Number")

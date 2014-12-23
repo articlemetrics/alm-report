@@ -1,0 +1,21 @@
+- facets.each do |name, items|
+  - selected = items.select { |item, value| value[:selected] == true if value.is_a? Hash }
+  p= name.to_s.titlecase
+  - if selected.present?
+    ul
+      - selected.each do |value, properties|
+        li
+          - if name == 'publication_date'
+            strong= link_to "#{value[0..3]} (#{properties[:count]})", facets_path(facets: [{ name: name, value: value}])
+          - else
+            strong= link_to "#{value} (#{properties[:count]})", facets_path(facets: [{ name: name, value: value}])
+  - else
+    ul
+      - items.each_with_index do |(value, properties), i|
+        - if properties[:count] > 0
+          li class=(i > 4 ? "additional" : nil) style=(i > 4 ? "display:none;" : nil)
+            - if name == 'publication_date'
+              = link_to "#{value[0..3]} (#{properties[:count]})", facets_path(facets: [{ name: name, value: value}])
+            - else
+              = link_to "#{value} (#{properties[:count]})", facets_path(facets: [{ name: name, value: value}])
+      li.see_all= link_to "See all"

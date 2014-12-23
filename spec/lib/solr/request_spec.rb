@@ -1,6 +1,4 @@
 require "rails_helper"
-# require 'solr_request'
-# require "date"
 
 describe Solr::Request do
   it "queries by pubmed ids" do
@@ -146,7 +144,7 @@ describe Solr::Request do
       :author_country=>"",
       :institution=>"University of California",
       :subject=>"Gene regulation",
-      :filterJournals=>["All Journals"],
+      :filters=>["All Journals"],
       :financial_disclosure=>""
     }
 

@@ -4,10 +4,11 @@ AlmReport::Application.routes.draw do
   get "/search/advanced" => "search#index", advanced: true
 
   get "/search" => "search#show"
+  get "/facets" => "search#facets"
   get "/preview" => "preview#index"
 
   post "/update-session" => "home#update_session"
-  post "/select-all-search-results" => "home#select_all_search_results"
+  get "/select-all-search-results" => "home#select_all_search_results"
   get "/start-over" => "home#start_over"
   get "/get-article-count" => "home#get_article_count"
 
@@ -26,6 +27,7 @@ AlmReport::Application.routes.draw do
 
   get "/about" => "static_pages#about"
   get "/samples" => "static_pages#samples"
+
 
   namespace :api do
     resources :reports

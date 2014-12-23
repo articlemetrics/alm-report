@@ -7,7 +7,7 @@ class ReportsController < ApplicationController
     if dois.blank?
       return redirect_to(search_advanced_path,
                          unformattedQueryId: params[:unformattedQueryId],
-                         filterJournals: params[:filterJournals])
+                         filters: params[:filters])
     end
 
     @report = Report.new

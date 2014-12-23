@@ -1,8 +1,7 @@
 .row
-  / .two.columns
-  /   h2 Filters
-  /   p Here be filters.
-  .eight.columns
+  .two.columns
+    .facets= render "facets", facets: @facets
+  .six.columns
     h2 Add selected articles to your list
     p
       - if @total_found > 0
@@ -45,7 +44,7 @@
           = select_tag( \
             :sort, \
             options_for_select( \
-              (Search.plos? ? Solr::Request : SearchCrossref)::SORTS.to_a, \
+              (Search.plos? ? Solr : SearchCrossref)::SORTS.to_a, \
               params[:sort] \
             ), \
             id: "search_results_sort_order_select" \

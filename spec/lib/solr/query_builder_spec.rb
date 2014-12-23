@@ -72,7 +72,7 @@ describe Solr::QueryBuilder do
   it "removes All Journals from list of journals" do
     # cross_published_journal_name should be ignored if it equals "All Journals"
     build_query_test_once(
-      { everything: "fooCross", filterJournals: ["PLoSONE"] },
+      { everything: "fooCross", filters: ["PLoSONE"] },
       'everything:fooCross',
       {fq: "cross_published_journal_key:PLoSONE"}
     )
@@ -80,7 +80,7 @@ describe Solr::QueryBuilder do
     build_query_test_once(
       {
         everything: "fooNoJournal",
-        filterJournals: ["All Journals"]
+        filters: ["All Journals"]
       },
       "everything:fooNoJournal"
     )
@@ -161,7 +161,7 @@ describe Solr::QueryBuilder do
       author_country: "",
       institution: "",
       subject: "",
-      filterJournals: ["All Journals"],
+      filters: ["All Journals"],
       financial_disclosure: "",
       publication_date: "[2014-09-03T14:01:32Z TO 2014-10-03T14:01:32Z]"
     }

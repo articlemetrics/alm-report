@@ -389,8 +389,6 @@ jQuery(function(d, $){
       // *all* of the articles from the search, not just those on the current page.
       // (Subject to the article limit.)
       selectAllSearchResults : function(e) {
-        var data = queryString.parse(window.location.search);
-
         $("#gray-out-screen").css({
           opacity: 0.7,
           "width": $(document).width(),
@@ -400,15 +398,15 @@ jQuery(function(d, $){
         $("#select-all-spinner").css({"display": "block"});
 
         $.ajax("/select-all-search-results", {
-          type: "POST",
+          type: "GET",
 
           // Unless we set this header, rails will silently refuse to save anything
           // to the session!
           beforeSend: function(xhr) {
               xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))
               },
-          data: data,
-          complete: jQuery.proxy(this.selectAllSearchResultsResponseHandler, this)
+          complete: jQuery.proxy(this.selectAllSearchResultsResponseHandler, this),
+          data: window.location.search
         });
       },
 

@@ -35,7 +35,7 @@ describe SearchController do
         datepicker1: "",
         datepicker2: "",
         subject: "",
-        filterJournals: ["All Journals"],
+        filters: ["All Journals"],
         financial_disclosure: "",
         commit: "Search",
         x: "Y"
@@ -78,7 +78,7 @@ describe SearchController do
           unformattedQueryId: "everything:biology",
           commit: "Search",
           journalOpt: "some",
-          filterJournals: ["PLoSCompBiol"],
+          filters: ["PLoSCompBiol"],
           utf8: "✓"
         }
 

@@ -51,7 +51,7 @@ class HomeController < ApplicationController
     results = []
     for page in 1 .. (limit / rows)
       params[:current_page] = page
-      docs, _ = Search.find(params)
+      docs = Search.find(params)[:docs]
       results += docs
       break if docs.size < rows
     end
@@ -90,6 +90,7 @@ class HomeController < ApplicationController
 
   # Action that clears any DOIs in the session and redirects to home.
   def start_over
+    session.delete(:facets)
     @cart.clear
     redirect_to root_path
   end

@@ -10,8 +10,6 @@
 //= require jquery
 //= require jquery_ujs
 //= require jquery-ui
-// require jquery.placeholder
-// require jquery.uniform
 //= require query-string
 //= require script
 //= require advancedSearch
@@ -22,4 +20,5 @@
 //= require sunburst/app/scripts/sunburst_chart
 //= require line/app/scripts/line_chart
 //= require datamaps/dist/datamaps.world
+//= require facets
 //= require_self

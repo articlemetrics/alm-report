@@ -9,7 +9,15 @@ class SearchController < ApplicationController
     @tab = :select_articles
     @title = "Add Articles"
 
-    @results, @total_found, @metadata = Search.find(params)
+    session[:params] = params
+    search = Search.find(params)
+
+    @results = search[:docs]
+    @total_found = search[:found]
+    @metadata = search[:metadata]
+
+    session[:facets] = search[:facets]
+    @facets = search[:facets]
 
     if @cart.items.present?
       @results.each do |result|
@@ -18,6 +26,17 @@ class SearchController < ApplicationController
     end
 
     set_paging_vars(params[:current_page])
+  end
+
+  def facets
+    @facets = session[:facets]
+    redirect_to(root_path) && return unless @facets
+
+    params[:facets].each do |facet|
+      @facets.select(name: facet[:name], value: facet[:value])
+    end
+
+    redirect_to search_path(session[:params].merge(@facets.params))
   end
 
   private
@@ -38,12 +57,6 @@ class SearchController < ApplicationController
   # PLOS
 
   def journals
-    @journals = if params[:advanced]
-      Solr::Request.get_journals
-    else
-      # Add a "All Journals" entry
-      { Solr::Request::ALL_JOURNALS => Solr::Request::ALL_JOURNALS }.
-        merge(Solr::Request.get_journals)
-    end
+    @journals = Solr::Request.get_journals
   end
 end

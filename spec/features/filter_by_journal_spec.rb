@@ -8,7 +8,7 @@ if Search.plos?
 
       visit "/"
       fill_in "author", with: "Eisen"
-      select "PLOS ONE", from: "filterJournals_"
+      select "PLOS ONE", from: "filters_"
       click_button "Search"
       page.should have_content "journals: PLOS ONE"
       page.should have_content "1 - 25 of 39 results"

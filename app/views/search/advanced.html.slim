@@ -63,23 +63,23 @@
         li
           label
             input(id="journalsOpt_all" type="radio" name="journalOpt" value="all" title="Search All Journals"
-              checked=("checked" unless params["filterJournals"].present?))
+              checked=("checked" unless params["filters"].present?))
             | Search all journals
         li
           label
             input(id="journalsOpt_slct" type="radio" name="journalOpt" value="some" title="Search Selected Journals"
-              checked=("checked" if params["filterJournals"].present?))
+              checked=("checked" if params["filters"].present?))
             | Only search in the following journals:
         li.options
           fieldset#fsJournalOpt
           ul
             - @journals.each do |key, name|
               li
-                input(id="filterJournals_#{key}" name="filterJournals[]" value="#{key}" type="checkbox"
+                input(id="filters_#{key}" name="filters[]" value="#{key}" type="checkbox"
                   title="Select #{name}" alt="Select Journal #{name} Check Box"
-                  checked=("checked" if params["filterJournals"] && params["filterJournals"].include?(key)))
+                  checked=("checked" if params["filters"] && params["filters"].include?(key)))
                   | &nbsp;
-                label for="filterJournals_#{key}" #{name}
+                label for="filters_#{key}" #{name}
 
   .aside.aside-container
     h2 Find Specific Articles
